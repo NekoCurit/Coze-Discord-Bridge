@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+build{
+    dependsOn {
+        shadowJar
+    }
+}
+
+jar {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    manifest {
+        attributes(
+                'Main-Class': 'catx.feitu.coze_discord_bridge.Main'
+        )
+    }
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty "log4j.skipJansi", "false"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+group = 'catx.feitu'
+version = '1.0'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    // Discord Recommend
+    implementation 'org.javacord:javacord:3.8.0'
+    // https://mavenlibs.com/maven/dependency/org.yaml/snakeyaml
+    implementation 'org.yaml:snakeyaml:2.1'
+    // https://mavenlibs.com/maven/dependency/com.alibaba/fastjson
+    implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
+    // https://mavenlibs.com/maven/dependency/org.fusesource.jansi/jansi
+    implementation 'org.fusesource.jansi:jansi:2.4.1'
+    // https://mavenlibs.com/maven/dependency/org.apache.logging.log4j/log4j-core
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    // https://mavenlibs.com/maven/dependency/com.esotericsoftware.yamlbeans/yamlbeans
+    implementation 'com.esotericsoftware.yamlbeans:yamlbeans:1.17'
+}
