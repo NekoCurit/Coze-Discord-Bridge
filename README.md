@@ -12,9 +12,9 @@ _觉得有点用的话 别忘了点个🌟_
 
 ## 简介
 
-其实这个项目本质上算是 https://github.com/deanxv/coze-discord-proxy/ 的java~移植版~重置版
+其实这个项目灵感来源于Github上的其它项目..
 
-但是考虑到要在Windows VPS上部署
+但是考虑到要在Windows VPS上部署~以及作者技术不行~
 
 因此就做出来了这个
 
