@@ -65,18 +65,22 @@ class HttpHandle implements HttpHandler {
             Response.Header_Content_Type = "application/json; charset=UTF-8";
         } else { // 200 Successful
             String query = "GET".equals(t.getRequestMethod()) ?
-                    t.getRequestURI().getQuery() :
+                    t.getRequestURI().getRawQuery() :
                     new BufferedReader(new InputStreamReader(t.getRequestBody(), StandardCharsets.UTF_8)).readLine();
             HandleType handle = new HandleType();
             handle.RequestParams = new JSONObject();
-
             if (query != null) {
                 for (String param : query.split("&")) {
                     String[] keyValue = param.split("=");
                     if (keyValue.length > 1) {
-                        handle.RequestParams.put(URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8), URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8));
+                        // 对key和value进行分别解码
+                        String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                        String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
+                        handle.RequestParams.put(key, value);
                     } else if (keyValue.length == 1) {
-                        handle.RequestParams.put(URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8), "");
+                        // 只有key没有value时
+                        String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                        handle.RequestParams.put(key, "");
                     }
                 }
             }
