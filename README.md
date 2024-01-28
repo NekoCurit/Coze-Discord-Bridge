@@ -14,9 +14,9 @@ _觉得有点用的话 别忘了点个🌟_
 
 其实这个项目本质上算是 https://github.com/deanxv/coze-discord-proxy/ 的java~移植版~重置版
 
-~但是docker作者实在是搞不明白..~
+但是考虑到要在Windows VPS上部署
 
-~因此就做出来了这个~
+因此就做出来了这个
 
 ## 截图
 
@@ -24,12 +24,12 @@ _觉得有点用的话 别忘了点个🌟_
 
 ## 功能
 
-- [ ] 对话支持流式返回
+- [X] HTTP API支持
 - [X] 支持文生图(需`coze`配置`DALL·E3`/`DALL·E2`插件)返回图片url
 - [X] 支持图生文(需`coze`配置`GPT4V`插件)(发送的文本消息中携带图片url即可)
-- [x] 支持创建 `discord`频道/子频道/线程
-- [x] 支持对话指定 `discord`频道/子频道/线程 实现对话隔离
-- [ ] 支持和`openai`对齐的接口(`v1/chat/completions`)(支持文生图/图生文)
+- [x] 支持对话隔离
+- [ ] 对话支持流式返回
+- [ ] 支持和`openai`对齐的接口(`v1/chat/completions`)
 
 ## 部署
 
