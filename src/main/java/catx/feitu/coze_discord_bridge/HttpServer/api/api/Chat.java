@@ -12,10 +12,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 
-import java.util.Objects;
-import java.util.Optional;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+import static catx.feitu.coze_discord_bridge.Misc.CacheManager.Cache_BotReplyGetFiles;
 
 public class Chat implements APIHandler {
 
@@ -64,27 +73,53 @@ public class Chat implements APIHandler {
                         // TextChannel textChannel = (TextChannel) channel.get();
                         LockManager.getLock(channel.get().getIdAsString()).lock(); // 上锁
                         CacheManager.Cache_BotReplyClear(textChannel.getIdAsString());
-                        textChannel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + Handle.RequestParams.getString("prompt")).join();
+
+                        CompletableFuture<Message> send = textChannel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + Handle.RequestParams.getString("prompt"));
+                        if (Handle.RequestParams.containsKey("image")) {
+                            String encodedImage = Handle.RequestParams.getString("image")
+                                    .replace("data:image/png;base64,","");
+                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                            try {
+                                // 使用 Java 自带的Base64解码器解码字符串
+                                byte[] imageBytes = Base64.getDecoder().decode(encodedImage);
+                                BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+                                if (image == null) {
+                                    throw new IllegalArgumentException("返回图片为空");
+                                }
+                                ImageIO.write(image, "png", outputStream);
+                                try (InputStream sendStream = new ByteArrayInputStream(outputStream.toByteArray())) {
+                                    EmbedBuilder embed = new EmbedBuilder().setImage(sendStream);
+                                    send = send.thenCompose(message -> textChannel.sendMessage(embed));
+                                }
+                            } catch (Exception e) {
+                                logger.warn("解析图片失败\r\n" + encodedImage, e);
+                            }
+                        }
+                        send.join();
                         String Prompt = "";
+                        List<String> files = new ArrayList<>();
 
                         int retryInterval = 200; // 等待时间间隔 单位为毫秒
-                        int maxRetries = 100; // 最大尝试次数
+                        int maxRetries = 300; // 最大尝试次数
                         int attempt = 0; // 当前尝试次数
-                        while (Objects.equals(Prompt, "")) {
+                        while (Objects.equals(Prompt, "") && files.isEmpty()) {
                             attempt++; // +1
                             Prompt = CacheManager.Cache_BotReplyGetPrompt(textChannel.getIdAsString());
+                            files = CacheManager.Cache_BotReplyGetFiles(textChannel.getIdAsString());
                             if (attempt < maxRetries) {
                                 try { Thread.sleep(retryInterval); } catch (InterruptedException ignored) {}
                             } else {
                                 break;
                             }
                         }
+                        Cache_BotReplyGetFiles(textChannel.getIdAsString());
                         LockManager.getLock(channel.get().getIdAsString()).unlock(); // 解锁
                         Response.code = 200;
                         json.put("code", 200);
                         json.put("message", "成功!");
                         JSONObject json_data = new JSONObject();
                         json_data.put("prompt", Prompt);
+                        json_data.put("files", files);
                         json.put("data", json_data);
                     } else {
                         Response.code = 502;

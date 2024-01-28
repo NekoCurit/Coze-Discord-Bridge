@@ -14,6 +14,7 @@ import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,7 +50,9 @@ public class GetLatestMessage implements APIHandler {
                     json.put("data", json_data);
                 } else {
                     String Prompt = CacheManager.Cache_BotReplyGetPrompt(channel.get().getIdAsString());
-                    if (Prompt.isEmpty()) {
+                    List<String> files = CacheManager.Cache_BotReplyGetFiles(channel.get().getIdAsString());
+                    if (Objects.equals(Prompt, "") && files.isEmpty()) {
+                        Response.code = 502;
                         json.put("code", 502);
                         json.put("message", "未获取到旧消息");
                         JSONObject json_data = new JSONObject();
@@ -60,6 +63,7 @@ public class GetLatestMessage implements APIHandler {
                         json.put("message", "成功!");
                         JSONObject json_data = new JSONObject();
                         json_data.put("prompt", Prompt);
+                        json_data.put("files", files);
                         json.put("data", json_data);
                     }
                 }

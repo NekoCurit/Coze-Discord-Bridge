@@ -5,11 +5,14 @@ import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.MessageAttachment;
+import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.listener.message.MessageEditListener;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,10 +34,20 @@ public class MessageHandle implements MessageCreateListener, MessageEditListener
                 if (Done100) {
                     logger.info("[CozeBot] " + event.getChannel().getIdAsString() + ":" + event.getMessageContent());
                 }
-
+                List<Embed> embeds = event.getMessage().getEmbeds(); // 获取消息中的所有嵌入内容
+                List<String> files = new ArrayList<>(); // 存储嵌入图片的URL
+                for (Embed embed : embeds) {
+                    if (embed.getImage().isPresent()) {
+                        if (Done100) {
+                            logger.info("[CozeBot] 图片URL -> " + embed.getImage().get().getUrl().toString());
+                        }
+                        files.add(embed.getImage().get().getUrl().toString());
+                    }
+                }
                 CacheManager.Cache_BotReplySave( // 不是 Done100 也要记录  因为少数情况生成完成Bot也不会显示按钮(你可以问bot nsfw试试)
                         event.getChannel().getIdAsString(),
                         event.getMessageContent(),
+                        files,
                         Done100
                 );
             }

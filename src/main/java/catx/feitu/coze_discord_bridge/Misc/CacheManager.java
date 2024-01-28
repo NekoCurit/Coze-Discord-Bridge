@@ -10,6 +10,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CacheManager {
 
@@ -50,9 +52,10 @@ public class CacheManager {
         return ConfigManage.Configs.Disable_Name_Cache ? Name : (channel_name_cache.containsKey(Name) ? channel_name_cache.getString(Name) : Name);
     }
 
-    public static void Cache_BotReplySave (String ChannelID,String prompt,Boolean Done) {
+    public static void Cache_BotReplySave (String ChannelID, String prompt, List<String> files, Boolean Done) {
         bot_reply_cache.put("timestamp_" + ChannelID, Done ? 0 : Instant.now().toEpochMilli());
         bot_reply_cache.put("prompt_" + ChannelID, prompt);
+        bot_reply_cache.put("files_" + ChannelID, files);
     }
     public static String Cache_BotReplyGetPrompt (String ChannelID) {
         if (!bot_reply_cache.containsKey("timestamp_" + ChannelID) || !bot_reply_cache.containsKey("prompt_" + ChannelID)) {
@@ -63,6 +66,16 @@ public class CacheManager {
             return (bot_reply_cache.getString("prompt_" + ChannelID));
         }
         return "";
+    }
+    public static List<String> Cache_BotReplyGetFiles (String ChannelID) {
+        if (!bot_reply_cache.containsKey("timestamp_" + ChannelID) || !bot_reply_cache.containsKey("prompt_" + ChannelID)) {
+            return new ArrayList<>();
+        }
+        long generate_time = bot_reply_cache.getLong("timestamp_" + ChannelID);
+        if (generate_time == 0 || Instant.now().toEpochMilli() - generate_time > ConfigManage.Configs.generate_timeout) {
+            return bot_reply_cache.getObject("files_" + ChannelID, List.class);
+        }
+        return new ArrayList<>();
     }
     public static void Cache_BotReplyClear (String ChannelID) {
         bot_reply_cache.remove("prompt_" + ChannelID);
