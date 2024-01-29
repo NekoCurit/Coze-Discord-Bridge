@@ -10,12 +10,19 @@ Discord_Bot_Token: ""
 
 #配置是否启用代理  代理类型 HTTP 或 SOCKS 常用于中国大陆机器部署
 UsingProxy: false
-ProxyIP: 127.0.0.1
+ProxyIP: ”127.0.0.1"
 ProxyPort: 8080
-ProxyType: HTTP
+ProxyType: “HTTP”
 
+#API端口设置为0关闭 如果HTTP和HTTPS都监听失败则无法启动
 #API端口 默认8092 curl http://127.0.0.1:8092/Ping
 APIPort: 8092
+#API HTTPS 端口 默认8093 curl https://127.0.0.1:8093/Ping
+APISSLPort: 8093
+#API HTTPS 证书 格式jks
+APISSL_keyStorePath: "keystore.jks"
+APISSL_keyStorePassword: "123456"
+
 #APIKey 留空取消 设置后需要在header或者请求参数里添加key配置
 APIKey: ""
 

@@ -29,12 +29,11 @@ public class Main {
             CacheManager.LoadCache();
         }
         try {
-            HttpServerManage.Start(ConfigManage.Configs.APIPort);
-        } catch (IOException e) {
-            logger.error("监听 0.0.0.0:" + ConfigManage.Configs.APIPort + " 失败,请关闭占用程序或者修改端口后重新启动",e);
+            HttpServerManage.Start();
+        } catch (Exception e) {
+            logger.error(e);
             System.exit(-1);
         }
-        logger.info("监听 0.0.0.0:" + ConfigManage.Configs.APIPort + " 成功");
 
         logger.info("Coze-Discord-Bridge 初始化完毕,正在登录Discord...");
         // 程序退出前执行

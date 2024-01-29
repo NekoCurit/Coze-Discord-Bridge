@@ -19,5 +19,10 @@ public class ConfigData {
         public boolean Disable_Name_Cache = false;
 
         public int APIPort = 8092;
+        public int APISSLPort = 8093;
+        public String APISSL_keyStorePath = "";
+        public String APISSL_keyStorePassword = "";
         public String APIKey = "";
+
+
 }
