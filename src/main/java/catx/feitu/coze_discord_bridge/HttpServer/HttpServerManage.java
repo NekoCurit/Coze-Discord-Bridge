@@ -94,6 +94,8 @@ public class HttpServerManage {
         AddAPI("/api/DeleteConversation", new DeleteConversation());
         AddAPI("/api/ConversationIsFound", new ConversationIsFound());
         AddAPI("/api/Chat", new Chat());
+        AddAPI("/api/ChatStream", new ChatStream());
+        AddAPI("/api/RenameConversation", new RenameConversation());
         AddAPI("/v1/chat/Completions", new Completions());
         AddAPI("/Ping", new Ping());
 
