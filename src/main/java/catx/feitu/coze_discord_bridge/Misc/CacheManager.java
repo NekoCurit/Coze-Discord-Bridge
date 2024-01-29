@@ -2,6 +2,7 @@ package catx.feitu.coze_discord_bridge.Misc;
 
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CacheManager {
 
@@ -67,6 +69,17 @@ public class CacheManager {
         }
         return "";
     }
+    public static BotReplyType Cache_BotReplyMessageEx (String ChannelID) {
+        BotReplyType Reply = new BotReplyType ();
+        Reply.IsFound = bot_reply_cache.containsKey("timestamp_" + ChannelID);
+        if (Reply.IsFound) {
+            Reply.TextMessage = bot_reply_cache.getString("prompt_" + ChannelID);
+            Reply.Files = bot_reply_cache.getObject("files_" + ChannelID, List.class);
+            Reply.UpdataTimeStamp = bot_reply_cache.getLong("timestamp_" + ChannelID);
+            Reply.Done = Reply.UpdataTimeStamp == 0 || Instant.now().toEpochMilli() - Reply.UpdataTimeStamp > ConfigManage.Configs.generate_timeout;
+        }
+        return Reply;
+    }
     public static List<String> Cache_BotReplyGetFiles (String ChannelID) {
         if (!bot_reply_cache.containsKey("timestamp_" + ChannelID) || !bot_reply_cache.containsKey("prompt_" + ChannelID)) {
             return new ArrayList<>();
@@ -80,5 +93,53 @@ public class CacheManager {
     public static void Cache_BotReplyClear (String ChannelID) {
         bot_reply_cache.remove("prompt_" + ChannelID);
         bot_reply_cache.remove("timestamp_" + ChannelID);
+    }
+
+    public static String Cache_Default_OldMessage2Name (List<String> OldMessage) {
+        if (!channel_name_cache.containsKey("OldMessage2Name")) {
+            return "";
+        }
+        JSONArray messagesArray = channel_name_cache.getJSONArray("OldMessage2Name");
+        logger.info(10);
+        for (int i = 0; i < messagesArray.size(); i++) {
+            JSONObject messageObject = messagesArray.getJSONObject(i);
+            if (Objects.equals(messageObject.getString("message"), String.join(",", OldMessage))) {
+                return (messageObject.getString("name"));
+            }
+        }
+        return "";
+    }
+    public static void Cache_Default_NameWriteOldMessage (String Name,List<String> OldMessage) {
+        JSONArray messagesArray = channel_name_cache.containsKey("OldMessage2Name") ?
+                channel_name_cache.getJSONArray("OldMessage2Name"):
+                new JSONArray();
+        Boolean NeedCreate = true;
+        for (int i = 0; i < messagesArray.size(); i++) {
+            JSONObject messageObject = messagesArray.getJSONObject(i);
+            if (Objects.equals(messageObject.getString("name"), Name)) {
+                messageObject.put(String.join(",", OldMessage),OldMessage);
+                messagesArray.set(i,messageObject);
+                NeedCreate = false;
+                break;
+            }
+        }
+        if (NeedCreate) {
+            JSONObject messageObject =new JSONObject();
+            messageObject.put("name",Name);
+            messageObject.put("message",String.join(",", OldMessage));
+            messagesArray.add(messageObject);
+        }
+        channel_name_cache.put("OldMessage2Name",messagesArray);
+    }
+    public static void Cache_Default_NameDeleteOldMessage (String Name) {
+        JSONArray messagesArray = channel_name_cache.getJSONArray("OldMessage2Name");
+        for (int i = 0; i < messagesArray.size(); i++) {
+            JSONObject messageObject = messagesArray.getJSONObject(i);
+            if (Objects.equals(messageObject.getString("name"), Name)) {
+                messagesArray.remove(i);
+                break;
+            }
+        }
+        channel_name_cache.put("OldMessage2Name",messagesArray);
     }
 }
