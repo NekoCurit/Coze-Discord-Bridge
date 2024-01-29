@@ -24,11 +24,13 @@ _觉得有点用的话 别忘了点个🌟_
 
 ## 功能
 
-- [X] HTTP API支持
+注:是最新源代码里支持的功能 不是Release里的 要看Release的往前翻Commit api文档 配置文件同样
+
+- [X] HTTP/HTTPS API支持
 - [X] 支持文生图(需`coze`配置`DALL·E3`/`DALL·E2`插件)返回图片url
 - [X] 支持图生文(需`coze`配置`GPT4V`插件)(发送的文本消息中携带图片url即可)
 - [x] 支持对话隔离
-- [ ] 对话支持流式返回
+- [X] 对话支持流式返回
 - [ ] 支持和`openai`对齐的接口(`v1/chat/completions`)
 
 ## 你需要的东西
@@ -38,6 +40,8 @@ _觉得有点用的话 别忘了点个🌟_
 2.一个代理服务器/材料一的机器在国外
 
 3.一个手机号/Google账号
+
+4.一个Discord账号
 
 ## 部署
 
@@ -64,10 +68,12 @@ ProxyIP: 127.0.0.1
 ProxyPort: 8080
 ProxyType: HTTP
 
+#API端口设置为0关闭 如果HTTP和HTTPS都监听失败则无法启动
 #API端口 默认8092 curl http://127.0.0.1:8092/Ping
 APIPort: 8092
-#APIKey 留空取消 设置后需要在header或者请求参数里添加key配置
-APIKey: ""
+#API HTTPS 端口 默认8093 curl https://127.0.0.1:8093/Ping
+APISSLPort: 8093
+......
 
 #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
 CozeBot_InServer_id: ""
@@ -198,6 +204,29 @@ ps:第一次启动报错 `读取 cache_names.json 失败` 正常 直接忽略即
 
 <br>
 
+终结点:`/api/ChatStream` 聊天
+
+参数:String name 名称 | String prompt 提示词 | <可选>String image 图片(经过base64编码过的png图片数据)
+
+返回:
+
+中途:Int code 状态码 200为成功 | String message 信息 固定为`生成中` | data {String prompt_all bot生成的文本,String prompt_new bot新生成的文本,String[] files bot生成/找到的图片,Boolean done 是否完成 固定false} 数据
+
+完成:Int code 状态码 200为成功 | String message 信息 | data {String prompt_all bot生成的文本,String prompt_new bot新生成的文本 为空,String[] files bot生成/找到的图片,Boolean done 是否完成 固定true} 数据
+
+`````
+curl --no-buffer "http://127.0.0.1:8092/api/ChatStream?name=1201576967368085686&prompt=1"
+{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How","prompt_new":"Ah, I see you've signaled me with a \"1\". How"},"message":"生成中.."}
+{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can","prompt_new":" can"},"message":"生成中.."}
+{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist","prompt_new":" I assist"},"message":"生成中.."}
+{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you","prompt_new":" you"},"message":"生成中.."}
+{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead","prompt_new":" today? If you have any questions or there's something you'd like to share, please go ahead"},"message":"生成中.."}
+{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":"!"},"message":"生成中.."}
+{"code":200,"data":{"done":true,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":""},"message":"成功!"}
+`````
+
+<br>
+
 终结点:`/api/GetLatestMessage` 获取上一次对话消息(常用于聊天中途连接丢失获取消息内容)
 
 参数:String name 名称
@@ -220,6 +249,13 @@ ps:第一次启动报错 `读取 cache_names.json 失败` 正常 直接忽略即
 
 返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否成功} 数据
 
+<br>
+
+终结点:`/api/RenameConversation` 对话改名   如果你开启 `Disable_Name_Cache` 那么只能改Discord子频道名称
+
+参数:String name 名称 | String new_name 新名称
+
+返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否成功,String conversation_id 频道ID,String conversation_name 频道名称} 数据
 ## Api-key
 
 确保安全性 您还可以通过配置文件开启安全访问
