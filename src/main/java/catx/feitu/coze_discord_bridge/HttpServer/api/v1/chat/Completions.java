@@ -133,7 +133,7 @@ public class Completions implements APIHandler {
                 json.put("choices", new JSONObject[]{choice});
                 if(UsingStream) {
                     Handle.HttpExchange.getResponseHeaders().add("Transfer-Encoding", "chunked");
-                    Handle.HttpExchange.sendResponseHeaders(200, -1); // 发送响应头，状态码为 200，发送内容长度设置为 -1 表示使用 chunked
+                    Handle.HttpExchange.sendResponseHeaders(200, 0);
 
                     os.write((json.toJSONString() + "\r\n").getBytes(StandardCharsets.UTF_8));
                     os.flush();
