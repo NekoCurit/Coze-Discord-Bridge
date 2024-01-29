@@ -132,7 +132,6 @@ public class Chat implements APIHandler {
             }
         }
         Response.msg = json.toJSONString();
-        Response.Header_Content_Type = "application/json; charset=UTF-8";
 
         return Response;
     }
