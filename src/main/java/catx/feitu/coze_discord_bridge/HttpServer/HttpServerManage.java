@@ -98,6 +98,7 @@ public class HttpServerManage {
         AddAPI("/api/RenameConversation", new RenameConversation());
         AddAPI("/v1/chat/Completions", new Completions());
         AddAPI("/Ping", new Ping());
+        AddAPI("/robots.txt", new robots());
 
 
     }
