@@ -4,13 +4,12 @@ import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.api.Ping;
 import catx.feitu.coze_discord_bridge.HttpServer.api.api.*;
 import catx.feitu.coze_discord_bridge.HttpServer.api.index;
+import catx.feitu.coze_discord_bridge.HttpServer.api.robots;
 import catx.feitu.coze_discord_bridge.HttpServer.api.v1.chat.Completions;
-import catx.feitu.coze_discord_bridge.Main;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.IOUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -25,7 +24,6 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Scanner;
 
 import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.APIS;
 
@@ -171,9 +169,7 @@ class HttpHandle implements HttpHandler {
             else {
                 handle.RequestPath = t.getRequestURI().getPath();
                 handle.HttpExchange = t; // 传递过去
-                logger.warn(2);
                 Response = handler.handle(handle);
-                logger.warn(3);
             }
             if (handle.HttpExchange_Disable_Default_Action) { return; } //关闭默认处理 用于支持特殊返回
         }
