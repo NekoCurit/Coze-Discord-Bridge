@@ -21,7 +21,7 @@ public class CreateConversation implements APIHandler {
     @Override
     public ResponseType handle(HandleType Handle) {
         ResponseType Response = new ResponseType();
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject(true);
         Optional<Server> optionalServer = Discord.api.getServerById(ConfigManage.Configs.CozeBot_InServer_id);
         if (optionalServer.isEmpty()) {
             Response.code = 502;
@@ -38,7 +38,7 @@ public class CreateConversation implements APIHandler {
                         .setName(Handle.RequestParams.getString("name"))
                         .create()
                         .join();
-                JSONObject json_data = new JSONObject();
+                JSONObject json_data = new JSONObject(true);
                 Response.code = 200;
                 json.put("code", 200);
                 json.put("message", "创建子频道成功!");

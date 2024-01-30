@@ -24,7 +24,7 @@ public class GetLatestMessage implements APIHandler {
     @Override
     public ResponseType handle(HandleType Handle) {
         ResponseType Response = new ResponseType();
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject(true);
         Optional<Server> optionalServer = Discord.api.getServerById(ConfigManage.Configs.CozeBot_InServer_id);
         if (optionalServer.isEmpty()) {
             Response.code = 502;
@@ -37,7 +37,7 @@ public class GetLatestMessage implements APIHandler {
                 Response.code = 400;
                 json.put("code", 400);
                 json.put("message", "参数缺失:name");
-                JSONObject json_data = new JSONObject();
+                JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
             }
             else {
@@ -46,7 +46,7 @@ public class GetLatestMessage implements APIHandler {
                     Response.code = 502;
                     json.put("code", 502);
                     json.put("message", "当前对话不存在");
-                    JSONObject json_data = new JSONObject();
+                    JSONObject json_data = new JSONObject(true);
                     json.put("data", json_data);
                 } else {
                     String Prompt = CacheManager.Cache_BotReplyGetPrompt(channel.get().getIdAsString());
@@ -55,13 +55,13 @@ public class GetLatestMessage implements APIHandler {
                         Response.code = 502;
                         json.put("code", 502);
                         json.put("message", "未获取到旧消息");
-                        JSONObject json_data = new JSONObject();
+                        JSONObject json_data = new JSONObject(true);
                         json.put("data", json_data);
                     } else {
                         Response.code = 200;
                         json.put("code", 200);
                         json.put("message", "成功!");
-                        JSONObject json_data = new JSONObject();
+                        JSONObject json_data = new JSONObject(true);
                         json_data.put("prompt", Prompt);
                         json_data.put("files", files);
                         json.put("data", json_data);

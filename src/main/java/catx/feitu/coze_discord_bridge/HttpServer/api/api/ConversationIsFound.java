@@ -20,7 +20,7 @@ public class ConversationIsFound implements APIHandler {
     @Override
     public ResponseType handle(HandleType Handle) {
         ResponseType Response = new ResponseType();
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject(true);
         Optional<Server> optionalServer = Discord.api.getServerById(ConfigManage.Configs.CozeBot_InServer_id);
         if (optionalServer.isEmpty()) {
             Response.code = 502;
@@ -33,7 +33,7 @@ public class ConversationIsFound implements APIHandler {
                 Response.code = 400;
                 json.put("code", 400);
                 json.put("message", "参数缺失:name");
-                JSONObject json_data = new JSONObject();
+                JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
             } else {
                 Optional<ServerChannel> channel = optionalServer.get().getChannelById(CacheManager.Cache_GetName2Channel(Handle.RequestParams.getString("name")));
@@ -41,14 +41,14 @@ public class ConversationIsFound implements APIHandler {
                     Response.code = 200;
                     json.put("code", 200);
                     json.put("message", "当前对话不存在");
-                    JSONObject json_data = new JSONObject();
+                    JSONObject json_data = new JSONObject(true);
                     json_data.put("status", false);
                     json.put("data", json_data);
                 } else {
                     Response.code = 200;
                     json.put("code", 200);
                     json.put("message", "当前对话存在");
-                    JSONObject json_data = new JSONObject();
+                    JSONObject json_data = new JSONObject(true);
                     json_data.put("status", true);
                     json_data.put("conversation_name", channel.get().getName());
                     json_data.put("conversation_id", channel.get().getIdAsString());

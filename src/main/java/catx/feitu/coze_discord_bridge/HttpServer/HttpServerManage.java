@@ -5,6 +5,7 @@ import catx.feitu.coze_discord_bridge.HttpServer.api.Ping;
 import catx.feitu.coze_discord_bridge.HttpServer.api.api.*;
 import catx.feitu.coze_discord_bridge.HttpServer.api.index;
 import catx.feitu.coze_discord_bridge.HttpServer.api.robots;
+import catx.feitu.coze_discord_bridge.HttpServer.api.v1.Models;
 import catx.feitu.coze_discord_bridge.HttpServer.api.v1.chat.Completions;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.*;
@@ -88,16 +89,18 @@ public class HttpServerManage {
         }
 
         AddAPI("/",new index());
+        AddAPI("/Ping", new Ping());
+        AddAPI("/robots.txt", new robots());
+
         AddAPI("/api/CreateConversation", new CreateConversation());
         AddAPI("/api/DeleteConversation", new DeleteConversation());
         AddAPI("/api/ConversationIsFound", new ConversationIsFound());
         AddAPI("/api/Chat", new Chat());
         AddAPI("/api/ChatStream", new ChatStream());
         AddAPI("/api/RenameConversation", new RenameConversation());
-        AddAPI("/v1/chat/Completions", new Completions());
-        AddAPI("/Ping", new Ping());
-        AddAPI("/robots.txt", new robots());
 
+        AddAPI("/v1/models", new Models());
+        AddAPI("/v1/chat/Completions", new Completions());
 
     }
 
@@ -111,17 +114,20 @@ class HttpHandle implements HttpHandler {
     public void handle(HttpExchange t) throws IOException {
         ResponseType Response = new ResponseType();
         logger.info(t.getRequestMethod() + " " + t.getRequestURI().getPath());
+        t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         if ("OPTIONS".equals(t.getRequestMethod())) {
-            t.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            t.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            t.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS, POST");
             t.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
-            // 发送204 No Content响应表明请求成功，但没有消息实体
-            t.sendResponseHeaders(204, -1);
+            t.sendResponseHeaders(200,0);
+            OutputStream os = t.getResponseBody();
+            os.write(0);
+            os.close();
+            t.close();
             return;
         }
         APIHandler handler = APIS.get(t.getRequestURI().getPath().toLowerCase());
         if (handler == null) { // 404 Not Found
-            JSONObject json = new JSONObject();
+            JSONObject json = new JSONObject(true);
             json.put("code", 404);
             json.put("message", "终结点不存在");
             Response.msg = json.toJSONString();
@@ -132,7 +138,7 @@ class HttpHandle implements HttpHandler {
                     t.getRequestURI().getRawQuery() :
                     Stream2String(t.getRequestBody());
                         HandleType handle = new HandleType();
-            handle.RequestParams = new JSONObject();
+            handle.RequestParams = new JSONObject(true);
             if (query != null) {
                 try {
                     handle.RequestParams = handle.RequestParams.parseObject(query);
@@ -158,7 +164,7 @@ class HttpHandle implements HttpHandler {
             }
             Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("key"), ConfigManage.Configs.APIKey);
             if (!Verifyed) {
-                JSONObject json = new JSONObject();
+                JSONObject json = new JSONObject(true);
                 json.put("code", 403);
                 json.put("message", "无权访问本服务");
                 Response.msg = json.toJSONString();

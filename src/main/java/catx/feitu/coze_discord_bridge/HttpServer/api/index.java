@@ -13,11 +13,11 @@ public class index implements APIHandler {
     public ResponseType handle(HandleType Handle) {
         ResponseType Response = new ResponseType();
 
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject(true);
         json.put("code", 200);
         json.put("message", "这里是Coze-Discord-Bridge的根节点~");
 
-        JSONObject json_data = new JSONObject();
+        JSONObject json_data = new JSONObject(true);
         json_data.put("now", Instant.now().toEpochMilli() / 1000);
 
         json.put("data", json_data);

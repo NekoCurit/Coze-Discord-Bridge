@@ -15,7 +15,7 @@ public class Ping implements APIHandler {
     @Override
     public ResponseType handle(HandleType Handle) {
         ResponseType Response = new ResponseType();
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject(true);
         json.put("code", 200);
         json.put("message", "Pong!");
 

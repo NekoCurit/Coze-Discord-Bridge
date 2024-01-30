@@ -19,8 +19,8 @@ public class CacheManager {
 
     private static final Logger logger = LogManager.getLogger(CacheManager.class);
 
-    public static JSONObject channel_name_cache = new JSONObject();
-    public static JSONObject bot_reply_cache = new JSONObject();
+    public static JSONObject channel_name_cache = new JSONObject(true);
+    public static JSONObject bot_reply_cache = new JSONObject(true);
 
     public static void LoadCache () {
         try {
@@ -124,7 +124,7 @@ public class CacheManager {
             }
         }
         if (NeedCreate) {
-            JSONObject messageObject =new JSONObject();
+            JSONObject messageObject =new JSONObject(true);
             messageObject.put("name",Name);
             messageObject.put("message",String.join(",", OldMessage));
             messagesArray.add(messageObject);

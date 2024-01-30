@@ -33,7 +33,7 @@ public class ChatStream implements APIHandler {
     @Override
     public ResponseType handle(HandleType Handle) {
         ResponseType Response = new ResponseType();
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject(true);
         Optional<Server> optionalServer = Discord.api.getServerById(ConfigManage.Configs.CozeBot_InServer_id);
         if (optionalServer.isEmpty()) {
             Response.code = 502;
@@ -46,14 +46,14 @@ public class ChatStream implements APIHandler {
                 Response.code = 400;
                 json.put("code", 400);
                 json.put("message", "参数缺失:name");
-                JSONObject json_data = new JSONObject();
+                JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
             }
             if (!Handle.RequestParams.containsKey("prompt")) {
                 Response.code = 400;
                 json.put("code", 400);
                 json.put("message", "参数缺失:prompt");
-                JSONObject json_data = new JSONObject();
+                JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
             }
             else {
@@ -62,7 +62,7 @@ public class ChatStream implements APIHandler {
                     Response.code = 502;
                     json.put("code", 502);
                     json.put("message", "当前对话不存在");
-                    JSONObject json_data = new JSONObject();
+                    JSONObject json_data = new JSONObject(true);
                     json_data.put("status", false);
                     json.put("data", json_data);
                 } else {
@@ -116,7 +116,7 @@ public class ChatStream implements APIHandler {
                                 if (!OldMessage.equals(Reply.TextMessage)) {
                                     json.put("code", 200);
                                     json.put("message", "生成中..");
-                                    JSONObject json_data = new JSONObject();
+                                    JSONObject json_data = new JSONObject(true);
                                     json_data.put("prompt_all", Reply.TextMessage);
                                     json_data.put("prompt_new", Reply.TextMessage.replace(OldMessage,""));
                                     json_data.put("files", Reply.Files);
@@ -137,7 +137,7 @@ public class ChatStream implements APIHandler {
                             Response.code = 200;
                             json.put("code", 200);
                             json.put("message", "成功!");
-                            JSONObject json_data = new JSONObject();
+                            JSONObject json_data = new JSONObject(true);
                             json_data.put("prompt_all", Reply.TextMessage);
                             json_data.put("prompt_new", Reply.TextMessage.replace(OldMessage,""));
                             json_data.put("files", Reply.Files);
@@ -152,7 +152,7 @@ public class ChatStream implements APIHandler {
                         Response.code = 502;
                         json.put("code", 502);
                         json.put("message", "执行失败:目标非文本频道");
-                        JSONObject json_data = new JSONObject();
+                        JSONObject json_data = new JSONObject(true);
                         json.put("data", json_data);
                     }
                 }
