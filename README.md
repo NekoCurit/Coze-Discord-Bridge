@@ -10,17 +10,19 @@ _觉得有点用的话 别忘了点个🌟_
 
 </div>
 
-## 简介
-
-其实这个项目灵感来源于Github上的其它项目..
-
-但是考虑到要在Windows VPS上部署~以及作者技术不行~
-
-因此就做出来了这个
-
 ## 截图
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/285d33e5-6898-4324-8f9c-8842f3a3912c)
+
+## 留言
+
+没有特殊需求不会/很少维护
+
+作者本身来自Minecraft挂圈 是圈子内很少见不魔怔 不圈钱的高层用户
+
+因为一些不可抗拒等等问题 需要回去一趟
+
+如果有能力 你也可以通过提交pr来继续维护项目
 
 ## 功能
 
@@ -28,10 +30,16 @@ _觉得有点用的话 别忘了点个🌟_
 
 - [X] HTTP/HTTPS API支持
 - [X] 支持文生图(需`coze`配置`DALL·E3`/`DALL·E2`插件)返回图片url
-- [X] 支持图生文(需`coze`配置`GPT4V`插件)(发送的文本消息中携带图片url即可)
+- [X] 支持图生文(需`coze`配置`GPT4V`插件)(发送的文本消息中携带图片url/自己上传base64图片)
 - [x] 支持对话隔离
 - [X] 对话支持流式返回
-- [ ] 支持和`openai`对齐的接口(`v1/chat/completions`)
+- [X] 支持和`openai`对齐的对话接口(`v1/chat/completions`)
+- [X] 支持和`openai`对齐的图像生成接口(`v1/images/generations`)
+- [ ] 突破Discord Bot 2k字消息长度上限
+- [ ] WebUI
+- [ ] 多个Bot 负载均衡
+
+大饼很甜,苦了的只是猫猫
 
 ## 你需要的东西
 
@@ -151,7 +159,7 @@ ps:Changelog必填 随便写即可 如果你有强迫症的话那..不太建议.
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/fac6a998-c32b-4a39-aef3-f8a00b1ab65f)
 
-4.再次运行 `java -jar CozeDiscordBridge-xxxxxx.jar` 如下显示则正常
+4.再次运行 `java -jar CozeDiscordBridge-xxxxxx.jar` 如下显示则正常  如果您是使用的是Windows且控制台编码为GBK 请先执行`chcp 65001`
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/803bfe60-39d5-42d5-b1b3-7aaf932a2808)
 
@@ -216,13 +224,19 @@ ps:第一次启动报错 `读取 cache_names.json 失败` 正常 直接忽略即
 
 `````
 curl --no-buffer "http://127.0.0.1:8092/api/ChatStream?name=1201576967368085686&prompt=1"
-{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How","prompt_new":"Ah, I see you've signaled me with a \"1\". How"},"message":"生成中.."}
-{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can","prompt_new":" can"},"message":"生成中.."}
-{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist","prompt_new":" I assist"},"message":"生成中.."}
-{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you","prompt_new":" you"},"message":"生成中.."}
-{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead","prompt_new":" today? If you have any questions or there's something you'd like to share, please go ahead"},"message":"生成中.."}
-{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":"!"},"message":"生成中.."}
-{"code":200,"data":{"done":true,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":""},"message":"成功!"}
+data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How","prompt_new":"Ah, I see you've signaled me with a \"1\". How"},"message":"生成中.."}
+
+data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can","prompt_new":" can"},"message":"生成中.."}
+
+data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist","prompt_new":" I assist"},"message":"生成中.."}
+
+data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you","prompt_new":" you"},"message":"生成中.."}
+
+data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead","prompt_new":" today? If you have any questions or there's something you'd like to share, please go ahead"},"message":"生成中.."}
+
+data:{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":"!"},"message":"生成中.."}
+
+data: {"code":200,"data":{"done":true,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":""},"message":"成功!"}
 `````
 
 <br>
@@ -256,6 +270,13 @@ curl --no-buffer "http://127.0.0.1:8092/api/ChatStream?name=1201576967368085686&
 参数:String name 名称 | String new_name 新名称
 
 返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否成功,String conversation_id 频道ID,String conversation_name 频道名称} 数据
+
+<br>
+
+终结点:`/v1/xxxx` OpenAI官方接口适配
+
+仅适配了部分 具体请参照[OpenAI官方文档](https://platform.openai.com/docs/introduction)
+
 ## Api-key
 
 确保安全性 您还可以通过配置文件开启安全访问

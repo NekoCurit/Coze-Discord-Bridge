@@ -37,7 +37,9 @@ public class Main {
         logger.info("Coze-Discord-Bridge 初始化完毕,正在登录Discord...");
         // 程序退出前执行
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            Discord.api.disconnect();
+            if (Discord.api != null) {
+                Discord.api.disconnect();
+            }
         }));
         // Discord 登录
         Discord.discord_init();

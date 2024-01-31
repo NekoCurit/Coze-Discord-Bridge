@@ -123,7 +123,7 @@ public class ChatStream implements APIHandler {
                                     json_data.put("done", false);
                                     json.put("data", json_data);
 
-                                    os.write((json.toJSONString() + "\r\n").getBytes(StandardCharsets.UTF_8));
+                                    os.write(("data: " + json.toJSONString() + "\n\n").getBytes(StandardCharsets.UTF_8));
                                     os.flush();
                                     OldMessage = Reply.TextMessage;
                                 }
@@ -143,10 +143,11 @@ public class ChatStream implements APIHandler {
                             json_data.put("files", Reply.Files);
                             json_data.put("done", true);
                             json.put("data", json_data);
-                            os.write((json.toJSONString() + "\r\n").getBytes(StandardCharsets.UTF_8));
+                            os.write(("data: " + json.toJSONString() + "\n\n").getBytes(StandardCharsets.UTF_8));
                             os.flush();
                             Handle.HttpExchange.sendResponseHeaders(200, 0);
                             Handle.HttpExchange.close();
+                            return Response;
                         } catch (Exception ignored) { }
                     } else {
                         Response.code = 502;
