@@ -2,7 +2,7 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout charset="GBK" pattern="%highlight{[%d{HH:mm:ss}] [%t/%level]: %msg{nolookups}%n}"/>
+            <PatternLayout pattern="%highlight{[%d{HH:mm:ss}] [%t/%level]: %msg{nolookups}%n}"/>
         </Console>
         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg{nolookups}%n" />

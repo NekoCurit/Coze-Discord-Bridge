@@ -47,7 +47,7 @@ CozeBot_id: ""
 
 
 #等待回答超时 通常情况下通过CozeBot下方出现按钮判断是否生成完毕 但是有时也不会出现按钮 比如说你对Bot说NSFW
-generate_timeout: 2000
+generate_timeout: 5000
 
 #高级选项
 #跳过CozeBot回复来源检查

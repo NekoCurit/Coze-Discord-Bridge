@@ -21,6 +21,7 @@ jar {
 
 tasks.withType(JavaExec).configureEach {
     systemProperty "log4j.skipJansi", "false"
+    systemProperty 'file.encoding', 'UTF-8'
 }
 
 tasks.withType(JavaCompile).configureEach {
