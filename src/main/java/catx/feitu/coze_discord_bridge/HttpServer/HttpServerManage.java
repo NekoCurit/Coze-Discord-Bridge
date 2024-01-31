@@ -101,7 +101,7 @@ public class HttpServerManage {
 
         AddAPI("/v1/models", new Models());
         AddAPI("/v1/chat/Completions", new Completions());
-
+        AddAPI("/v1/images/Generations", new Completions());
     }
 
     public static void AddAPI (String s ,APIHandler api) {

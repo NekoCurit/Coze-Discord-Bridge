@@ -32,15 +32,19 @@ APIKey: ""
 # 2 = 将 model 参数作为聊天历史索引 , 无 model 是OpenAI已存在的模型检查 警告:只会传递最新一条用户消息
 # 3 = 上下文连同当前对话合并成一条发送到默认频道
 OpenAPI_Chat_Default_Models2Conversation: 0
-#默认频道ID
+#聊天默认频道ID
 OpenAPI_Chat_Default_Channel: "default"
 #合并对话前缀
 OpenAPI_Chat_MsgForward_Prefix: "下面是一段聊天记录"
 OpenAPI_Chat_MsgForward_Suffix: "请根据上方聊天记录生成相应,不需要写解释,不需要添加前缀"
+#图像生成默认频道ID
+OpenAPI_ImageGenerate_Default_Channel: "default"
+
 #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
 CozeBot_InServer_id: ""
 #接入Coze的Bot id 邀请进服务器在用户列表右键 复制用户ID 过来即可
 CozeBot_id: ""
+
 
 #等待回答超时 通常情况下通过CozeBot下方出现按钮判断是否生成完毕 但是有时也不会出现按钮 比如说你对Bot说NSFW
 generate_timeout: 2000

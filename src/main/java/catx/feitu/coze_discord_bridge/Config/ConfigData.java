@@ -28,5 +28,6 @@ public class ConfigData {
         public String OpenAPI_Chat_Default_Channel = "default";
         public String OpenAPI_Chat_MsgForward_Prefix = "";
         public String OpenAPI_Chat_MsgForward_Suffix = "";
+        public String OpenAPI_ImageGenerate_Default_Channel = "";
 
 }
