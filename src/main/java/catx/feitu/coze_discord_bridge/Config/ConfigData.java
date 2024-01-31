@@ -24,5 +24,9 @@ public class ConfigData {
         public String APISSL_keyStorePassword = "";
         public String APIKey = "";
 
+        public int OpenAPI_Chat_Default_Models2Conversation = 0;
+        public String OpenAPI_Chat_Default_Channel = "default";
+        public String OpenAPI_Chat_MsgForward_Prefix = "";
+        public String OpenAPI_Chat_MsgForward_Suffix = "";
 
 }

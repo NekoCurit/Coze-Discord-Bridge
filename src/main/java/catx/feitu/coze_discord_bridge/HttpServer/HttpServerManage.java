@@ -163,6 +163,7 @@ class HttpHandle implements HttpHandler {
                 Verifyed = Verifyed || Objects.equals(handle.RequestParams.getString("key"), ConfigManage.Configs.APIKey);
             }
             Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("key"), ConfigManage.Configs.APIKey);
+            Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("Authorization"), "Bearer " + ConfigManage.Configs.APIKey);
             if (!Verifyed) {
                 JSONObject json = new JSONObject(true);
                 json.put("code", 403);

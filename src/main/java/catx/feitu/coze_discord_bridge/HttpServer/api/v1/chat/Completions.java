@@ -37,36 +37,84 @@ public class Completions implements APIHandler {
             ResponseType.msg = json.toJSONString();
             return ResponseType;
         }
+        boolean UsingStream = Handle.RequestParams.containsKey("stream") ? Handle.RequestParams.getBoolean("stream") : true;
+        String Channel_id = "";
+        List<String> SendMessage = new ArrayList<>(); // 待发送消息列表
+        List<String> OldMessage = new ArrayList<>();
         JSONArray messagesArray = Handle.RequestParams.getJSONArray("messages");
-        Boolean UsingStream = Handle.RequestParams.containsKey("stream") ? Handle.RequestParams.getBoolean("stream") : true;
-                List<String> OldMessage = new ArrayList<>();
         String[] ForceDefaultModel = {"gpt4", "gpt-4-0314", "gpt-4-0613",
                 "gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32-0613", "gpt-4-turbo-preview",
                 "gpt-4-1106-preview", "gpt-4-0125-preview", "gpt-4-vision-preview",
                 "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613",
                 "gpt-3.5-turbo-1196", "gpt-3.5-turbo-16k-0613", "gemini-pro"};
 
-        // 默认模型 通过聊天历史记录确认上下文
-        String Channel_id = "";
-        List<String> SendMessage = new ArrayList<>(); // 待发送消息列表
-        for (int i = 0; i < messagesArray.size(); i++) {
-            JSONObject messageObject = messagesArray.getJSONObject(i);
-            // 取出role和content字段
-            if (Objects.equals(messageObject.getString("role"), "user") || Objects.equals(messageObject.getString("role"), "assistant")) {
-                OldMessage.add(messageObject.getString("content"));
-            }
+        switch (ConfigManage.Configs.OpenAPI_Chat_Default_Models2Conversation) {
+            case 0: // 通过读取 model 参数 , 如果 model 是OpenAI已存在的模型 那就通过传递过来的上下文自动判断
+                for (int i = 0; i < messagesArray.size(); i++) {
+                    JSONObject messageObject = messagesArray.getJSONObject(i);
+                    // 取出role和content字段
+                    if (Objects.equals(messageObject.getString("role"), "user") || Objects.equals(messageObject.getString("role"), "assistant")) {
+                        OldMessage.add("[" + ConfigManage.Configs.OpenAPI_Chat_Default_Models2Conversation + "]" + messageObject.getString("role") + ":" + messageObject.getString("content"));
+                    }
+                }
+                if (Arrays.asList(ForceDefaultModel).contains(Handle.RequestParams.getString("model"))) {
+                    if (OldMessage.size() > 1) {
+                        List<String> OldMessagePost = OldMessage;
+                        OldMessagePost.remove(OldMessagePost.size() - 1); // 去掉用户最新发送消息
+                        Channel_id = CacheManager.Cache_Default_OldMessage2Name(OldMessagePost);
+                    }
+                    Channel_id = Objects.equals(Channel_id, "") ? RandomName() : Channel_id;
+                } else {
+                    Channel_id = Handle.RequestParams.getString("model");
+                }
+                if (OldMessage.size() == 1) { // 去除SystemPrompt后 聊天记录长度 = 1 第一次发消息/清空过历史记录了
+                    CacheManager.Cache_Default_NameDeleteOldMessage (Channel_id);
+                    for (int i = 0; i < messagesArray.size(); i++) { // 系统提示词也发送 如果是第一次的话
+                        JSONObject messageObject = messagesArray.getJSONObject(i);
+                        if (Objects.equals(messageObject.getString("role"), "system")) {
+                            SendMessage.add(messageObject.getString("content"));
+                        }
+                    }
+                }
+                if (!OldMessage.isEmpty()) {
+                    SendMessage.add(OldMessage.get(OldMessage.size() - 1)); // 最后一条消息
+                }
+                break;
+            case 1:
+                List<String> SendMessageL = new ArrayList<>();
+                for (int i = 0; i < messagesArray.size(); i++) {
+                    JSONObject messageObject = messagesArray.getJSONObject(i);
+                    SendMessageL.add(messageObject.getString("role") + ":" + messageObject.getString("content"));
+                }
+                Channel_id = Arrays.asList(ForceDefaultModel).contains(Handle.RequestParams.getString("model")) ?
+                        CacheManager.Cache_GetName2Channel(ConfigManage.Configs.OpenAPI_Chat_Default_Channel) :
+                        Handle.RequestParams.getString("model");
+                SendMessage.add(ConfigManage.Configs.OpenAPI_Chat_MsgForward_Prefix
+                        + "\n\n" + String.join("\n",SendMessageL)
+                        + "\n\n" + ConfigManage.Configs.OpenAPI_Chat_MsgForward_Suffix); // 最后一条消息
+                break;
+            case 2:
+                Channel_id = Handle.RequestParams.getString("model");
+                String SendMessageOne = "";
+                for (int i = 0; i < messagesArray.size(); i++) {
+                    JSONObject messageObject = messagesArray.getJSONObject(i);
+                    SendMessageOne = messageObject.getString("content");
+                }
+                SendMessage.add(SendMessageOne);
+                break;
+            case 3:
+                List<String> SendMessageR = new ArrayList<>();
+                for (int i = 0; i < messagesArray.size(); i++) {
+                    JSONObject messageObject = messagesArray.getJSONObject(i);
+                    SendMessageR.add(messageObject.getString("role") + ":" + messageObject.getString("content"));
+                }
+                Channel_id = CacheManager.Cache_GetName2Channel(ConfigManage.Configs.OpenAPI_Chat_Default_Channel);
+                SendMessage.add(ConfigManage.Configs.OpenAPI_Chat_MsgForward_Prefix
+                        + "\n\n" + String.join("\n",SendMessageR)
+                        + "\n\n" + ConfigManage.Configs.OpenAPI_Chat_MsgForward_Suffix); // 最后一条消息
+                break;
         }
-        if (Arrays.asList(ForceDefaultModel).contains(Handle.RequestParams.getString("model"))) {
-            if (OldMessage.size() > 1) {
-                List<String> OldMessagePost = OldMessage;
-                OldMessagePost.remove(OldMessagePost.size() - 1); // 去掉用户最新发送消息
-                Channel_id = CacheManager.Cache_Default_OldMessage2Name(OldMessagePost);
-            }
-            Channel_id = Objects.equals(Channel_id, "") ? RandomName() : Channel_id;
-        } else {
-            Channel_id = Handle.RequestParams.getString("model");
-        }
-        if (OldMessage.isEmpty()) { // 为空 错误
+        if (SendMessage.isEmpty()) { // 为空 错误
             ResponseType ResponseType = new ResponseType();
             ResponseType.code = 400;
             JSONObject error = new JSONObject();
@@ -76,16 +124,6 @@ public class Completions implements APIHandler {
             ResponseType.msg = json.toJSONString();
             return ResponseType;
         }
-        if (OldMessage.size() == 1) { // 去除SystemPrompt后 聊天记录长度 = 1 第一次发消息/清空过历史记录了
-            CacheManager.Cache_Default_NameDeleteOldMessage (Channel_id);
-            for (int i = 0; i < messagesArray.size(); i++) { // 系统提示词也发送 如果是第一次的话
-                JSONObject messageObject = messagesArray.getJSONObject(i);
-                if (Objects.equals(messageObject.getString("role"), "system")) {
-                    SendMessage.add(messageObject.getString("content"));
-                }
-            }
-        }
-        SendMessage.add(OldMessage.get(OldMessage.size() - 1)); // 最后一条消息
 
         Optional<Server> optionalServer = Discord.api.getServerById(ConfigManage.Configs.CozeBot_InServer_id);
         if (optionalServer.isEmpty()) {
@@ -187,7 +225,7 @@ public class Completions implements APIHandler {
                             update_choice.put("index", 0);
                             JSONObject update_delta = new JSONObject(true);
                             update_delta.put("content", Reply.TextMessage.replace(LatestTextMessage, "")); // 只需要发送新生成的content就行了
-                        LatestTextMessage = Reply.TextMessage;
+                            LatestTextMessage = Reply.TextMessage;
                             update_choice.put("delta", update_delta);
                             json.put("choices", new JSONObject[]{update_choice});
                             logger.info(json.toJSONString());
@@ -219,8 +257,9 @@ public class Completions implements APIHandler {
                 }
                 os.flush();
                 os.close();
-
-
+                if (ConfigManage.Configs.OpenAPI_Chat_Default_Models2Conversation == 0) {
+                    CacheManager.Cache_Default_NameWriteOldMessage(Channel_id, OldMessage);
+                }
             } catch (Exception e) {
                 logger.error ("error",e);
             }
