@@ -146,6 +146,7 @@ public class Completions implements APIHandler {
                         .setName(Channel_id)
                         .create()
                         .join();
+                CacheManager.Cache_AddName2Channel(ConfigManage.Configs.OpenAPI_Chat_Default_Channel,Channel.getIdAsString());
             } else {
                 Optional<TextChannel> ChannelTest2 = ChannelTest.get().asTextChannel();
                 Channel = ChannelTest2.isEmpty() ? // 是否为文字频道
@@ -257,6 +258,7 @@ public class Completions implements APIHandler {
                 }
                 os.flush();
                 os.close();
+                Handle.RequestParams.getString("model");
                 if (ConfigManage.Configs.OpenAPI_Chat_Default_Models2Conversation == 0) {
                     CacheManager.Cache_Default_NameWriteOldMessage(Channel_id, OldMessage);
                 }

@@ -54,6 +54,7 @@ public class Generations implements APIHandler {
                         .setName(Channel_id)
                         .create()
                         .join();
+                CacheManager.Cache_AddName2Channel(ConfigManage.Configs.OpenAPI_Chat_Default_Channel,Channel.getIdAsString());
             } else {
                 Optional<TextChannel> ChannelTest2 = ChannelTest.get().asTextChannel();
                 Channel = ChannelTest2.isEmpty() ? // 是否为文字频道
