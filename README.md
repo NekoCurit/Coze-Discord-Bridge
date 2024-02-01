@@ -35,9 +35,10 @@ _觉得有点用的话 别忘了点个🌟_
 - [X] 对话支持流式返回
 - [X] 支持和`openai`对齐的对话接口(`v1/chat/completions`)
 - [X] 支持和`openai`对齐的图像生成接口(`v1/images/generations`)
-- [ ] 突破Discord Bot 2k字消息长度上限
+- [X] 突破Discord Bot 2k字消息长度上限
 - [ ] WebUI
 - [ ] 多个Bot 负载均衡
+- [ ] Token计数
 
 大饼很甜,苦了的只是猫猫
 
