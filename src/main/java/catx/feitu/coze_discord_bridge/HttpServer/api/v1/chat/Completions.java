@@ -14,12 +14,17 @@ import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.server.Server;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
 
@@ -217,7 +222,38 @@ public class Completions implements APIHandler {
                     }
                     attempt = 0;
                 }
-                Channel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + SendMessage.get(SendMessage.size() - 1)).join();
+                String SendLatest = SendMessage.get(SendMessage.size() - 1);
+                CompletableFuture<Message> send = Channel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + (SendLatest.length() <= 2000 ? SendLatest : ""));
+                if (SendLatest.length() > 2000) {
+                    if (!ConfigManage.Configs.Disable_2000Limit_Unlock) {
+                        ResponseType ResponseType = new ResponseType();
+                        ResponseType.code = 502;
+                        JSONObject error = new JSONObject();
+                        error.put("message","Prompt过长(>2000)");
+                        error.put("type","one_api_error");
+                        json.put("error", error);
+                        ResponseType.msg = json.toJSONString();
+                        return ResponseType;
+                    }
+                    try {
+                        String FileName = RandomName() + ".txt";
+                        File tempDir = new File("tmp");
+                        if (!tempDir.exists()) {
+                            if (!tempDir.mkdir()) {
+                                throw new Exception("创建临时目录失败");
+                            }
+                        }
+                        try (FileWriter writer = new FileWriter(new File(tempDir, FileName))) {
+                            writer.write(SendLatest);
+                        } catch (IOException e) {
+                            throw e;
+                        }
+                        send = send.thenCompose(message -> Channel.sendMessage(new File(tempDir, FileName)));
+                    } catch (Exception e) {
+                        logger.warn("发送长文本失败", e);
+                    }
+                }
+                send.join();
                 while (!Reply.Done) {
                     if (UsingStream) { // 启用流式返回
                         attempt++;
