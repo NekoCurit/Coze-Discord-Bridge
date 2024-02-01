@@ -29,7 +29,7 @@ public class MessageHandle implements MessageCreateListener, MessageEditListener
     @Override
     public void onMessageEdit(MessageEditEvent event) {
         if (Objects.equals(event.getMessageAuthor().getIdAsString(), ConfigManage.Configs.CozeBot_id)) {
-            if (ConfigManage.Configs.Ignore_CozeBot_ReplyMsgCheck || event.getMessage().getMentionedUsers().contains(event.getApi().getYourself())) {
+            if (ConfigManage.Configs.Disable_CozeBot_ReplyMsgCheck || event.getMessage().getMentionedUsers().contains(event.getApi().getYourself())) {
                 Boolean Done100 = !event.getMessage().getComponents().isEmpty(); //存在按钮 = 100%响应完毕
                 if (Done100) {
                     logger.info("[CozeBot] " + event.getChannel().getIdAsString() + ":" + event.getMessageContent());

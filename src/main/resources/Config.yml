@@ -53,10 +53,10 @@ generate_timeout: 5000
 #跳过CozeBot回复来源检查
 #开启后在同一频道内非Coze bot回复bot的消息也会被当作Coze bot回复bot的消息
 #简单理解就是 你在频道内发送消息就会影响bot读取
-Ignore_CozeBot_ReplyMsgCheck: false
+Disable_CozeBot_ReplyMsgCheck: false
 #默认会开启Name保存
 #通过API调用时非创建API时可以使用创建时提供的Name
 #关闭后只能使用子频道ID
 #可以用于修复传入Name参数与服务器ID参数相同造成的一些问题 (只要不刻意去复现基本不可能发生)
 #但是已经保存的cache_names.json需要手动删除
-Disable_Name_Cache: false
+

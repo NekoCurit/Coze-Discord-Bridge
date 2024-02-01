@@ -15,7 +15,7 @@ public class ConfigData {
 
         public long generate_timeout = 2000;
 
-        public boolean Ignore_CozeBot_ReplyMsgCheck = false;
+        public boolean Disable_CozeBot_ReplyMsgCheck = false;
         public boolean Disable_Name_Cache = false;
 
         public int APIPort = 8092;
