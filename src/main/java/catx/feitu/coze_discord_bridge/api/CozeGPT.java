@@ -9,8 +9,6 @@ import catx.feitu.coze_discord_bridge.api.Exceptions.*;
 import catx.feitu.coze_discord_bridge.api.FunctionalInterface.ChatStreamEvent;
 import catx.feitu.coze_discord_bridge.api.Types.ConversationInfo;
 import catx.feitu.coze_discord_bridge.api.Types.GenerateMessage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.channel.*;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.server.Server;
@@ -118,11 +116,15 @@ public class CozeGPT {
         }
     }
     public static GenerateMessage Chat(String Prompts, String ConversationID, File[] Files) throws Exception {
-        return Chat (Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { });
+        return Chat(Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { });
+    }
+    public static GenerateMessage Chat(String Prompts, String ConversationID, ChatStreamEvent event) throws Exception {
+        return Chat(Prompts ,ConversationID ,null ,event);
     }
     public static GenerateMessage Chat(String Prompts, String ConversationID) throws Exception {
-        return Chat (Prompts ,ConversationID ,null);
+        return Chat(Prompts ,ConversationID ,(ALLGenerateMessages, NewGenerateMessage) -> { });
     }
+
     /**** 创建聊天 ****/
     public static String CreateConversation (String ConversationName) throws Exception {
         GetServer();
