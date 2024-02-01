@@ -11,6 +11,7 @@ _觉得有点用的话 别忘了点个🌟_
 </div>
 
 ## 截图
+![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/24e4304b-a5f7-4baa-9559-8c01f9a935b3)
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/285d33e5-6898-4324-8f9c-8842f3a3912c)
 
