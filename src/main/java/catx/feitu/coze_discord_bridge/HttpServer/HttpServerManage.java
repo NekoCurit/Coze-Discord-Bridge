@@ -22,11 +22,10 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.APIS;
+import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.ProtectPaths;
 
 public class HttpServerManage {
 
@@ -34,6 +33,7 @@ public class HttpServerManage {
     public static HttpsServer server_https;
 
     static Map<String, APIHandler> APIS = new HashMap<>();
+    static List<String> ProtectPaths = new ArrayList<>();
 
     private static final Logger logger = LogManager.getLogger(HttpServerManage.class);
 
@@ -92,24 +92,27 @@ public class HttpServerManage {
             throw new Exception("HTTP和HTTPS服务均启动失败");
         }
 
-        AddAPI("/",new index());
-        AddAPI("/Ping", new Ping());
-        AddAPI("/robots.txt", new robots());
+        AddAPI("/",new index(), false);
+        AddAPI("/Ping", new Ping(), false);
+        AddAPI("/robots.txt", new robots(), false);
 
-        AddAPI("/api/CreateConversation", new CreateConversation());
-        AddAPI("/api/DeleteConversation", new DeleteConversation());
-        AddAPI("/api/ConversationIsFound", new ConversationIsFound());
-        AddAPI("/api/Chat", new Chat());
-        AddAPI("/api/ChatStream", new ChatStream());
-        AddAPI("/api/RenameConversation", new RenameConversation());
+        AddAPI("/api/CreateConversation", new CreateConversation(), true);
+        AddAPI("/api/DeleteConversation", new DeleteConversation(), true);
+        AddAPI("/api/ConversationIsFound", new ConversationIsFound(), true);
+        AddAPI("/api/Chat", new Chat(), true);
+        AddAPI("/api/ChatStream", new ChatStream(), true);
+        AddAPI("/api/RenameConversation", new RenameConversation(), true);
 
-        AddAPI("/v1/models", new Models());
-        AddAPI("/v1/chat/Completions", new Completions());
-        AddAPI("/v1/images/Generations", new Completions());
+        AddAPI("/v1/models", new Models(), true);
+        AddAPI("/v1/chat/Completions", new Completions(), true);
+        AddAPI("/v1/images/Generations", new Completions(), true);
     }
 
-    public static void AddAPI (String s ,APIHandler api) {
+    public static void AddAPI (String s ,APIHandler api,boolean IsProtect) {
         APIS.put(s.toLowerCase(), api);
+        if (IsProtect) {
+            ProtectPaths.add(s.toLowerCase());
+        }
     }
 }
 class HttpHandle implements HttpHandler {
@@ -164,10 +167,9 @@ class HttpHandle implements HttpHandler {
                     }
                 }
             }
-            boolean Verifyed = Objects.equals(ConfigManage.Configs.APIKey, "");
-            if (handle.RequestParams.containsKey("key")) {
-                Verifyed = Verifyed || Objects.equals(handle.RequestParams.getString("key"), ConfigManage.Configs.APIKey);
-            }
+            boolean Verifyed = !ProtectPaths.contains(t.getRequestURI().getPath().toLowerCase());
+            Verifyed = Verifyed || Objects.equals(ConfigManage.Configs.APIKey, "");
+            Verifyed = (Verifyed || handle.RequestParams.containsKey("key")) && Objects.equals(handle.RequestParams.getString("key"), ConfigManage.Configs.APIKey);
             Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("key"), ConfigManage.Configs.APIKey);
             Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("Authorization"), "Bearer " + ConfigManage.Configs.APIKey);
             if (!Verifyed) {
