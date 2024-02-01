@@ -7,6 +7,8 @@
 #点击 Reset Token 然后复制过来即可
 #注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
 Discord_Bot_Token: ""
+#创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
+Discord_CreateChannel_Category: ""
 
 #配置是否启用代理  代理类型 HTTP 或 SOCKS 常用于中国大陆机器部署
 UsingProxy: false

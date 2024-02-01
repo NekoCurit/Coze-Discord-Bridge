@@ -11,6 +11,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.javacord.api.entity.channel.Channel;
+import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
@@ -50,8 +52,12 @@ public class Generations implements APIHandler {
             Optional<ServerChannel> ChannelTest = optionalServer.get().getChannelById(CacheManager.Cache_GetName2Channel(Channel_id));
             TextChannel Channel;
             if (ChannelTest.isEmpty()) {// 子频道id不存在 创建
+                Optional<org.javacord.api.entity.channel.Channel> Category = Discord.api.getChannelById(ConfigManage.Configs.Discord_CreateChannel_Category);
+                ChannelCategory category = (ChannelCategory) Category.orElse(null);
+
                 Channel = optionalServer.get().createTextChannelBuilder()
                         .setName(Channel_id)
+                        .setCategory(category)
                         .create()
                         .join();
                 CacheManager.Cache_AddName2Channel(ConfigManage.Configs.OpenAPI_Chat_Default_Channel,Channel.getIdAsString());

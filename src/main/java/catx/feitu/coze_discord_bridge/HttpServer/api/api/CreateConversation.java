@@ -9,9 +9,12 @@ import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.javacord.api.entity.channel.Channel;
+import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.server.Server;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -34,8 +37,12 @@ public class CreateConversation implements APIHandler {
                 Handle.RequestParams.put("name",RandomName());
             }
             try {
+                Optional<Channel> Category = Discord.api.getChannelById(ConfigManage.Configs.Discord_CreateChannel_Category);
+                ChannelCategory category = (ChannelCategory) Category.orElse(null);
+
                 ServerTextChannel channel = optionalServer.get().createTextChannelBuilder()
                         .setName(Handle.RequestParams.getString("name"))
+                        .setCategory(category)
                         .create()
                         .join();
                 JSONObject json_data = new JSONObject(true);

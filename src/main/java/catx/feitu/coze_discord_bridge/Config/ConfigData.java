@@ -3,6 +3,7 @@ package catx.feitu.coze_discord_bridge.Config;
 public class ConfigData {
 
         public String Discord_Bot_Token = "";
+        public String Discord_CreateChannel_Category = "";
 
         public Boolean UsingProxy = false;
 
