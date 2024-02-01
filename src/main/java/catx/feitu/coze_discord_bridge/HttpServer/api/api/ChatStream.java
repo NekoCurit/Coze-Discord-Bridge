@@ -19,13 +19,12 @@ import org.javacord.api.entity.server.Server;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+
+import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
 
 public class ChatStream implements APIHandler {
 
@@ -48,6 +47,8 @@ public class ChatStream implements APIHandler {
                 json.put("message", "参数缺失:name");
                 JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
+                Response.msg = json.toJSONString();
+                return Response;
             }
             if (!Handle.RequestParams.containsKey("prompt")) {
                 Response.code = 400;
@@ -55,6 +56,8 @@ public class ChatStream implements APIHandler {
                 json.put("message", "参数缺失:prompt");
                 JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
+                Response.msg = json.toJSONString();
+                return Response;
             }
             else {
                 Optional<ServerChannel> channel = optionalServer.get().getChannelById(CacheManager.Cache_GetName2Channel(Handle.RequestParams.getString("name")));
@@ -65,6 +68,8 @@ public class ChatStream implements APIHandler {
                     JSONObject json_data = new JSONObject(true);
                     json_data.put("status", false);
                     json.put("data", json_data);
+                    Response.msg = json.toJSONString();
+                    return Response;
                 } else {
                     if(channel.get() instanceof TextChannel) {
                         TextChannel textChannel = (TextChannel) channel.get();
@@ -75,7 +80,36 @@ public class ChatStream implements APIHandler {
                         LockManager.getLock(channel.get().getIdAsString()).lock(); // 上锁
                         CacheManager.Cache_BotReplyClear(textChannel.getIdAsString());
 
-                        CompletableFuture<Message> send = textChannel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + Handle.RequestParams.getString("prompt"));
+                        String Prompt = Handle.RequestParams.getString("prompt");
+                        CompletableFuture<Message> send = textChannel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + (Prompt.length() <= 2000 ? Prompt : ""));
+                        if (Prompt.length() > 2000) {
+                            if (!ConfigManage.Configs.Disable_2000Limit_Unlock) {
+                                Response.code = 502;
+                                json.put("code", 502);
+                                json.put("message", "执行失败:发送文本长度超出限制(>2000)");
+                                JSONObject json_data = new JSONObject(true);
+                                json.put("data", json_data);
+                                Response.msg = json.toJSONString();
+                                return Response;
+                            }
+                            try {
+                                String FileName = RandomName() + ".txt";
+                                File tempDir = new File("tmp");
+                                if (!tempDir.exists()) {
+                                    if (!tempDir.mkdir()) {
+                                        throw new Exception("创建临时目录失败");
+                                    }
+                                }
+                                try (FileWriter writer = new FileWriter(new File(tempDir, FileName))) {
+                                    writer.write(Prompt);
+                                } catch (IOException e) {
+                                    throw e;
+                                }
+                                send = send.thenCompose(message -> textChannel.sendMessage(new File(tempDir, FileName)));
+                            } catch (Exception e) {
+                                logger.warn("发送长文本失败", e);
+                            }
+                        }
                         if (Handle.RequestParams.containsKey("image")) {
                             String encodedImage = Handle.RequestParams.getString("image")
                                     .replace("data:image/png;base64,","");
@@ -155,6 +189,8 @@ public class ChatStream implements APIHandler {
                         json.put("message", "执行失败:目标非文本频道");
                         JSONObject json_data = new JSONObject(true);
                         json.put("data", json_data);
+                        Response.msg = json.toJSONString();
+                        return Response;
                     }
                 }
             }

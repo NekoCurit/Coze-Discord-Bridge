@@ -18,6 +18,7 @@ public class ConfigData {
 
         public boolean Disable_CozeBot_ReplyMsgCheck = false;
         public boolean Disable_Name_Cache = false;
+        public boolean Disable_2000Limit_Unlock = false;
 
         public int APIPort = 8092;
         public int APISSLPort = 8093;

@@ -18,13 +18,13 @@ import org.javacord.api.entity.server.Server;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static catx.feitu.coze_discord_bridge.Misc.CacheManager.Cache_BotReplyGetFiles;
+import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
 
 public class Chat implements APIHandler {
 
@@ -39,6 +39,8 @@ public class Chat implements APIHandler {
             json.put("code", 502);
             json.put("message", "服务端配置异常:CozeBot_InServer_id没有找到匹配的Discord服务器");
             logger.warn("执行CreateConversation失败:服务端配置异常:CozeBot_InServer_id没有找到匹配的Discord服务器");
+            Response.msg = json.toJSONString();
+            return Response;
         }
         else {
             if (!Handle.RequestParams.containsKey("name")) {
@@ -47,6 +49,8 @@ public class Chat implements APIHandler {
                 json.put("message", "参数缺失:name");
                 JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
+                Response.msg = json.toJSONString();
+                return Response;
             }
             if (!Handle.RequestParams.containsKey("prompt")) {
                 Response.code = 400;
@@ -54,6 +58,8 @@ public class Chat implements APIHandler {
                 json.put("message", "参数缺失:prompt");
                 JSONObject json_data = new JSONObject(true);
                 json.put("data", json_data);
+                Response.msg = json.toJSONString();
+                return Response;
             }
             else {
                 Optional<ServerChannel> channel = optionalServer.get().getChannelById(CacheManager.Cache_GetName2Channel(Handle.RequestParams.getString("name")));
@@ -64,6 +70,8 @@ public class Chat implements APIHandler {
                     JSONObject json_data = new JSONObject(true);
                     json_data.put("status", false);
                     json.put("data", json_data);
+                    Response.msg = json.toJSONString();
+                    return Response;
                 } else {
                     if(channel.get() instanceof TextChannel) {
                         TextChannel textChannel = (TextChannel) channel.get();
@@ -74,7 +82,36 @@ public class Chat implements APIHandler {
                         LockManager.getLock(channel.get().getIdAsString()).lock(); // 上锁
                         CacheManager.Cache_BotReplyClear(textChannel.getIdAsString());
 
-                        CompletableFuture<Message> send = textChannel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + Handle.RequestParams.getString("prompt"));
+                        String Prompt = Handle.RequestParams.getString("prompt");
+                        CompletableFuture<Message> send = textChannel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + (Prompt.length() <= 2000 ? Prompt : ""));
+                        if (Prompt.length() > 2000) {
+                            if (!ConfigManage.Configs.Disable_2000Limit_Unlock) {
+                                Response.code = 502;
+                                json.put("code", 502);
+                                json.put("message", "执行失败:发送文本长度超出限制(>2000)");
+                                JSONObject json_data = new JSONObject(true);
+                                json.put("data", json_data);
+                                Response.msg = json.toJSONString();
+                                return Response;
+                            }
+                            try {
+                                String FileName = RandomName() + ".txt";
+                                File tempDir = new File("tmp");
+                                if (!tempDir.exists()) {
+                                    if (!tempDir.mkdir()) {
+                                        throw new Exception("创建临时目录失败");
+                                    }
+                                }
+                                try (FileWriter writer = new FileWriter(new File(tempDir, FileName))) {
+                                    writer.write(Prompt);
+                                } catch (IOException e) {
+                                    throw e;
+                                }
+                                send = send.thenCompose(message -> textChannel.sendMessage(new File(tempDir, FileName)));
+                            } catch (Exception e) {
+                                logger.warn("发送长文本失败", e);
+                            }
+                        }
                         if (Handle.RequestParams.containsKey("image")) {
                             String encodedImage = Handle.RequestParams.getString("image")
                                     .replace("data:image/png;base64,","");
@@ -96,7 +133,7 @@ public class Chat implements APIHandler {
                             }
                         }
                         send.join();
-                        String Prompt = "";
+                        String ReplyPrompt = "";
                         List<String> files = new ArrayList<>();
 
                         int retryInterval = 200; // 等待时间间隔 单位为毫秒
@@ -104,7 +141,7 @@ public class Chat implements APIHandler {
                         int attempt = 0; // 当前尝试次数
                         while (Objects.equals(Prompt, "") && files.isEmpty()) {
                             attempt++; // +1
-                            Prompt = CacheManager.Cache_BotReplyGetPrompt(textChannel.getIdAsString());
+                            ReplyPrompt = CacheManager.Cache_BotReplyGetPrompt(textChannel.getIdAsString());
                             files = CacheManager.Cache_BotReplyGetFiles(textChannel.getIdAsString());
                             if (attempt < maxRetries) {
                                 try { Thread.sleep(retryInterval); } catch (InterruptedException ignored) {}
@@ -118,21 +155,22 @@ public class Chat implements APIHandler {
                         json.put("code", 200);
                         json.put("message", "成功!");
                         JSONObject json_data = new JSONObject(true);
-                        json_data.put("prompt", Prompt);
+                        json_data.put("prompt", ReplyPrompt);
                         json_data.put("files", files);
                         json.put("data", json_data);
+                        Response.msg = json.toJSONString();
+                        return Response;
                     } else {
                         Response.code = 502;
                         json.put("code", 502);
                         json.put("message", "执行失败:目标非文本频道");
                         JSONObject json_data = new JSONObject(true);
                         json.put("data", json_data);
+                        Response.msg = json.toJSONString();
+                        return Response;
                     }
                 }
             }
         }
-        Response.msg = json.toJSONString();
-
-        return Response;
     }
 }
