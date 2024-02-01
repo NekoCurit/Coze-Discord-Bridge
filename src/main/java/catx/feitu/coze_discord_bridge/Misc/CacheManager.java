@@ -142,4 +142,13 @@ public class CacheManager {
         }
         channel_name_cache.put("OldMessage2Name",messagesArray);
     }
+    public static void Cache_BotStartGenerate_Write (String ID) {
+        bot_reply_cache.put("startgenerate_" + ID,Instant.now().toEpochMilli());
+    }
+    public static boolean Cache_BotStartGenerate_Get (String ID) {
+        return bot_reply_cache.containsKey("startgenerate_" + ID);
+    }
+    public static void Cache_BotStartGenerate_Reset (String ID) {
+        bot_reply_cache.remove("startgenerate_" + ID);
+    }
 }

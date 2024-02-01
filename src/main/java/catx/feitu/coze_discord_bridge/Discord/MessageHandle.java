@@ -8,17 +8,26 @@ import org.javacord.api.entity.message.MessageAttachment;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.MessageEditEvent;
+import org.javacord.api.event.user.UserStartTypingEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.listener.message.MessageEditListener;
+import org.javacord.api.listener.user.UserStartTypingListener;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MessageHandle implements MessageCreateListener, MessageEditListener {
+public class MessageHandle implements MessageCreateListener, MessageEditListener, UserStartTypingListener {
     private static final Logger logger = LogManager.getLogger(MessageHandle.class);
 
+    @Override
+    public void onUserStartTyping(UserStartTypingEvent event) {
+        if(Objects.equals(event.getUserIdAsString(), ConfigManage.Configs.CozeBot_id)) {
+            CacheManager.Cache_BotStartGenerate_Write(event.getChannel().getIdAsString());
+            logger.info("[CozeBot Start Generate] " + event.getChannel().getIdAsString());
+        }
+    }
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         if (Objects.equals(event.getMessageAuthor().getIdAsString(), event.getApi().getYourself().getIdAsString())) {
