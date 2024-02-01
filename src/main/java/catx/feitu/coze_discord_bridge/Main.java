@@ -4,6 +4,7 @@ import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.Discord.Discord;
 import catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage;
 import catx.feitu.coze_discord_bridge.Misc.CacheManager;
+import catx.feitu.coze_discord_bridge.Misc.TempFileManger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fusesource.jansi.AnsiConsole;
@@ -33,7 +34,7 @@ public class Main {
             logger.error(e);
             System.exit(-1);
         }
-
+        TempFileManger.init();
         logger.info("Coze-Discord-Bridge 初始化完毕,正在登录Discord...");
         // 程序退出前执行
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
