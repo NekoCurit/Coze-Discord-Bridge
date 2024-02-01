@@ -113,7 +113,9 @@ class HttpHandle implements HttpHandler {
     @Override
     public void handle(HttpExchange t) throws IOException {
         ResponseType Response = new ResponseType();
-        logger.info(t.getRequestMethod() + " " + t.getRequestURI().getPath());
+        logger.info(t.getRemoteAddress().getHostString() + ":" + t.getRemoteAddress().getPort() + "  " +
+                t.getRequestMethod() + " " + t.getRequestURI().getPath());
+        t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         if ("OPTIONS".equals(t.getRequestMethod())) {
             t.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS, POST");
