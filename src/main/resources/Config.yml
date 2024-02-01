@@ -62,5 +62,7 @@ Disable_CozeBot_ReplyMsgCheck: false
 #可以用于修复传入Name参数与服务器ID参数相同造成的一些问题 (只要不刻意去复现基本不可能发生)
 #但是已经保存的cache_names.json需要手动删除
 Disable_Name_Cache: false
-
+#默认开启提示词长度大于2k长文本发送
+#由于Discord API限制消息文本长度为2k
+#因此关闭此设置 将会导致长度大于2k的提示词取消生成
 Disable_2000Limit_Unlock: false
