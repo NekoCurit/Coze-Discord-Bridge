@@ -14,16 +14,6 @@ _觉得有点用的话 别忘了点个🌟_
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/285d33e5-6898-4324-8f9c-8842f3a3912c)
 
-## 留言
-
-没有特殊需求不会/很少维护
-
-作者本身来自Minecraft挂圈 是圈子内很少见不魔怔 不圈钱的高层用户
-
-因为一些不可抗拒等等问题 需要回去一趟
-
-如果有能力 你也可以通过提交pr来继续维护项目
-
 ## 功能
 
 注:是最新源代码里支持的功能 不是Release里的 要看Release的往前翻Commit api文档 配置文件同样
@@ -36,15 +26,16 @@ _觉得有点用的话 别忘了点个🌟_
 - [X] 支持和`openai`对齐的对话接口(`v1/chat/completions`)
 - [X] 支持和`openai`对齐的图像生成接口(`v1/images/generations`)
 - [X] 突破Discord Bot 2k字消息长度上限
+- [ ] 导入此jar进行二次开发 [::80%]
 - [ ] WebUI
 - [ ] 多个Bot 负载均衡
 - [ ] Token计数
 
 大饼很甜,苦了的只是猫猫
 
-## 你需要的东西
+## 部署准备材料
 
-1.一个Windows/Linux/...机器 (只要能运行java,能联网就行)
+1.一个Windows/Linux/...机器 (只要能运行java,能联网就行)  需要安装java (推荐jdk17 已知jdk8及以下版本不兼容)
 
 2.一个代理服务器/材料一的机器在国外
 
