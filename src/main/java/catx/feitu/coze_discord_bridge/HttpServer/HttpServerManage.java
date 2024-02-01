@@ -95,6 +95,7 @@ public class HttpServerManage {
         AddAPI("/",new index(), false);
         AddAPI("/Ping", new Ping(), false);
         AddAPI("/robots.txt", new robots(), false);
+        //AddAPI("/favicon.ico", , false);
 
         AddAPI("/api/CreateConversation", new CreateConversation(), true);
         AddAPI("/api/DeleteConversation", new DeleteConversation(), true);
@@ -169,7 +170,7 @@ class HttpHandle implements HttpHandler {
             }
             boolean Verifyed = !ProtectPaths.contains(t.getRequestURI().getPath().toLowerCase());
             Verifyed = Verifyed || Objects.equals(ConfigManage.Configs.APIKey, "");
-            Verifyed = (Verifyed || handle.RequestParams.containsKey("key")) && Objects.equals(handle.RequestParams.getString("key"), ConfigManage.Configs.APIKey);
+            Verifyed = Verifyed || (handle.RequestParams.containsKey("key") && Objects.equals(handle.RequestParams.getString("key"), ConfigManage.Configs.APIKey));
             Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("key"), ConfigManage.Configs.APIKey);
             Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("Authorization"), "Bearer " + ConfigManage.Configs.APIKey);
             if (!Verifyed) {
