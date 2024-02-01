@@ -38,48 +38,52 @@ public class HttpServerManage {
     private static final Logger logger = LogManager.getLogger(HttpServerManage.class);
 
     public static void Start () throws Exception {
-        Boolean SuccessOne = false;
+        boolean SuccessOne = false;
         try {
-            server = HttpServer.create(new InetSocketAddress(ConfigManage.Configs.APIPort), 0);
-            server.createContext("/", new HttpHandle());
-            server.start();
-            logger.info("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 成功");
-            SuccessOne = true;
+            if (ConfigManage.Configs.APIPort != 0) {
+                server = HttpServer.create(new InetSocketAddress(ConfigManage.Configs.APIPort), 0);
+                server.createContext("/", new HttpHandle());
+                server.start();
+                logger.info("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 成功");
+                SuccessOne = true;
+            }
         } catch (Exception e) {
             logger.error("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 失败",e);
         }
 
 
         try {
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            FileInputStream keyStoreIS = new FileInputStream(ConfigManage.Configs.APISSL_keyStorePath);
-            keyStore.load(keyStoreIS, ConfigManage.Configs.APISSL_keyStorePassword.toCharArray());
-            keyStoreIS.close();
-            // 初始化密钥管理器
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, ConfigManage.Configs.APISSL_keyStorePassword.toCharArray());
-            // 初始化信任管理器
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keyStore);
+            if (ConfigManage.Configs.APISSLPort != 0) {
+                KeyStore keyStore = KeyStore.getInstance("JKS");
+                FileInputStream keyStoreIS = new FileInputStream(ConfigManage.Configs.APISSL_keyStorePath);
+                keyStore.load(keyStoreIS, ConfigManage.Configs.APISSL_keyStorePassword.toCharArray());
+                keyStoreIS.close();
+                // 初始化密钥管理器
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(keyStore, ConfigManage.Configs.APISSL_keyStorePassword.toCharArray());
+                // 初始化信任管理器
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(keyStore);
 
 
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
 
-            server_https = HttpsServer.create(new InetSocketAddress(ConfigManage.Configs.APISSLPort), 0);
-            server_https.createContext("/", new HttpHandle());
+                server_https = HttpsServer.create(new InetSocketAddress(ConfigManage.Configs.APISSLPort), 0);
+                server_https.createContext("/", new HttpHandle());
 
-            server_https.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-                public void configure(HttpsParameters params) {
-                    SSLParameters defaultSSLParameters = sslContext.getDefaultSSLParameters();
-                    params.setSSLParameters(defaultSSLParameters);
-                }
-            });
+                server_https.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+                    public void configure(HttpsParameters params) {
+                        SSLParameters defaultSSLParameters = sslContext.getDefaultSSLParameters();
+                        params.setSSLParameters(defaultSSLParameters);
+                    }
+                });
 
 
-            server_https.start();
-            logger.info("监听HTTPS服务 0.0.0.0:" + ConfigManage.Configs.APISSLPort + " 成功");
-            SuccessOne = true;
+                server_https.start();
+                logger.info("监听HTTPS服务 0.0.0.0:" + ConfigManage.Configs.APISSLPort + " 成功");
+                SuccessOne = true;
+            }
         } catch (Exception e) {
             logger.error("监听HTTPS服务 0.0.0.0:" + ConfigManage.Configs.APISSLPort + " 失败",e);
         }
