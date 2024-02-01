@@ -11,7 +11,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
@@ -203,7 +202,6 @@ public class Completions implements APIHandler {
                     os.write(("data: " + json.toJSONString() + "\n\n").getBytes(StandardCharsets.UTF_8));
                     os.flush();
                 }
-                logger.info(SendMessage.size());
                 int retryInterval = 200; // 等待时间间隔 单位为毫秒
                 int maxRetries = 300; // 最大尝试次数
                 int attempt = 0; // 当前尝试次数
@@ -219,7 +217,6 @@ public class Completions implements APIHandler {
                     }
                     attempt = 0;
                 }
-                logger.info(3);
                 Channel.sendMessage("<@" + ConfigManage.Configs.CozeBot_id + ">" + SendMessage.get(SendMessage.size() - 1)).join();
                 while (!Reply.Done) {
                     if (UsingStream) { // 启用流式返回
@@ -237,7 +234,6 @@ public class Completions implements APIHandler {
                             LatestTextMessage = Reply.TextMessage;
                             update_choice.put("delta", update_delta);
                             json.put("choices", new JSONObject[]{update_choice});
-                            logger.info(json.toJSONString());
                             // 负责发送 发送失败直接抛出异常关闭连接
                             os.write(("data: " + json.toJSONString() + "\n\n").getBytes(StandardCharsets.UTF_8));
 
