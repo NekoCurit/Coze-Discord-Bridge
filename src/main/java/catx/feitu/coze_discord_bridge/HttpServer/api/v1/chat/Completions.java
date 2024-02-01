@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 
+import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
+
 public class Completions implements APIHandler {
     // https://platform.openai.com/docs/api-reference/chat/create
     private static final Logger logger = LogManager.getLogger(Completions.class);
@@ -275,15 +277,5 @@ public class Completions implements APIHandler {
 
         }
         return null;
-    }
-    public static String RandomName() {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(16);
-        String characters = "0123456789abcdef";
-        for(int i=0; i<16; i++){
-            int index = random.nextInt(characters.length());
-            sb.append(characters.charAt(index));
-        }
-        return(sb.toString());
     }
 }

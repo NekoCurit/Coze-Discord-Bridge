@@ -18,6 +18,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
+import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
+
 public class CreateConversation implements APIHandler {
 
     private static final Logger logger = LogManager.getLogger(CreateConversation.class);
@@ -67,16 +69,5 @@ public class CreateConversation implements APIHandler {
         Response.msg = json.toJSONString();
 
         return Response;
-    }
-
-    public static String RandomName() {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(16);
-        String characters = "0123456789abcdef";
-        for(int i=0; i<16; i++){
-            int index = random.nextInt(characters.length());
-            sb.append(characters.charAt(index));
-        }
-        return(sb.toString());
     }
 }
