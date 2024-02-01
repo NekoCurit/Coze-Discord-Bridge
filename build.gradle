@@ -29,7 +29,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 group = 'catx.feitu'
-version = '1.0'
+version = '1.0.0201'
 
 repositories {
     jcenter()
