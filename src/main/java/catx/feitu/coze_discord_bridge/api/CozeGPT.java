@@ -156,7 +156,7 @@ public class CozeGPT {
         channel.get().delete().join();
     }
     /**** 聊天改名 ****/
-    public static void RenameConversation (String OldConversationName, String NewConversationName) throws Exception {
+    public static String RenameConversation (String OldConversationName, String NewConversationName) throws Exception {
         GetServer();
         Optional<ServerChannel> channel = Server.getChannelById(CacheManager.Cache_GetName2Channel(OldConversationName));
         if (channel.isEmpty()) {
@@ -169,6 +169,7 @@ public class CozeGPT {
         channel.get().updateName(NewConversationName).join();
         CacheManager.Cache_DelName2Channel(OldConversationName);
         CacheManager.Cache_AddName2Channel(NewConversationName,ChannelID);
+        return channel.get().getIdAsString();
     }
     /**** 获取对话信息 ****/
     public static ConversationInfo GetConversationInfo (String ConversationName) throws Exception {
