@@ -1,6 +1,8 @@
 package catx.feitu.coze_discord_bridge.api.FunctionalInterface;
 
+import java.io.IOException;
+
 @FunctionalInterface
 public interface ChatStreamEvent {
-    void handle(String ALLGenerateMessages, String NewGenerateMessage);
+    boolean handle(String ALLGenerateMessages, String NewGenerateMessage);
 }

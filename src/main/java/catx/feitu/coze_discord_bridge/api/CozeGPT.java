@@ -5,6 +5,7 @@ import catx.feitu.coze_discord_bridge.Discord.Discord;
 import catx.feitu.coze_discord_bridge.Misc.BotReplyType;
 import catx.feitu.coze_discord_bridge.Misc.CacheManager;
 import catx.feitu.coze_discord_bridge.Misc.LockManager;
+import catx.feitu.coze_discord_bridge.Misc.TempFileManger;
 import catx.feitu.coze_discord_bridge.api.Exceptions.*;
 import catx.feitu.coze_discord_bridge.api.FunctionalInterface.ChatStreamEvent;
 import catx.feitu.coze_discord_bridge.api.Types.ConversationInfo;
@@ -14,18 +15,15 @@ import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.server.Server;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
-
 public class CozeGPT {
     private static Server Server = null;
     /**** 对话 ****/
-    public static GenerateMessage Chat(String Prompts, String ConversationID, File[] Files, ChatStreamEvent event) throws Exception {
+    public static GenerateMessage Chat(String Prompts, String ConversationID, List<File> Files, ChatStreamEvent event) throws Exception {
         if (Objects.equals(Prompts, "")) {
             throw new InvalidPromptException();
         }
@@ -45,26 +43,15 @@ public class CozeGPT {
             CompletableFuture<Message> send = null;
             if (Prompts.length() > 2000) { // 长文本发送消息
                 if (!ConfigManage.Configs.Disable_2000Limit_Unlock) {
-                    throw new PromptTooLongException(Prompts);
+                    throw new PromptTooLongException(Prompts,2000);
                 }
+                TempFileManger.fwrite_String(Prompts);
                 // 仅提及(@)唤醒机器人
                 send = textChannel.sendMessage(
                         "<@" + ConfigManage.Configs.CozeBot_id + ">"
                 );
-                // 把回复内容写到临时目录
-                String FileName = RandomName() + ".txt";
-                File tempDir = new File("tmp");
-                if (!tempDir.exists()) {
-                    if (!tempDir.mkdir()) {
-                        throw new SendMessageException("创建临时文件失败");
-                    }
-                }
-                try (FileWriter writer = new FileWriter(new File(tempDir, FileName))) {
-                    writer.write(Prompts);
-                } catch (IOException e) {
-                    throw new SendMessageException("写入临时文件失败",e);
-                }
-                send = send.thenCompose(message -> textChannel.sendMessage(new File(tempDir, FileName)));
+                File PromptX = TempFileManger.fwrite_String(Prompts);
+                send = send.thenCompose(message -> textChannel.sendMessage(PromptX));
             } else {
                 send = textChannel.sendMessage( // 默认发送消息
                         "<@" + ConfigManage.Configs.CozeBot_id + ">" + Prompts
@@ -102,7 +89,9 @@ public class CozeGPT {
                     throw new RecvMsgException("超时无回应:超过设定时间");
                 }
                 Reply = CacheManager.Cache_BotReplyMessageEx(textChannel.getIdAsString());
-                event.handle(Reply.TextMessage, Reply.TextMessage.replace(LatestMessage,""));
+                if (!event.handle(Reply.TextMessage, Reply.TextMessage.replace(LatestMessage,""))) {
+                    throw new StopGenerateException();
+                }
                 LatestMessage = Reply.TextMessage;
                 try { Thread.sleep(200); } catch (InterruptedException ignored) {}
             }
@@ -115,14 +104,14 @@ public class CozeGPT {
             throw e;
         }
     }
-    public static GenerateMessage Chat(String Prompts, String ConversationID, File[] Files) throws Exception {
-        return Chat(Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { });
+    public static GenerateMessage Chat(String Prompts, String ConversationID, List<File> Files) throws Exception {
+        return Chat(Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
     }
     public static GenerateMessage Chat(String Prompts, String ConversationID, ChatStreamEvent event) throws Exception {
         return Chat(Prompts ,ConversationID ,null ,event);
     }
     public static GenerateMessage Chat(String Prompts, String ConversationID) throws Exception {
-        return Chat(Prompts ,ConversationID ,(ALLGenerateMessages, NewGenerateMessage) -> { });
+        return Chat(Prompts ,ConversationID ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
     }
 
     /**** 创建聊天 ****/
