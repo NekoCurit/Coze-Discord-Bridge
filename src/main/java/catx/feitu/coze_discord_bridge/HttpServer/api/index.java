@@ -24,7 +24,6 @@ public class index implements APIHandler {
 
         Response.msg = json.toJSONString();
         Response.code = 200;
-        Response.Header_Content_Type = "application/json; charset=UTF-8";
 
         return Response;
     }

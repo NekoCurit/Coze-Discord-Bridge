@@ -142,7 +142,6 @@ class HttpHandle implements HttpHandler {
             json.put("message", "终结点不存在");
             Response.msg = json.toJSONString();
             Response.code = 404;
-            Response.Header_Content_Type = "application/json; charset=UTF-8";
         } else { // 200 Successful
             String query = "GET".equals(t.getRequestMethod()) ?
                     t.getRequestURI().getRawQuery() :
@@ -179,8 +178,6 @@ class HttpHandle implements HttpHandler {
                 json.put("message", "无权访问本服务");
                 Response.msg = json.toJSONString();
                 Response.code = 403;
-                Response.Header_Content_Type = "application/json; charset=UTF-8";
-
             }
             else {
                 handle.RequestPath = t.getRequestURI().getPath();
@@ -190,10 +187,13 @@ class HttpHandle implements HttpHandler {
             if (handle.HttpExchange_Disable_Default_Action) { return; } //关闭默认处理 用于支持特殊返回
         }
         t.getResponseHeaders().set("Content-Type", Response.Header_Content_Type);
-        t.sendResponseHeaders(Response.code, Response.msg.getBytes(StandardCharsets.UTF_8).length);
+
+        byte[] ResponseByte = Response.msg.getBytes(StandardCharsets.UTF_8);
+        t.sendResponseHeaders(Response.code, ResponseByte.length);
         OutputStream os = t.getResponseBody();
-        os.write(Response.msg.getBytes());
+        os.write(ResponseByte);
         os.close();
+
         t.close();
     }
     private String Stream2String(InputStream stream) {
