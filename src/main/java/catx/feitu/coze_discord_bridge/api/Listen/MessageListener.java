@@ -1,9 +1,9 @@
 package catx.feitu.coze_discord_bridge.api.Listen;
 
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
-import catx.feitu.coze_discord_bridge.Misc.CacheManager;
-import catx.feitu.coze_discord_bridge.api.MessageManger.BotResponseManage;
-import catx.feitu.coze_discord_bridge.api.MessageManger.BotResponseType;
+import catx.feitu.coze_discord_bridge.api.MessageManage.BotGenerateStatusManage;
+import catx.feitu.coze_discord_bridge.api.MessageManage.BotResponseManage;
+import catx.feitu.coze_discord_bridge.api.MessageManage.BotResponseType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.embed.Embed;
@@ -21,14 +21,16 @@ import java.util.Objects;
 public class MessageListener implements MessageCreateListener, MessageEditListener, UserStartTypingListener {
     private static final Logger logger = LogManager.getLogger(MessageListener.class);
     private BotResponseManage BotResponseManage;
-    public MessageListener(BotResponseManage BotResponseManage) {
+    private BotGenerateStatusManage BotGenerateStatusManage;
+    public MessageListener(BotResponseManage BotResponseManage, BotGenerateStatusManage BotGenerateStatusManage) {
         this.BotResponseManage = BotResponseManage;
+        this.BotGenerateStatusManage = BotGenerateStatusManage;
     }
 
     @Override
     public void onUserStartTyping(UserStartTypingEvent event) {
         if(Objects.equals(event.getUserIdAsString(), ConfigManage.Configs.CozeBot_id)) {
-            CacheManager.Cache_BotStartGenerate_Write(event.getChannel().getIdAsString());
+            this.BotGenerateStatusManage.saveGenerateStatus(event.getChannel().getIdAsString());
             logger.info("[CozeBot Start Generate] " + event.getChannel().getIdAsString());
         }
     }

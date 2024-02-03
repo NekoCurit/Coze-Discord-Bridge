@@ -1,4 +1,4 @@
-package catx.feitu.coze_discord_bridge.api.MessageManger;
+package catx.feitu.coze_discord_bridge.api.MessageManage;
 
 import java.time.Instant;
 import java.util.ArrayList;

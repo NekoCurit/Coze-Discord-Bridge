@@ -1,12 +1,12 @@
-package catx.feitu.coze_discord_bridge.Misc;
+package catx.feitu.coze_discord_bridge.api.LockManage;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LockManager {
-    private static final ConcurrentHashMap<Object, Lock> lockMap = new ConcurrentHashMap<>();
-    public static Lock getLock(String key) {
+public class LockManage {
+    private final ConcurrentHashMap<Object, Lock> lockMap = new ConcurrentHashMap<>();
+    public Lock getLock(String key) {
         return lockMap.computeIfAbsent(key, k -> new ReentrantLock());
     }
 }
