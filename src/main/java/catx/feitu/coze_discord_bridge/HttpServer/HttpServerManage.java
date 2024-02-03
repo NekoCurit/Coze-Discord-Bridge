@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.APIS;
 
@@ -37,20 +39,31 @@ public class HttpServerManage {
     static Map<String, APIHandler> APIS = new HashMap<>();
     static List<String> ProtectPaths = new ArrayList<>();
 
+    private static ThreadPoolExecutor threadPoolExecutor;
+
     private static final Logger logger = LogManager.getLogger(HttpServerManage.class);
 
     public static void start() throws Exception {
         boolean SuccessOne = false;
         try {
+            threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(ConfigManage.Configs.APIMaxThread);
+            logger.info("初始化线程池成功 最大线程:" + ConfigManage.Configs.APIMaxThread);
+        } catch (Exception e){
+            logger.error("初始化线程池失败" ,e);
+            throw e;
+        }
+
+        try {
             if (ConfigManage.Configs.APIPort != 0) {
                 server = HttpServer.create(new InetSocketAddress(ConfigManage.Configs.APIPort), 0);
                 server.createContext("/", new HttpHandle());
+                server.setExecutor(threadPoolExecutor); // 线程池设置
                 server.start();
                 logger.info("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 成功");
                 SuccessOne = true;
             }
         } catch (Exception e) {
-            logger.error("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 失败",e);
+            logger.error("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 失败" ,e);
         }
 
 
@@ -73,6 +86,8 @@ public class HttpServerManage {
 
                 server_https = HttpsServer.create(new InetSocketAddress(ConfigManage.Configs.APISSLPort), 0);
                 server_https.createContext("/", new HttpHandle());
+
+                server_https.setExecutor(threadPoolExecutor); // 线程池设置
 
                 server_https.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
                     public void configure(HttpsParameters params) {
@@ -115,6 +130,8 @@ public class HttpServerManage {
         logger.info("停止HTTP服务成功");
         try { server_https.stop(0); } catch (Exception ignored) {}
         logger.info("停止HTTPS服务成功");
+        try { threadPoolExecutor.shutdown(); } catch (Exception ignored) {}
+        logger.info("关闭线程池成功");
     }
     public static void AddAPI (String s ,APIHandler api,boolean IsProtect) {
         APIS.put(s.toLowerCase(), api);

@@ -20,6 +20,7 @@ public class ConfigData {
         public boolean Disable_2000Limit_Unlock = false;
 
         public int APIPort = 8092;
+        public int APIMaxThread = 10;
         public int APISSLPort = 8093;
         public String APISSL_keyStorePath = "";
         public String APISSL_keyStorePassword = "";

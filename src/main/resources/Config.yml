@@ -23,6 +23,8 @@ ProxyType: "HTTP"
 #API端口设置为0关闭 如果HTTP和HTTPS都监听失败则无法启动
 #API端口 默认8092 curl http://127.0.0.1:8092/Ping
 APIPort: 8092
+#最大同时处理API请求的线程数
+APIMaxThread: 10
 #API HTTPS 端口 默认8093 curl https://127.0.0.1:8093/Ping
 APISSLPort: 8093
 #API HTTPS 证书 格式jks
