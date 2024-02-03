@@ -111,8 +111,8 @@ public class CozeGPT {
         // 锁定 避免同频道多次对话
         LockManage.getLock(textChannel.getIdAsString()).lock();
         // 初始化回复记录
-        this.BotResponseManage.clearMsg(textChannel.getIdAsString());
         this.BotGenerateStatusManage.clearGenerateStatus(textChannel.getIdAsString());
+        this.BotResponseManage.clearMsg(textChannel.getIdAsString());
         // 开始
         try {
             CompletableFuture<Message> send = null;
@@ -173,6 +173,7 @@ public class CozeGPT {
             GenerateMessage return_info = new GenerateMessage();
             return_info.Message = Response.prompt;
             return_info.Files = Response.files;
+            LockManage.getLock(textChannel.getIdAsString()).unlock();
             return return_info;
         } catch (Exception e) {
             LockManage.getLock(textChannel.getIdAsString()).unlock();
