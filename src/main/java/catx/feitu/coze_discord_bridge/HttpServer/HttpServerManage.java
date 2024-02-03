@@ -234,10 +234,10 @@ class HttpHandle implements HttpHandler {
     }
     private String Stream2String(InputStream stream) {
         StringBuilder sb = new StringBuilder();
-        try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            int c;
-            while ((c = reader.read()) != -1) {
-                sb.append((char) c);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
             }
         } catch (IOException e) {
             // TODO: handle exception
