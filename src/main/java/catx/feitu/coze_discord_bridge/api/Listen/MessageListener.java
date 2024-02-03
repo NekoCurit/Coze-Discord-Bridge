@@ -1,6 +1,6 @@
 package catx.feitu.coze_discord_bridge.api.Listen;
 
-import catx.feitu.coze_discord_bridge.Config.ConfigManage;
+import catx.feitu.coze_discord_bridge.api.CozeGPTConfig;
 import catx.feitu.coze_discord_bridge.api.MessageManage.BotGenerateStatusManage;
 import catx.feitu.coze_discord_bridge.api.MessageManage.BotResponseManage;
 import catx.feitu.coze_discord_bridge.api.MessageManage.BotResponseType;
@@ -20,17 +20,19 @@ import java.util.Objects;
 
 public class MessageListener implements MessageCreateListener, MessageEditListener, UserStartTypingListener {
     private static final Logger logger = LogManager.getLogger(MessageListener.class);
-    private BotResponseManage BotResponseManage;
-    private BotGenerateStatusManage BotGenerateStatusManage;
-    public MessageListener(BotResponseManage BotResponseManage, BotGenerateStatusManage BotGenerateStatusManage) {
-        this.BotResponseManage = BotResponseManage;
-        this.BotGenerateStatusManage = BotGenerateStatusManage;
+    private final BotResponseManage botResponseManage;
+    private final BotGenerateStatusManage botGenerateStatusManage;
+    private final CozeGPTConfig config;
+    public MessageListener(BotResponseManage botResponseManage, BotGenerateStatusManage botGenerateStatusManage, CozeGPTConfig config) {
+        this.botResponseManage = botResponseManage;
+        this.botGenerateStatusManage = botGenerateStatusManage;
+        this.config = config;
     }
 
     @Override
     public void onUserStartTyping(UserStartTypingEvent event) {
-        if(Objects.equals(event.getUserIdAsString(), ConfigManage.Configs.CozeBot_id)) {
-            this.BotGenerateStatusManage.saveGenerateStatus(event.getChannel().getIdAsString());
+        if(Objects.equals(event.getUserIdAsString(), config.CozeBot_id)) {
+            this.botGenerateStatusManage.saveGenerateStatus(event.getChannel().getIdAsString());
             logger.info("[CozeBot Start Generate] " + event.getChannel().getIdAsString());
         }
     }
@@ -43,9 +45,9 @@ public class MessageListener implements MessageCreateListener, MessageEditListen
 
     @Override
     public void onMessageEdit(MessageEditEvent event) {
-        if (Objects.equals(event.getMessageAuthor().getIdAsString(), ConfigManage.Configs.CozeBot_id)) {
-            if (ConfigManage.Configs.Disable_CozeBot_ReplyMsgCheck || event.getMessage().getMentionedUsers().contains(event.getApi().getYourself())) {
-                Boolean Done100 = !event.getMessage().getComponents().isEmpty(); //存在按钮 = 100%响应完毕
+        if (Objects.equals(event.getMessageAuthor().getIdAsString(), config.CozeBot_id)) {
+            if (config.Disable_CozeBot_ReplyMsgCheck || event.getMessage().getMentionedUsers().contains(event.getApi().getYourself())) {
+                boolean Done100 = !event.getMessage().getComponents().isEmpty(); //存在按钮 = 100%响应完毕
                 if (Done100) {
                     logger.info("[CozeBot] " + event.getChannel().getIdAsString() + ":" + event.getMessageContent());
                 }
@@ -63,7 +65,7 @@ public class MessageListener implements MessageCreateListener, MessageEditListen
                 Response.prompt = event.getMessageContent();
                 Response.files = files;
                 Response.SetCompleted(Done100);
-                this.BotResponseManage.saveMsg(event.getChannel().getIdAsString(),Response);
+                this.botResponseManage.saveMsg(event.getChannel().getIdAsString(),Response);
             }
         }
     }

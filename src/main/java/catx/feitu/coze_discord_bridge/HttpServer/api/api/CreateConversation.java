@@ -3,7 +3,6 @@ package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.CozeGPT;
 import catx.feitu.coze_discord_bridge.api.Exceptions.ConversationAlreadyExistsException;
 import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConfigException;
 import com.alibaba.fastjson.JSONObject;
@@ -19,7 +18,7 @@ public class CreateConversation implements APIHandler {
 
         String Name = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : RandomName();
         try {
-            String ChannelID = CozeGPT.CreateConversation(Name);
+            String ChannelID = Handle.CozeGPT.CreateConversation(Name);
 
             Response.code = 200;
             JSONObject json_data = new JSONObject(true);
@@ -45,6 +44,7 @@ public class CreateConversation implements APIHandler {
             json.put("code", 502);
             json.put("message", "创建对话失败");
             json.put("data", null);
+            e.printStackTrace();
         }
         Response.msg = json.toJSONString();
         return Response;

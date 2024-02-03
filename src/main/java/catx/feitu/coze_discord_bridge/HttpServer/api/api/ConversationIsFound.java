@@ -1,10 +1,8 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 
-import catx.feitu.coze_discord_bridge.Misc.CacheManager;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.CozeGPT;
 import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConfigException;
 import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConversationException;
 import catx.feitu.coze_discord_bridge.api.Types.ConversationInfo;
@@ -16,9 +14,8 @@ public class ConversationIsFound implements APIHandler {
         ResponseType Response = new ResponseType();
         JSONObject json = new JSONObject(true);
         String Name = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : "";
-        Name = CacheManager.Cache_GetName2Channel(Name);
         try {
-            ConversationInfo Info = CozeGPT.GetConversationInfo(Name);
+            ConversationInfo Info = Handle.CozeGPT.GetConversationInfo(Name);
             Response.code = 200;
             json.put("code", 200);
             json.put("message", "当前对话存在");

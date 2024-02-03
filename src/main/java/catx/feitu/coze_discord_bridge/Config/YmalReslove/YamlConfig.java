@@ -19,6 +19,7 @@ public class YamlConfig {
         yamlConfig.writeConfig.setWriteRootElementTags(false);
         yamlConfig.writeConfig.setWriteRootTags(false);
         yamlConfig.writeConfig.setUseVerbatimTags(false);
+        yamlConfig.writeConfig.setWriteClassname(com.esotericsoftware.yamlbeans.YamlConfig.WriteClassName.NEVER);
         StringWriter stringWriter = new StringWriter();
         YamlWriter yamlWriter = new YamlWriter(stringWriter, yamlConfig);
         yamlWriter.write(o);

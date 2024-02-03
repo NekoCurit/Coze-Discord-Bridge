@@ -27,10 +27,15 @@ public class CozeGPTConfig {
 
     public String Discord_CreateChannel_Category = "";
 
-    public long generate_timeout = 2000;
+    public long generate_timeout = 10000;
 
     public boolean Disable_CozeBot_ReplyMsgCheck = false;
     public boolean Disable_Name_Cache = false;
     public boolean Disable_2000Limit_Unlock = false;
+
+    /**
+     * 额外标记 可填写任意内容
+     */
+    public String Mark = "";
 
 }

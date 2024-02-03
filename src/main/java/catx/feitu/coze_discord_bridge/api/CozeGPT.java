@@ -9,7 +9,7 @@ import catx.feitu.coze_discord_bridge.api.MessageManage.BotGenerateStatusManage;
 import catx.feitu.coze_discord_bridge.api.MessageManage.BotResponseManage;
 import catx.feitu.coze_discord_bridge.api.MessageManage.BotResponseType;
 import catx.feitu.coze_discord_bridge.api.Types.ConversationInfo;
-import catx.feitu.coze_discord_bridge.api.Types.GPTFiles;
+import catx.feitu.coze_discord_bridge.api.Types.GPTFile;
 import catx.feitu.coze_discord_bridge.api.Types.GenerateMessage;
 
 import org.javacord.api.DiscordApi;
@@ -29,11 +29,12 @@ public class CozeGPT {
     private Server server = null;
     private final CozeGPTConfig config;
 
-    private final BotResponseManage BotResponseManage = new BotResponseManage();
+    public BotResponseManage BotResponseManage = new BotResponseManage();
     private final BotGenerateStatusManage BotGenerateStatusManage = new BotGenerateStatusManage();
     private final LockManage LockManage = new LockManage();
     public ConversationData conversations = new ConversationData();
     public DiscordApi discord_api;
+
 
     public CozeGPT(CozeGPTConfig config) {
         this.config = config;
@@ -59,7 +60,7 @@ public class CozeGPT {
                 .setProxy(config.Proxy)
                 .login()
                 .join();
-        discord_api.addListener(new MessageListener(this.BotResponseManage,this.BotGenerateStatusManage));
+        discord_api.addListener(new MessageListener(this.BotResponseManage ,this.BotGenerateStatusManage ,this.config));
     }
     /**
      * Discord登出
@@ -74,6 +75,18 @@ public class CozeGPT {
         discord_api = null;
     }
     /**
+     * 获取标记
+     */
+    public String getMark() {
+        return config.Mark;
+    }
+    /**
+     * 设置标记
+     */
+    public void setMark(String mark) {
+        config.Mark = mark;
+    }
+    /**
      * 发送一条消息到对话列表并等待Bot回复
      *
      * @param Prompts          提示词,即用户发送的消息,可以填入url上传附件.
@@ -83,7 +96,7 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public GenerateMessage Chat(String Prompts, String ConversationID, List<GPTFiles> Files, ChatStreamEvent event) throws Exception {
+    public GenerateMessage Chat(String Prompts, String ConversationID, List<GPTFile> Files, ChatStreamEvent event) throws Exception {
         if (Objects.equals(Prompts, "")) {
             throw new InvalidPromptException();
         }
@@ -119,16 +132,16 @@ public class CozeGPT {
             }
             // 发送附件(图片)处理
             if (Files != null)  {
-                for (GPTFiles file : Files) {
+                for (GPTFile file : Files) {
                     send = send.thenCompose(message -> textChannel.sendMessage(file.GetByteArrayInputStream(),file.GetFileName()));
                 }
             }
             // 发送消息
             send.join();
-            // 在此之下为bot回复消息处理阶段
+            // 在此之下为bot回复消息处理阶段 -> 5s 超时
             boolean BotStartGenerate = false;
             int attempt = 0; // 重试次数
-            int maxRetries = 20; // 最大尝试次数
+            int maxRetries = 25; // 最大尝试次数
             while (!BotStartGenerate) {
                 attempt++;
                 if (attempt > maxRetries) {
@@ -141,7 +154,7 @@ public class CozeGPT {
             BotResponseType Response = new BotResponseType();
             String LatestMessage = "";
             attempt = 0; // 重置重试次数
-            maxRetries = 600; // 最大尝试次数
+            maxRetries = 120; // 最大尝试次数
             // 超时 2 分钟
             while (!Response.IsCompleted(config.generate_timeout)) {
                 attempt++;
@@ -155,7 +168,7 @@ public class CozeGPT {
                     throw new StopGenerateException();
                 }
                 LatestMessage = Response.prompt;
-                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+                try { Thread.sleep(500); } catch (InterruptedException ignored) {}
             }
             GenerateMessage return_info = new GenerateMessage();
             return_info.Message = Response.prompt;
@@ -175,7 +188,7 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public GenerateMessage Chat(String Prompts, String ConversationID, List<GPTFiles> Files) throws Exception {
+    public GenerateMessage Chat(String Prompts, String ConversationID, List<GPTFile> Files) throws Exception {
         return Chat(Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
     }
     /**

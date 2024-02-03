@@ -1,12 +1,15 @@
 package catx.feitu.coze_discord_bridge.HttpServer;
 
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
+import catx.feitu.coze_discord_bridge.GPTManage;
 import catx.feitu.coze_discord_bridge.HttpServer.api.Ping;
 import catx.feitu.coze_discord_bridge.HttpServer.api.api.*;
 import catx.feitu.coze_discord_bridge.HttpServer.api.index;
 import catx.feitu.coze_discord_bridge.HttpServer.api.robots;
 import catx.feitu.coze_discord_bridge.HttpServer.api.v1.Models;
 import catx.feitu.coze_discord_bridge.HttpServer.api.v1.chat.Completions;
+import catx.feitu.coze_discord_bridge.HttpServer.api.v1.images.Generations;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.*;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +28,6 @@ import java.security.SecureRandom;
 import java.util.*;
 
 import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.APIS;
-import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.ProtectPaths;
 
 public class HttpServerManage {
 
@@ -37,7 +39,7 @@ public class HttpServerManage {
 
     private static final Logger logger = LogManager.getLogger(HttpServerManage.class);
 
-    public static void Start () throws Exception {
+    public static void start() throws Exception {
         boolean SuccessOne = false;
         try {
             if (ConfigManage.Configs.APIPort != 0) {
@@ -106,9 +108,14 @@ public class HttpServerManage {
 
         AddAPI("/v1/models", new Models(), true);
         AddAPI("/v1/chat/Completions", new Completions(), true);
-        AddAPI("/v1/images/Generations", new Completions(), true);
+        AddAPI("/v1/images/Generations", new Generations(), true);
     }
-
+    public static void stop() {
+        try { server.stop(0); } catch (Exception ignored) {}
+        logger.info("停止HTTP服务成功");
+        try { server_https.stop(0); } catch (Exception ignored) {}
+        logger.info("停止HTTPS服务成功");
+    }
     public static void AddAPI (String s ,APIHandler api,boolean IsProtect) {
         APIS.put(s.toLowerCase(), api);
         if (IsProtect) {
@@ -120,81 +127,93 @@ class HttpHandle implements HttpHandler {
     private static final Logger logger = LogManager.getLogger(HttpServerManage.class);
     @Override
     public void handle(HttpExchange t) throws IOException {
-        ResponseType Response = new ResponseType();
-        logger.info(t.getRemoteAddress().getHostString() + ":" + t.getRemoteAddress().getPort() + "  " +
-                t.getRequestMethod() + " " + t.getRequestURI().getPath());
-        t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        if ("OPTIONS".equals(t.getRequestMethod())) {
-            t.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS, POST");
-            t.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
-            t.sendResponseHeaders(200,0);
-            OutputStream os = t.getResponseBody();
-            os.write(0);
-            os.close();
-            t.close();
-            return;
-        }
-        APIHandler handler = APIS.get(t.getRequestURI().getPath().toLowerCase());
-        if (handler == null) { // 404 Not Found
-            JSONObject json = new JSONObject(true);
-            json.put("code", 404);
-            json.put("message", "终结点不存在");
-            Response.msg = json.toJSONString();
-            Response.code = 404;
-        } else { // 200 Successful
-            String query = "GET".equals(t.getRequestMethod()) ?
-                    t.getRequestURI().getRawQuery() :
-                    Stream2String(t.getRequestBody());
-                        HandleType handle = new HandleType();
-            handle.RequestParams = new JSONObject(true);
-            if (query != null) {
-                try {
-                    handle.RequestParams = handle.RequestParams.parseObject(query);
-                } catch (Exception ignored) {
-                    for (String param : query.split("&")) {
-                        String[] keyValue = param.split("=");
-                        if (keyValue.length > 1) {
-                            // 对key和value进行分别解码
-                            String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
-                            String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
-                            handle.RequestParams.put(key, value);
-                        } else if (keyValue.length == 1) {
-                            // 只有key没有value时
-                            String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
-                            handle.RequestParams.put(key, "");
+        try {
+            ResponseType Response = new ResponseType();
+            logger.info(t.getRemoteAddress().getHostString() + ":" + t.getRemoteAddress().getPort() + "  " +
+                    t.getRequestMethod() + " " + t.getRequestURI().getPath());
+            t.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            if ("OPTIONS".equals(t.getRequestMethod())) {
+                t.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS, POST");
+                t.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
+                t.sendResponseHeaders(200, 0);
+                OutputStream os = t.getResponseBody();
+                os.write(0);
+                os.close();
+                t.close();
+                return;
+            }
+            APIHandler handler = APIS.get(t.getRequestURI().getPath().toLowerCase());
+            if (handler == null) { // 404 Not Found
+                JSONObject json = new JSONObject(true);
+                json.put("code", 404);
+                json.put("message", "终结点不存在");
+                Response.msg = json.toJSONString();
+                Response.code = 404;
+            } else { // 200 Successful
+                String query = "GET".equals(t.getRequestMethod()) ?
+                        t.getRequestURI().getRawQuery() :
+                        Stream2String(t.getRequestBody());
+                HandleType handle = new HandleType();
+                handle.RequestParams = new JSONObject(true);
+                if (query != null) {
+                    try {
+                        handle.RequestParams = JSON.parseObject(query);
+                    } catch (Exception ignored) {
+                        for (String param : query.split("&")) {
+                            String[] keyValue = param.split("=");
+                            if (keyValue.length > 1) {
+                                // 对key和value进行分别解码
+                                String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                                String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
+                                handle.RequestParams.put(key, value);
+                            } else if (keyValue.length == 1) {
+                                // 只有key没有value时
+                                String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                                handle.RequestParams.put(key, "");
+                            }
                         }
                     }
                 }
+                String Key = handle.RequestParams.containsKey("key") ? handle.RequestParams.getString("key") : "";
+                Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("key") : Key;
+                Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("Authorization").replace("Bearer ", "") : Key;
+
+                Key = Objects.equals(Key, null) ? "default" : Key;
+
+                try {
+                    handle.CozeGPT = GPTManage.getGPT(Key);
+                    if (handle.CozeGPT == null) {
+                        throw new Exception();
+                    }
+                    handle.RequestPath = t.getRequestURI().getPath();
+                    handle.HttpExchange = t; // 传递过去
+                    Response = handler.handle(handle);
+
+                    if (handle.HttpExchange_Disable_Default_Action) {
+                        return;
+                    } // 关闭默认处理 用于支持特殊返回
+                } catch (Exception ignored) {
+                    JSONObject json = new JSONObject(true);
+                    json.put("code", 403);
+                    json.put("message", "无权访问本服务");
+                    Response.msg = json.toJSONString();
+                    Response.code = 403;
+                }
+
             }
-            boolean Verifyed = !ProtectPaths.contains(t.getRequestURI().getPath().toLowerCase());
-            Verifyed = Verifyed || Objects.equals(ConfigManage.Configs.APIKey, "");
-            Verifyed = Verifyed || (handle.RequestParams.containsKey("key") && Objects.equals(handle.RequestParams.getString("key"), ConfigManage.Configs.APIKey));
-            Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("key"), ConfigManage.Configs.APIKey);
-            Verifyed = Verifyed || Objects.equals(t.getRequestHeaders().getFirst("Authorization"), "Bearer " + ConfigManage.Configs.APIKey);
-            if (!Verifyed) {
-                JSONObject json = new JSONObject(true);
-                json.put("code", 403);
-                json.put("message", "无权访问本服务");
-                Response.msg = json.toJSONString();
-                Response.code = 403;
-            }
-            else {
-                handle.RequestPath = t.getRequestURI().getPath();
-                handle.HttpExchange = t; // 传递过去
-                Response = handler.handle(handle);
-            }
-            if (handle.HttpExchange_Disable_Default_Action) { return; } //关闭默认处理 用于支持特殊返回
+            t.getResponseHeaders().set("Content-Type", Response.Header_Content_Type);
+
+            byte[] ResponseByte = Response.msg.getBytes(StandardCharsets.UTF_8);
+            t.sendResponseHeaders(Response.code, ResponseByte.length);
+            OutputStream os = t.getResponseBody();
+            os.write(ResponseByte);
+            os.close();
+
+            t.close();
+        } catch (Exception e){
+            logger.error("请求处理失败" ,e);
+            throw e;
         }
-        t.getResponseHeaders().set("Content-Type", Response.Header_Content_Type);
-
-        byte[] ResponseByte = Response.msg.getBytes(StandardCharsets.UTF_8);
-        t.sendResponseHeaders(Response.code, ResponseByte.length);
-        OutputStream os = t.getResponseBody();
-        os.write(ResponseByte);
-        os.close();
-
-        t.close();
     }
     private String Stream2String(InputStream stream) {
         StringBuilder sb = new StringBuilder();

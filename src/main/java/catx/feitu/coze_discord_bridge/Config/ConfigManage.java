@@ -45,7 +45,6 @@ public class ConfigManage {
             logger.warn("写出默认配置失败",e);
         }
     }
-    /*
     public static void SaveConfig() {
         try {
             Files.writeString(new File("Config.yml").toPath(), YamlConfig.saveToString(Configs));
@@ -54,5 +53,4 @@ public class ConfigManage {
             logger.warn("保存配置失败",e);
         }
     }
-     */
 }

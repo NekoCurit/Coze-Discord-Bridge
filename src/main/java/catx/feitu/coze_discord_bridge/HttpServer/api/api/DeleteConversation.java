@@ -3,8 +3,6 @@ package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.Misc.CacheManager;
-import catx.feitu.coze_discord_bridge.api.CozeGPT;
 import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConfigException;
 import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConversationException;
 import com.alibaba.fastjson.JSONObject;
@@ -19,9 +17,8 @@ public class DeleteConversation implements APIHandler {
         JSONObject json = new JSONObject(true);
 
         String Name = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : RandomName();
-        Name = CacheManager.Cache_GetName2Channel(Name);
         try {
-            CozeGPT.DeleteConversation(Name);
+            Handle.CozeGPT.DeleteConversation(Name);
 
             Response.code = 200;
             json.put("code", 200);
