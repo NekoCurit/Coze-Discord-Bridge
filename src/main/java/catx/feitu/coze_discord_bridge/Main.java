@@ -3,17 +3,13 @@ package catx.feitu.coze_discord_bridge;
 import catx.feitu.coze_discord_bridge.Config.ConfigBotsData;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage;
-import catx.feitu.coze_discord_bridge.api.ConversationManage.ConversationHelper;
 import catx.feitu.coze_discord_bridge.api.CozeGPTConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fusesource.jansi.AnsiConsole;
 
-import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 
@@ -28,8 +24,7 @@ public class Main {
             ConfigManage.ReadConfig();
             // 初始化CozeGPT API
             if (ConfigManage.Configs.Bots.isEmpty()) {
-                logger.error("未配置Bot信息 请编辑后重新启动");
-                System.exit(-1);
+                throw new Exception("未配置Bot信息 请编辑后重新启动");
             }
             Proxy proxy = ConfigManage.Configs.UsingProxy ? new Proxy(
                     Objects.equals(ConfigManage.Configs.ProxyType, "HTTP") ?
