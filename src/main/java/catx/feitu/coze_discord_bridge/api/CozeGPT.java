@@ -18,6 +18,8 @@ import org.javacord.api.entity.channel.*;
 import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.server.Server;
+import org.javacord.api.entity.user.User;
+import org.javacord.api.entity.user.UserStatus;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -47,10 +49,8 @@ public class CozeGPT {
     }
     /**
      * Discord登录
-     *
-     * @throws Exception       遇到错误会抛出异常
      */
-    public void Login() throws Exception {
+    public void Login() {
         if (discord_api != null) {
             discord_api.disconnect();
         }
@@ -319,6 +319,14 @@ public class CozeGPT {
         return_info.Name = Channel.get().getName();
         return_info.ID = Channel.get().getIdAsString();
         return return_info;
+    }
+    public boolean IsCozeBotOnline() throws Exception {
+        GetServer();
+        Optional<User> cozeBot = server.getMemberById(config.CozeBot_id);
+        if (cozeBot.isEmpty()) {
+            throw new InvalidCozeBotUserIDException();
+        }
+        return cozeBot.get().getStatus() != UserStatus.OFFLINE;
     }
 
     private void GetServer() throws Exception {
