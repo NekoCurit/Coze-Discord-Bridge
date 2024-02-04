@@ -162,10 +162,21 @@ ps:第一次启动报错 `读取 cache_names.json 失败` 正常 直接忽略即
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/a87d04ac-5c52-4929-bb7c-ff62bd2fde65)
 
+## (可选)定时任务
+
+因为Discord/Coze问题 当bot很长时间不互动会离线 遇到这种情况需要去Coze手动重新登录 很麻烦
+
+因此 你可以创建一个定时任务
+
+举例:
+
+1.先执行一次 `curl "http://127.0.0.1:8092/api/CreateConversation?name=keepalive` 
+
+2.之后设置 每12小时执行一次 `curl "http://127.0.0.1:8092/api/chat?name=keepalive&prompt=ignored"` 
+
+注意这只是一个例子 你可能需要根据使用场景调整/不使用定时任务
 
 ## API文档
-
-由于~技术原因~懒 我们暂不支持以OpenAI官方API的方式调用
 
 调用方式: GET `http://地址:端口/终结点?key1=value1&key2=value2`  POST `http://地址:端口/终结点` `{"key1":"value1","key2":"value2"}`
 
