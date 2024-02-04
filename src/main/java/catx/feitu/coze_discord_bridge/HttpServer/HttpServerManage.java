@@ -4,6 +4,7 @@ import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.GPTManage;
 import catx.feitu.coze_discord_bridge.HttpServer.api.Ping;
 import catx.feitu.coze_discord_bridge.HttpServer.api.api.*;
+import catx.feitu.coze_discord_bridge.HttpServer.api.api.Discord.*;
 import catx.feitu.coze_discord_bridge.HttpServer.api.index;
 import catx.feitu.coze_discord_bridge.HttpServer.api.robots;
 import catx.feitu.coze_discord_bridge.HttpServer.api.v1.Models;
@@ -26,10 +27,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.APIS;
+import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.ProtectPaths;
 
 public class HttpServerManage {
 
@@ -37,7 +40,7 @@ public class HttpServerManage {
     public static HttpsServer server_https;
 
     static Map<String, APIHandler> APIS = new HashMap<>();
-    static List<String> ProtectPaths = new ArrayList<>();
+    static List<String> ProtectPaths = new CopyOnWriteArrayList<>();
 
     private static ThreadPoolExecutor threadPoolExecutor;
 
@@ -121,6 +124,9 @@ public class HttpServerManage {
         AddAPI("/api/ChatStream", new ChatStream(), true);
         AddAPI("/api/RenameConversation", new RenameConversation(), true);
 
+        AddAPI("/api/discord/GetUserInfo", new GetUserInfo(), true);
+        AddAPI("/api/discord/ReLogin", new ReLogin(), true);
+
         AddAPI("/v1/models", new Models(), true);
         AddAPI("/v1/chat/Completions", new Completions(), true);
         AddAPI("/v1/images/Generations", new Generations(), true);
@@ -171,6 +177,7 @@ class HttpHandle implements HttpHandler {
                         t.getRequestURI().getRawQuery() :
                         Stream2String(t.getRequestBody());
                 HandleType handle = new HandleType();
+                handle.RequestPath = t.getRequestURI().getPath().toLowerCase();
                 handle.RequestParams = new JSONObject(true);
                 if (query != null) {
                     try {
@@ -191,18 +198,19 @@ class HttpHandle implements HttpHandler {
                         }
                     }
                 }
-                String Key = handle.RequestParams.containsKey("key") ? handle.RequestParams.getString("key") : "";
-                Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("key") : Key;
-                Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("Authorization").replace("Bearer ", "") : Key;
-
-                Key = Objects.equals(Key, null) ? "default" : Key;
-
                 try {
-                    handle.CozeGPT = GPTManage.getGPT(Key);
-                    if (handle.CozeGPT == null) {
-                        throw new Exception();
+                    if (ProtectPaths.contains(handle.RequestPath)) {
+                        String Key = handle.RequestParams.containsKey("key") ? handle.RequestParams.getString("key") : "";
+                        Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("key") : Key;
+                        Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("Authorization").replace("Bearer ", "") : Key;
+
+                        Key = Objects.equals(Key, null) ? "default" : Key;
+
+                        handle.CozeGPT = GPTManage.getGPT(Key);
+                        if (handle.CozeGPT == null) {
+                            throw new Exception();
+                        }
                     }
-                    handle.RequestPath = t.getRequestURI().getPath();
                     handle.HttpExchange = t; // 传递过去
                     Response = handler.handle(handle);
 
