@@ -1,4 +1,8 @@
 #Github: https://github.com/catx-feitu/coze-discord-bridge
+
+#配置版本 无特殊不需要改动
+Version: 0
+
 Bots:
   -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
      Key: "default"
