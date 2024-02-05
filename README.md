@@ -18,7 +18,7 @@ _觉得有点用的话 别忘了点个🌟_
 ## 功能
 
 注:是最新源代码里支持的功能 不是Release里的 要看Release的往前翻Commit api文档 配置文件同样
-
+- [X] 适配`NextChat`,`LobeChat`等可以修改OpenAPI URL的AI平台
 - [X] HTTP/HTTPS API支持
 - [X] 支持文生图(需`coze`配置`DALL·E3`/`DALL·E2`插件)返回图片url
 - [X] 支持图生文(需`coze`配置`GPT4V`插件)(发送的文本消息中携带图片url/自己上传base64图片)
@@ -27,6 +27,7 @@ _觉得有点用的话 别忘了点个🌟_
 - [X] 支持和`openai`对齐的对话接口(`v1/chat/completions`)
 - [X] 支持和`openai`对齐的图像生成接口(`v1/images/generations`)
 - [X] 突破Discord Bot 2k字消息长度上限
+- [X] 定时活跃机器人 自定义活跃间隔 避免bot因为太久未互动而离线
 - [ ] 导入此jar进行二次开发 [::80%]
 - [ ] WebUI
 - [ ] 多个Bot 负载均衡
@@ -54,14 +55,20 @@ _觉得有点用的话 别忘了点个🌟_
 
 ````
 #Github: https://github.com/catx-feitu/coze-discord-bridge
-
-#Discord bot token 获取方法
-#浏览器打开 https://discord.com/developers/
-#创建Application
-#点击Bot
-#点击 Reset Token 然后复制过来即可
-#注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
-Discord_Bot_Token: ""
+Bots:
+  -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
+     Key: "default"
+     #Discord bot token 获取方法
+     #浏览器打开 https://discord.com/developers/
+     #创建Application > 点击Bot > 点击 Reset Token 然后复制过来即可
+     #注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
+     Discord_Bot_Token: ""
+     #创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
+     CreateChannel_Category: ""
+     #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
+     Server_id: ""
+     #接入Coze的Bot id 邀请进服务器在用户列表右键 复制用户ID 过来即可
+     CozeBot_id: ""
 
 #配置是否启用代理  代理类型 HTTP 或 SOCKS 常用于中国大陆机器部署
 UsingProxy: false
@@ -74,13 +81,6 @@ ProxyType: HTTP
 APIPort: 8092
 #API HTTPS 端口 默认8093 curl https://127.0.0.1:8093/Ping
 APISSLPort: 8093
-......
-
-#Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
-CozeBot_InServer_id: ""
-#接入Coze的Bot id 邀请进服务器在用户列表右键 复制用户ID 过来即可
-CozeBot_id: ""
-
 ......
 ````
 首先你要在[Discord开发者平台](https://discord.com/developers/)创建两个Application
@@ -162,19 +162,28 @@ ps:第一次启动报错 `读取 cache_names.json 失败` 正常 直接忽略即
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/a87d04ac-5c52-4929-bb7c-ff62bd2fde65)
 
-## (可选)定时任务
+## (可选)keepalive
 
 因为Discord/Coze问题 当bot很长时间不互动会离线 遇到这种情况需要去Coze手动重新登录 很麻烦
 
-因此 你可以创建一个定时任务
+因此 你可以通过编辑配置开启keepalive功能
 
-举例:
+它可以自动与Coze托管的bot对话 当累计到一段时间bot没有被互动过
 
-1.先执行一次 `curl "http://127.0.0.1:8092/api/CreateConversation?name=keepalive` 
+````
+......
+# Keepalive 通过定时与Coze托管的bot互动防止因为太久未发言而被强制下限
+# 内置定时器执行周期 单位分钟  设置 0 关闭  关闭后也可以通过api调用keepalive
+Keepalive_timer: 0
+# 只有大于指定分钟未发言Coze托管的bot才执行keepalive 单位分钟
+Keepalive_maxIntervalMinutes: 720
+# keepalive发送消息所在频道
+Keepalive_sendChannel: "keepalive"
+# keepalive发送消息内容
+Keepalive_sendMessage: "keepalive"
+````
 
-2.之后设置 每12小时执行一次 `curl "http://127.0.0.1:8092/api/chat?name=keepalive&prompt=ignored"` 
-
-注意这只是一个例子 你可能需要根据使用场景调整/不使用定时任务
+当关闭内置定时器时 你也可以通过访问终结点`/api/keepalive`来执行keepalive任务
 
 ## API文档
 
@@ -276,6 +285,15 @@ data: {"code":200,"data":{"done":true,"files":[],"prompt_all":"Ah, I see you've 
 返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否成功,String conversation_id 频道ID,String conversation_name 频道名称} 数据
 
 <br>
+
+终结点:`/api/keepalive` 执行keepalive任务
+
+参数:无
+
+返回:Int code 状态码 200为成功 | String message 信息 额外说明
+
+<br>
+
 
 终结点:`/v1/xxxx` OpenAI官方接口适配
 
