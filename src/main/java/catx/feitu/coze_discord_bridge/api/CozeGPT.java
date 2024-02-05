@@ -22,6 +22,7 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.entity.user.UserStatus;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class CozeGPT {
     public BotResponseManage BotResponseManage = new BotResponseManage();
     private final BotGenerateStatusManage BotGenerateStatusManage = new BotGenerateStatusManage();
     private final LockManage LockManage = new LockManage();
+    private MessageListener MessageListener;
     public ConversationData conversations = new ConversationData();
     public DiscordApi discord_api;
 
@@ -60,7 +62,8 @@ public class CozeGPT {
                 .setProxy(config.Proxy)
                 .login()
                 .join();
-        discord_api.addListener(new MessageListener(this.BotResponseManage ,this.BotGenerateStatusManage ,this.config));
+        this.MessageListener = new MessageListener(this.BotResponseManage ,this.BotGenerateStatusManage ,this.config);
+        discord_api.addListener(this.MessageListener);
     }
     /**
      * Discord登出
@@ -328,7 +331,20 @@ public class CozeGPT {
         }
         return cozeBot.get().getStatus() != UserStatus.OFFLINE;
     }
-
+    /**
+     * 取出最后一次发送消息时间
+     * @return 返回 Instant 类型  如果没有记录 返回类创建时间
+     */
+    public Instant getLatestSendMsgInstant () {
+        return this.MessageListener.getLatestSendMsgInstant();
+    }
+    /**
+     * 取出最后一次接收Coze Bot消息时间
+     * @return 返回 Instant 类型  如果没有记录 返回类创建时间
+     */
+    public Instant getLatestReceiveCozeMsgInstant () {
+        return this.MessageListener.getLatestReceiveCozeMsgInstant();
+    }
     private void GetServer() throws Exception {
         if (discord_api == null) {
             throw new BotNotLoginException();

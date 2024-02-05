@@ -14,6 +14,7 @@ import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.listener.message.MessageEditListener;
 import org.javacord.api.listener.user.UserStartTypingListener;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,14 @@ public class MessageListener implements MessageCreateListener, MessageEditListen
     private final BotResponseManage botResponseManage;
     private final BotGenerateStatusManage botGenerateStatusManage;
     private final CozeGPTConfig config;
+    /**
+     * 最后一次发送消息时间
+     */
+    private Instant latestSendMessage = Instant.now();
+    /**
+     * 最后一次接收消息时间
+     */
+    private Instant latestReceiveCozeMessage = Instant.now();
     public MessageListener(BotResponseManage botResponseManage, BotGenerateStatusManage botGenerateStatusManage, CozeGPTConfig config) {
         this.botResponseManage = botResponseManage;
         this.botGenerateStatusManage = botGenerateStatusManage;
@@ -38,6 +47,7 @@ public class MessageListener implements MessageCreateListener, MessageEditListen
     }
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
+        latestSendMessage = Instant.now();
         if (Objects.equals(event.getMessageAuthor().getIdAsString(), event.getApi().getYourself().getIdAsString())) {
             logger.info("[Send] " + event.getChannel().getIdAsString() + ": " + event.getMessageContent());
         }
@@ -46,6 +56,7 @@ public class MessageListener implements MessageCreateListener, MessageEditListen
     @Override
     public void onMessageEdit(MessageEditEvent event) {
         if (Objects.equals(event.getMessageAuthor().getIdAsString(), config.CozeBot_id)) {
+            latestReceiveCozeMessage = Instant.now();
             if (config.Disable_CozeBot_ReplyMsgCheck || event.getMessage().getMentionedUsers().contains(event.getApi().getYourself())) {
                 boolean Done100 = !event.getMessage().getComponents().isEmpty(); //存在按钮 = 100%响应完毕
                 if (Done100) {
@@ -68,5 +79,19 @@ public class MessageListener implements MessageCreateListener, MessageEditListen
                 this.botResponseManage.saveMsg(event.getChannel().getIdAsString(),Response);
             }
         }
+    }
+    /**
+     * 取出最后一次发送消息时间
+     * @return 返回 Instant 类型
+     */
+    public Instant getLatestSendMsgInstant () {
+        return latestSendMessage;
+    }
+    /**
+     * 取出最后一次接收Coze Bot消息时间
+     * @return 返回 Instant 类型
+     */
+    public Instant getLatestReceiveCozeMsgInstant () {
+        return latestReceiveCozeMessage;
     }
 }
