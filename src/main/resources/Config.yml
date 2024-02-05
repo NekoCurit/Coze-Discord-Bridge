@@ -45,6 +45,16 @@ OpenAPI_Chat_MsgForward_Suffix: "请根据上方聊天记录生成相应,不需�
 #图像生成默认频道ID
 OpenAPI_ImageGenerate_Default_Channel: "default"
 
+# Keepalive 通过定时与Coze托管的bot互动防止因为太久未发言而被强制下限
+# 内置定时器执行周期 单位分钟  设置 0 关闭  关闭后也可以通过api调用keepalive
+Keepalive_timer: 15
+# 只有大于指定分钟未发言Coze托管的bot才执行keepalive 单位分钟
+Keepalive_maxIntervalMinutes: 720
+# keepalive发送消息所在频道
+Keepalive_sendChannel: "keepalive"
+# keepalive发送消息内容
+Keepalive_sendMessage: "keepalive"
+
 #等待回答超时 通常情况下通过CozeBot下方出现按钮判断是否生成完毕 但是有时也不会出现按钮 比如说你对Bot说NSFW
 generate_timeout: 10000
 

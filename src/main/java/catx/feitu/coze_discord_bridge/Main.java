@@ -74,9 +74,13 @@ public class Main {
             logger.error(e);
             System.exit(-1);
         }
-
+        KeepaliveTimer Keepalive = new KeepaliveTimer();
+        if (ConfigManage.Configs.Keepalive_timer > 0) {
+            Keepalive.start();
+        }
         // 程序退出前执行
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Keepalive.stop();
             GPTManage.clearGPT();
             HttpServerManage.stop();
 

@@ -124,6 +124,7 @@ public class HttpServerManage {
         AddAPI("/api/ChatStream", new ChatStream(), true);
         AddAPI("/api/RenameConversation", new RenameConversation(), true);
         AddAPI("/api/IsBotOnline", new IsBotOnline(), true);
+        AddAPI("/api/Keepalive", new Keepalive(), true);
 
         AddAPI("/api/discord/GetUserInfo", new GetUserInfo(), true);
         AddAPI("/api/discord/ReLogin", new ReLogin(), true);

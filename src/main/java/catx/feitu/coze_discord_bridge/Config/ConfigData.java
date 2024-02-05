@@ -33,4 +33,9 @@ public class ConfigData {
         public String OpenAI_ImageGenerate_Prompt_Prefix = "画图";
         public String OpenAI_ImageGenerate_Prompt_Suffix = "";
 
+        public long Keepalive_maxIntervalMinutes = 720;
+        public String Keepalive_sendChannel = "keepalive";
+        public String Keepalive_sendMessage = "keepalive";
+        public long Keepalive_timer = 15;
+
 }
