@@ -36,6 +36,6 @@ public class ConfigData {
         public long Keepalive_maxIntervalMinutes = 720;
         public String Keepalive_sendChannel = "keepalive";
         public String Keepalive_sendMessage = "keepalive";
-        public long Keepalive_timer = 15;
+        public long Keepalive_timer = 0;
 
 }

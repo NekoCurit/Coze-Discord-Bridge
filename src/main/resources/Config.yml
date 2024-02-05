@@ -47,7 +47,7 @@ OpenAPI_ImageGenerate_Default_Channel: "default"
 
 # Keepalive 通过定时与Coze托管的bot互动防止因为太久未发言而被强制下限
 # 内置定时器执行周期 单位分钟  设置 0 关闭  关闭后也可以通过api调用keepalive
-Keepalive_timer: 15
+Keepalive_timer: 0
 # 只有大于指定分钟未发言Coze托管的bot才执行keepalive 单位分钟
 Keepalive_maxIntervalMinutes: 720
 # keepalive发送消息所在频道
