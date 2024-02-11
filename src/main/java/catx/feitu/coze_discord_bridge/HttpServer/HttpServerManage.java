@@ -125,9 +125,11 @@ public class HttpServerManage {
         AddAPI("/api/RenameConversation", new RenameConversation(), true);
         AddAPI("/api/IsBotOnline", new IsBotOnline(), true);
         AddAPI("/api/Keepalive", new Keepalive(), true);
+        AddAPI("/api/GetConversations", new GetConversations(), true);
 
         AddAPI("/api/discord/GetUserInfo", new GetUserInfo(), true);
         AddAPI("/api/discord/ReLogin", new ReLogin(), true);
+        AddAPI("/api/discord/GetChannels", new GetChannels(), true);
 
         AddAPI("/v1/models", new Models(), true);
         AddAPI("/v1/chat/Completions", new Completions(), true);
