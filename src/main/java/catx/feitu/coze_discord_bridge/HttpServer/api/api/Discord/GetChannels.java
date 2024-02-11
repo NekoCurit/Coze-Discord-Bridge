@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.RegularServerChannel;
-import org.javacord.api.entity.channel.ServerChannel;
 
 import java.util.ArrayList;
 import java.util.List;
