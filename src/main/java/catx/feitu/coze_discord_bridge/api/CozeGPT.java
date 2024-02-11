@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class CozeGPT {
-    private Server server = null;
+    public Server server = null;
     private final CozeGPTConfig config;
 
     public BotResponseManage BotResponseManage = new BotResponseManage();
@@ -104,7 +104,7 @@ public class CozeGPT {
             throw new InvalidPromptException();
         }
         // 取服务器对象
-        GetServer();
+        private_getServer();
         // 取对应子频道
         Optional<ServerChannel> channel = server.getChannelById(conversations.get(ConversationID));
         if (channel.isEmpty()) {
@@ -226,7 +226,7 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public String CreateConversation (String ConversationName) throws Exception {
-        GetServer();
+        private_getServer();
         // 分类处理
         Optional<Channel> Category = discord_api.getChannelById(config.Discord_CreateChannel_Category);
         ChannelCategory category = (ChannelCategory) Category.orElse(null);
@@ -252,7 +252,7 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public String CreateConversation () throws Exception {
-        GetServer();
+        private_getServer();
         // 分类处理
         Optional<Channel> Category = discord_api.getChannelById(config.Discord_CreateChannel_Category);
         ChannelCategory category = (ChannelCategory) Category.orElse(null);
@@ -272,7 +272,7 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public void DeleteConversation (String ConversationName) throws Exception {
-        GetServer();
+        private_getServer();
         Optional<ServerChannel> channel = server.getChannelById(conversations.get(ConversationName));
         if (channel.isEmpty()) {
             throw new InvalidConversationException(ConversationName);
@@ -289,7 +289,7 @@ public class CozeGPT {
      * @throws Exception          如果遇到任何问题,则抛出异常.
      */
     public String RenameConversation (String OldConversationName, String NewConversationName) throws Exception {
-        GetServer();
+        private_getServer();
         Optional<ServerChannel> channel = server.getChannelById(conversations.get(OldConversationName));
         if (channel.isEmpty()) {
             throw new InvalidConversationException(OldConversationName);
@@ -312,7 +312,7 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public ConversationInfo GetConversationInfo (String ConversationName) throws Exception {
-        GetServer();
+        private_getServer();
         String ChannelID = conversations.get(ConversationName);
         Optional<ServerChannel> Channel = server.getChannelById(ChannelID);
         if (Channel.isEmpty()) {
@@ -324,7 +324,7 @@ public class CozeGPT {
         return return_info;
     }
     public boolean IsCozeBotOnline() throws Exception {
-        GetServer();
+        private_getServer();
         Optional<User> cozeBot = server.getMemberById(config.CozeBot_id);
         if (cozeBot.isEmpty()) {
             throw new InvalidCozeBotUserIDException();
@@ -345,7 +345,8 @@ public class CozeGPT {
     public Instant getLatestReceiveCozeMsgInstant () {
         return this.MessageListener.getLatestReceiveCozeMsgInstant();
     }
-    private void GetServer() throws Exception {
+
+    public void private_getServer() throws Exception {
         if (discord_api == null) {
             throw new BotNotLoginException();
         }
