@@ -23,7 +23,7 @@ public class GPTManage {
         GPT.setMark(botID);
         if (!config.Disable_2000Limit_Unlock) {
             if (new File("conversation_" + botID + ".json").exists()) {
-                GPT.conversations = ConversationHelper.JsonString2Conversation(
+                GPT.conversations = ConversationHelper.jsonString2Conversation(
                         Files.readString(Paths.get("conversation_" + botID + ".json"))
                 );
             }
@@ -43,7 +43,7 @@ public class GPTManage {
                 GPT.Logout();
             } catch (Exception ignored) {
             }
-            Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationHelper.Conversation2JsonString(GPT.conversations));
+            Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationHelper.conversation2JsonString(GPT.conversations));
             ResponseMap.remove(botID);
         } catch (Exception ignored) {}
     }
