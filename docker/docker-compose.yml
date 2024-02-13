@@ -4,6 +4,11 @@ services:
   coze-discord-bridge:
     build: .
     container_name: coze-discord-bridge
+    environment:
+      - token=xxxxxxxxxxxx
+      - discord_server=xxxxxxxxxxxx
+      - coze_bot=xxxxxxxxxxxx
+      - key=default
     ports:
       - "8092:8092"
       - "8093:8093"
