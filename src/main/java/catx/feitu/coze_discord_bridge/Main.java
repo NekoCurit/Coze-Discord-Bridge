@@ -60,6 +60,10 @@ public class Main {
 
                     GPTConfig.Proxy = proxy;
 
+                    if (GPTManage.containsGPT(BotData.Key)) {
+                        logger.warn("[" + BotData.Key + "] 检测到重复的Bot 跳过加载");
+                        continue;
+                    }
 
                     logger.info("[" + BotData.Key + "] 开始登录流程..");
                     GPTManage.newGPT(BotData.Key, GPTConfig);
