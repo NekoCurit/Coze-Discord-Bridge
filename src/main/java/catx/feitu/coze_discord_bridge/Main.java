@@ -23,7 +23,9 @@ public class Main {
 
             ConfigManage.ReadConfig();
             // Docker Helper (通过运行环境读取bot配置)
-            DockerHelper.dockerHelper();
+            if (!ConfigManage.configs.Disable_ENV_Read) {
+                DockerHelper.dockerHelper();
+            }
             // 无bot信息结束程序
             if (ConfigManage.configs.Bots.isEmpty()) {
                 throw new Exception("未配置Bot信息 请编辑后重新启动");

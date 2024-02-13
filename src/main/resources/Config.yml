@@ -79,3 +79,6 @@ Disable_Name_Cache: false
 #由于Discord API限制消息文本长度为2k
 #因此关闭此设置 将会导致长度大于2k的提示词取消生成
 Disable_2000Limit_Unlock: false
+#默认开启读取环境变量
+#如果是在Docker中运行关闭将必须通过编辑配置文件配置Bot
+Disable_ENV_Read: false
