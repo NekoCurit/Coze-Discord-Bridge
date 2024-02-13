@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  coze-discord-bridge:
+    build: .
+    container_name: coze-discord-bridge
+    ports:
+      - "8092:8092"
+      - "8093:8093"
+    volumes:
+      - coze-discord-bridge:/data
+    restart: unless-stopped
+volumes:
+  coze-discord-bridge:
+    driver: local
