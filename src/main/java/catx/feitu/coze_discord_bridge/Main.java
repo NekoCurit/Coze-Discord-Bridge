@@ -22,12 +22,15 @@ public class Main {
             ConfigManage.DefaultConfig();
 
             ConfigManage.ReadConfig();
-            // 初始化CozeGPT API
-            if (ConfigManage.Configs.Bots.isEmpty()) {
+            // Docker Helper (通过运行环境读取bot配置)
+            DockerHelper.dockerHelper();
+            // 无bot信息结束程序
+            if (ConfigManage.configs.Bots.isEmpty()) {
                 throw new Exception("未配置Bot信息 请编辑后重新启动");
             }
-            Proxy proxy = ConfigManage.Configs.UsingProxy ? new Proxy(
-                    Objects.equals(ConfigManage.Configs.ProxyType, "HTTP") ?
+            // 初始化CozeGPT API
+            Proxy proxy = ConfigManage.configs.UsingProxy ? new Proxy(
+                    Objects.equals(ConfigManage.configs.ProxyType, "HTTP") ?
                             Proxy.Type.HTTP : Proxy.Type.SOCKS,
                     new InetSocketAddress(ConfigManage.configs.ProxyIP, ConfigManage.configs.ProxyPort)):
                     null;

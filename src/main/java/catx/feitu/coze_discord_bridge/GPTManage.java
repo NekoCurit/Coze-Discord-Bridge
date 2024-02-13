@@ -52,6 +52,9 @@ public class GPTManage {
         }
         ResponseMap.clear();
     }
+    public static boolean containsGPT (String BotID) {
+        return ResponseMap.containsKey(BotID);
+    }
     public static void keepalive() {
         logger.info("[keepalive] 开始执行任务");
         int success = 0;
