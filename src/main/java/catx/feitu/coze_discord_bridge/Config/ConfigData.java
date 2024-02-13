@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ConfigData {
         public int Version = 0;
+        public int Version_minSupport = 0;
         public List<ConfigBotsData> Bots = new ArrayList<>();
         public Boolean UsingProxy = false;
 

@@ -2,7 +2,9 @@
 
 #配置版本 无特殊不需要改动
 Version: 0
+Version_minSupport: 0
 
+#创建Bot 根据不同的密钥访问不同的Bot
 Bots:
   -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
      Key: "default"
@@ -27,13 +29,13 @@ ProxyType: "HTTP"
 #API端口设置为0关闭 如果HTTP和HTTPS都监听失败则无法启动
 #API端口 默认8092 curl http://127.0.0.1:8092/Ping
 APIPort: 8092
-#最大同时处理API请求的线程数
-APIMaxThread: 10
 #API HTTPS 端口 默认8093 curl https://127.0.0.1:8093/Ping
 APISSLPort: 8093
 #API HTTPS 证书 格式jks
 APISSL_keyStorePath: "keystore.jks"
 APISSL_keyStorePassword: "123456"
+#最大同时处理API请求的线程数
+APIMaxThread: 10
 
 #通过OpenAI官方接口调用时聊天历史记录模式
 # 0 = 关闭上下文 , 将最新一条消息发送到默认频道 (如要使用还需要请在Coze中关闭上下文记忆)
