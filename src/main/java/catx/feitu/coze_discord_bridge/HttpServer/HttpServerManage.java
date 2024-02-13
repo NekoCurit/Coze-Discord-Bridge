@@ -112,6 +112,9 @@ public class HttpServerManage {
             throw new Exception("HTTP和HTTPS服务均启动失败");
         }
 
+        if (ConfigManage.configs.API_IP_WhiteList) {
+            logger.info("已启用IP白名单模式");
+        }
         AddAPI("/",new index(), false);
         AddAPI("/Ping", new Ping(), false);
         AddAPI("/robots.txt", new robots(), false);
@@ -170,65 +173,79 @@ class HttpHandle implements HttpHandler {
                 return;
             }
             APIHandler handler = APIS.get(t.getRequestURI().getPath().toLowerCase());
-            if (handler == null) { // 404 Not Found
+            // IP白名单
+            if (ConfigManage.configs.API_IP_WhiteList
+                    && !ConfigManage.configs.API_IP_WhiteList_IPs.contains(
+                            t.getRemoteAddress().getHostString())
+            ){
                 JSONObject json = new JSONObject(true);
-                json.put("code", 404);
-                json.put("message", "终结点不存在");
+                json.put("code", 403);
+                json.put("message", "无权访问本服务");
                 Response.msg = json.toJSONString();
-                Response.code = 404;
-            } else { // 200 Successful
-                String query = "GET".equals(t.getRequestMethod()) ?
-                        t.getRequestURI().getRawQuery() :
-                        Stream2String(t.getRequestBody());
-                HandleType handle = new HandleType();
-                handle.RequestPath = t.getRequestURI().getPath().toLowerCase();
-                handle.RequestParams = new JSONObject(true);
-                if (query != null) {
-                    try {
-                        handle.RequestParams = JSON.parseObject(query);
-                    } catch (Exception ignored) {
-                        for (String param : query.split("&")) {
-                            String[] keyValue = param.split("=");
-                            if (keyValue.length > 1) {
-                                // 对key和value进行分别解码
-                                String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
-                                String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
-                                handle.RequestParams.put(key, value);
-                            } else if (keyValue.length == 1) {
-                                // 只有key没有value时
-                                String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
-                                handle.RequestParams.put(key, "");
+                Response.code = 403;
+            }
+            else {
+                // 终结点不存在
+                if (handler == null) {
+                    JSONObject json = new JSONObject(true);
+                    json.put("code", 404);
+                    json.put("message", "终结点不存在");
+                    Response.msg = json.toJSONString();
+                    Response.code = 404;
+                } else {
+                    String query = "GET".equals(t.getRequestMethod()) ?
+                            t.getRequestURI().getRawQuery() :
+                            Stream2String(t.getRequestBody());
+                    HandleType handle = new HandleType();
+                    handle.RequestPath = t.getRequestURI().getPath().toLowerCase();
+                    handle.RequestParams = new JSONObject(true);
+                    if (query != null) {
+                        try {
+                            handle.RequestParams = JSON.parseObject(query);
+                        } catch (Exception ignored) {
+                            for (String param : query.split("&")) {
+                                String[] keyValue = param.split("=");
+                                if (keyValue.length > 1) {
+                                    // 对key和value进行分别解码
+                                    String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                                    String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
+                                    handle.RequestParams.put(key, value);
+                                } else if (keyValue.length == 1) {
+                                    // 只有key没有value时
+                                    String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                                    handle.RequestParams.put(key, "");
+                                }
                             }
                         }
                     }
-                }
-                try {
-                    if (ProtectPaths.contains(handle.RequestPath)) {
-                        String Key = handle.RequestParams.containsKey("key") ? handle.RequestParams.getString("key") : "";
-                        Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("key") : Key;
-                        Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("Authorization").replace("Bearer ", "") : Key;
+                    try {
+                        if (ProtectPaths.contains(handle.RequestPath)) {
+                            String Key = handle.RequestParams.containsKey("key") ? handle.RequestParams.getString("key") : "";
+                            Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("key") : Key;
+                            Key = Objects.equals(Key, "") ? t.getRequestHeaders().getFirst("Authorization").replace("Bearer ", "") : Key;
 
-                        Key = Objects.equals(Key, null) ? "default" : Key;
+                            Key = Objects.equals(Key, null) ? "default" : Key;
 
-                        handle.CozeGPT = GPTManage.getGPT(Key);
-                        if (handle.CozeGPT == null) {
-                            throw new Exception();
+                            handle.CozeGPT = GPTManage.getGPT(Key);
+                            if (handle.CozeGPT == null) {
+                                throw new Exception();
+                            }
                         }
+                        handle.HttpExchange = t; // 传递过去
+                        Response = handler.handle(handle);
+
+                        if (handle.HttpExchange_Disable_Default_Action) {
+                            return;
+                        } // 关闭默认处理 用于支持特殊返回
+                    } catch (Exception ignored) {
+                        JSONObject json = new JSONObject(true);
+                        json.put("code", 403);
+                        json.put("message", "无权访问本服务");
+                        Response.msg = json.toJSONString();
+                        Response.code = 403;
                     }
-                    handle.HttpExchange = t; // 传递过去
-                    Response = handler.handle(handle);
 
-                    if (handle.HttpExchange_Disable_Default_Action) {
-                        return;
-                    } // 关闭默认处理 用于支持特殊返回
-                } catch (Exception ignored) {
-                    JSONObject json = new JSONObject(true);
-                    json.put("code", 403);
-                    json.put("message", "无权访问本服务");
-                    Response.msg = json.toJSONString();
-                    Response.code = 403;
                 }
-
             }
             t.getResponseHeaders().set("Content-Type", Response.Header_Content_Type);
 
@@ -239,6 +256,7 @@ class HttpHandle implements HttpHandler {
             os.close();
 
             t.close();
+
         } catch (Exception e){
             logger.error("请求处理失败" ,e);
             throw e;

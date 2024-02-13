@@ -6,7 +6,7 @@ Version_minSupport: 0
 
 #创建Bot 根据不同的密钥访问不同的Bot
 Bots:
-  -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
+   -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
      Key: "default"
      #Discord bot token 获取方法
      #浏览器打开 https://discord.com/developers/
@@ -36,7 +36,12 @@ APISSL_keyStorePath: "keystore.jks"
 APISSL_keyStorePassword: "123456"
 #最大同时处理API请求的线程数
 APIMaxThread: 10
-
+#API访问IP白名单功能
+#启用后只能通过 API_IP_WhiteList_IPs 中的IP访问
+#暂不支持通配符/正则表达式
+API_IP_WhiteList: false
+API_IP_WhiteList_IPs:
+   - "127.0.0.1"
 #通过OpenAI官方接口调用时聊天历史记录模式
 # 0 = 关闭上下文 , 将最新一条消息发送到默认频道 (如要使用还需要请在Coze中关闭上下文记忆)
 # 1 = 将 model 参数作为聊天历史索引 , 如果 model 是OpenAI已存在的模型 那就把上下文连同当前对话合并成一条发送到默认频道

@@ -2,6 +2,7 @@ package catx.feitu.coze_discord_bridge.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ConfigData {
         public int Version = 0;
@@ -26,6 +27,9 @@ public class ConfigData {
         public int APISSLPort = 8093;
         public String APISSL_keyStorePath = "";
         public String APISSL_keyStorePassword = "";
+
+        public boolean API_IP_WhiteList = false;
+        public List<String> API_IP_WhiteList_IPs = new CopyOnWriteArrayList<>();
 
         public int OpenAPI_Chat_Default_Models2Conversation = 0;
         public String OpenAPI_Chat_Default_Channel = "default";
