@@ -46,7 +46,7 @@ public class Completions implements APIHandler {
                 "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613",
                 "gpt-3.5-turbo-1196", "gpt-3.5-turbo-16k-0613", "gemini-pro"};
 
-        switch (ConfigManage.Configs.OpenAPI_Chat_Default_Models2Conversation) {
+        switch (ConfigManage.configs.OpenAPI_Chat_Default_Models2Conversation) {
             case 0: // 通过读取 model 参数 , 如果 model 是OpenAI已存在的模型 那就通过传递过来的上下文自动判断
                 String LatestMessage = "";
                 for (int i = 0; i < messagesArray.size(); i++) {
@@ -56,7 +56,7 @@ public class Completions implements APIHandler {
                         LatestMessage = messageObject.getString("content");
                     }
                 }
-                Channel_id = ConfigManage.Configs.OpenAPI_Chat_Default_Channel;
+                Channel_id = ConfigManage.configs.OpenAPI_Chat_Default_Channel;
                 SendMessage.add(LatestMessage); // 最后一条消息
                 break;
             case 1:
@@ -66,11 +66,11 @@ public class Completions implements APIHandler {
                     SendMessageL.add(messageObject.getString("role") + ":" + messageObject.getString("content"));
                 }
                 Channel_id = Arrays.asList(ForceDefaultModel).contains(Handle.RequestParams.getString("model")) ?
-                        ConfigManage.Configs.OpenAPI_Chat_Default_Channel:
+                        ConfigManage.configs.OpenAPI_Chat_Default_Channel:
                         Handle.RequestParams.getString("model");
-                SendMessage.add(ConfigManage.Configs.OpenAPI_Chat_MsgForward_Prefix
+                SendMessage.add(ConfigManage.configs.OpenAPI_Chat_MsgForward_Prefix
                         + "\n\n" + String.join("\n",SendMessageL)
-                        + "\n\n" + ConfigManage.Configs.OpenAPI_Chat_MsgForward_Suffix); // 最后一条消息
+                        + "\n\n" + ConfigManage.configs.OpenAPI_Chat_MsgForward_Suffix); // 最后一条消息
                 break;
             case 2:
                 Channel_id = Handle.RequestParams.getString("model");
@@ -87,10 +87,10 @@ public class Completions implements APIHandler {
                     JSONObject messageObject = messagesArray.getJSONObject(i);
                     SendMessageR.add(messageObject.getString("role") + ":" + messageObject.getString("content"));
                 }
-                Channel_id = ConfigManage.Configs.OpenAPI_Chat_Default_Channel;
-                SendMessage.add(ConfigManage.Configs.OpenAPI_Chat_MsgForward_Prefix
+                Channel_id = ConfigManage.configs.OpenAPI_Chat_Default_Channel;
+                SendMessage.add(ConfigManage.configs.OpenAPI_Chat_MsgForward_Prefix
                         + "\n\n" + String.join("\n",SendMessageR)
-                        + "\n\n" + ConfigManage.Configs.OpenAPI_Chat_MsgForward_Suffix); // 最后一条消息
+                        + "\n\n" + ConfigManage.configs.OpenAPI_Chat_MsgForward_Suffix); // 最后一条消息
                 break;
         }
         logger.info(String.join("|",SendMessage));

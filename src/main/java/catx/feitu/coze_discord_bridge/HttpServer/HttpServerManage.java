@@ -49,36 +49,36 @@ public class HttpServerManage {
     public static void start() throws Exception {
         boolean SuccessOne = false;
         try {
-            threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(ConfigManage.Configs.APIMaxThread);
-            logger.info("初始化线程池成功 最大线程:" + ConfigManage.Configs.APIMaxThread);
+            threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(ConfigManage.configs.APIMaxThread);
+            logger.info("初始化线程池成功 最大线程:" + ConfigManage.configs.APIMaxThread);
         } catch (Exception e){
             logger.error("初始化线程池失败" ,e);
             throw e;
         }
 
         try {
-            if (ConfigManage.Configs.APIPort != 0) {
-                server = HttpServer.create(new InetSocketAddress(ConfigManage.Configs.APIPort), 0);
+            if (ConfigManage.configs.APIPort != 0) {
+                server = HttpServer.create(new InetSocketAddress(ConfigManage.configs.APIPort), 0);
                 server.createContext("/", new HttpHandle());
                 server.setExecutor(threadPoolExecutor); // 线程池设置
                 server.start();
-                logger.info("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 成功");
+                logger.info("监听HTTP服务 0.0.0.0:" + ConfigManage.configs.APIPort + " 成功");
                 SuccessOne = true;
             }
         } catch (Exception e) {
-            logger.error("监听HTTP服务 0.0.0.0:" + ConfigManage.Configs.APIPort + " 失败" ,e);
+            logger.error("监听HTTP服务 0.0.0.0:" + ConfigManage.configs.APIPort + " 失败" ,e);
         }
 
 
         try {
-            if (ConfigManage.Configs.APISSLPort != 0) {
+            if (ConfigManage.configs.APISSLPort != 0) {
                 KeyStore keyStore = KeyStore.getInstance("JKS");
-                FileInputStream keyStoreIS = new FileInputStream(ConfigManage.Configs.APISSL_keyStorePath);
-                keyStore.load(keyStoreIS, ConfigManage.Configs.APISSL_keyStorePassword.toCharArray());
+                FileInputStream keyStoreIS = new FileInputStream(ConfigManage.configs.APISSL_keyStorePath);
+                keyStore.load(keyStoreIS, ConfigManage.configs.APISSL_keyStorePassword.toCharArray());
                 keyStoreIS.close();
                 // 初始化密钥管理器
                 KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                keyManagerFactory.init(keyStore, ConfigManage.Configs.APISSL_keyStorePassword.toCharArray());
+                keyManagerFactory.init(keyStore, ConfigManage.configs.APISSL_keyStorePassword.toCharArray());
                 // 初始化信任管理器
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                 trustManagerFactory.init(keyStore);
@@ -87,7 +87,7 @@ public class HttpServerManage {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
 
-                server_https = HttpsServer.create(new InetSocketAddress(ConfigManage.Configs.APISSLPort), 0);
+                server_https = HttpsServer.create(new InetSocketAddress(ConfigManage.configs.APISSLPort), 0);
                 server_https.createContext("/", new HttpHandle());
 
                 server_https.setExecutor(threadPoolExecutor); // 线程池设置
@@ -101,11 +101,11 @@ public class HttpServerManage {
 
 
                 server_https.start();
-                logger.info("监听HTTPS服务 0.0.0.0:" + ConfigManage.Configs.APISSLPort + " 成功");
+                logger.info("监听HTTPS服务 0.0.0.0:" + ConfigManage.configs.APISSLPort + " 成功");
                 SuccessOne = true;
             }
         } catch (Exception e) {
-            logger.error("监听HTTPS服务 0.0.0.0:" + ConfigManage.Configs.APISSLPort + " 失败",e);
+            logger.error("监听HTTPS服务 0.0.0.0:" + ConfigManage.configs.APISSLPort + " 失败",e);
         }
 
         if (!SuccessOne) {

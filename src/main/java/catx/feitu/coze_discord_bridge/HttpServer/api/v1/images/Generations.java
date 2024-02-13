@@ -18,13 +18,13 @@ public class Generations implements APIHandler {
         JSONObject json = new JSONObject(true);
         try {
             // 创建频道
-            try { Handle.CozeGPT.GetConversationInfo(ConfigManage.Configs.OpenAPI_ImageGenerate_Default_Channel); }
-            catch (InvalidConversationException e) { Handle.CozeGPT.CreateConversation(ConfigManage.Configs.OpenAPI_ImageGenerate_Default_Channel); }
+            try { Handle.CozeGPT.GetConversationInfo(ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel); }
+            catch (InvalidConversationException e) { Handle.CozeGPT.CreateConversation(ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel); }
             GenerateMessage Generate = Handle.CozeGPT.Chat(
-                    ConfigManage.Configs.OpenAI_ImageGenerate_Prompt_Prefix +
+                    ConfigManage.configs.OpenAI_ImageGenerate_Prompt_Prefix +
                             Handle.RequestParams.getString("prompt") +
-                            ConfigManage.Configs.OpenAI_ImageGenerate_Prompt_Suffix,
-                    ConfigManage.Configs.OpenAPI_ImageGenerate_Default_Channel
+                            ConfigManage.configs.OpenAI_ImageGenerate_Prompt_Suffix,
+                    ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel
             );
             JSONArray dataArray = new JSONArray();
             json.put("created", Instant.now().toEpochMilli() / 1000);

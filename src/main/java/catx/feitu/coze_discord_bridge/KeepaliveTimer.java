@@ -10,7 +10,7 @@ public class KeepaliveTimer {
     // 定义你的任务
     private final Runnable task = GPTManage::keepalive;
     public void start() {
-        scheduler.scheduleAtFixedRate(task, 0, ConfigManage.Configs.Keepalive_timer, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(task, 0, ConfigManage.configs.Keepalive_timer, TimeUnit.MINUTES);
     }
     public void stop() {
         scheduler.shutdown();

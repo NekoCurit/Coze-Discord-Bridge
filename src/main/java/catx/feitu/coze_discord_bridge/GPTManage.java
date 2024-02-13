@@ -41,8 +41,7 @@ public class GPTManage {
             CozeGPT GPT = ResponseMap.get(botID);
             try {
                 GPT.Logout();
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
             Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationHelper.conversation2JsonString(GPT.conversations));
             ResponseMap.remove(botID);
         } catch (Exception ignored) {}
@@ -62,12 +61,12 @@ public class GPTManage {
             if (Duration.between(
                     cozeGPT.getLatestReceiveCozeMsgInstant(),
                     Instant.now()).toMinutes() >
-                    ConfigManage.Configs.Keepalive_maxIntervalMinutes
+                    ConfigManage.configs.Keepalive_maxIntervalMinutes
             ) {
                 try {
-                    try { cozeGPT.GetConversationInfo(ConfigManage.Configs.Keepalive_sendChannel); }
-                    catch (Exception e) { cozeGPT.CreateConversation(ConfigManage.Configs.Keepalive_sendChannel); }
-                    cozeGPT.Chat(ConfigManage.Configs.Keepalive_sendChannel ,ConfigManage.Configs.Keepalive_sendMessage);
+                    try { cozeGPT.GetConversationInfo(ConfigManage.configs.Keepalive_sendChannel); }
+                    catch (Exception e) { cozeGPT.CreateConversation(ConfigManage.configs.Keepalive_sendChannel); }
+                    cozeGPT.Chat(ConfigManage.configs.Keepalive_sendChannel ,ConfigManage.configs.Keepalive_sendMessage);
                     logger.info("[keepalive] " + cozeGPT.getMark() + " 成功");
                     success++;
                 } catch (Exception e) {

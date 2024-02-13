@@ -29,15 +29,15 @@ public class Main {
             Proxy proxy = ConfigManage.Configs.UsingProxy ? new Proxy(
                     Objects.equals(ConfigManage.Configs.ProxyType, "HTTP") ?
                             Proxy.Type.HTTP : Proxy.Type.SOCKS,
-                    new InetSocketAddress(ConfigManage.Configs.ProxyIP, ConfigManage.Configs.ProxyPort)):
+                    new InetSocketAddress(ConfigManage.configs.ProxyIP, ConfigManage.configs.ProxyPort)):
                     null;
             if (proxy != null) {
-                logger.info("使用代理 " + ConfigManage.Configs.ProxyType + "://" +
-                        ConfigManage.Configs.ProxyIP + ":" + ConfigManage.Configs.ProxyPort + "/");
+                logger.info("使用代理 " + ConfigManage.configs.ProxyType + "://" +
+                        ConfigManage.configs.ProxyIP + ":" + ConfigManage.configs.ProxyPort + "/");
             }
             boolean successOne = false;
-            for (int i = 0;ConfigManage.Configs.Bots.size() > i;i++) {
-                ConfigBotsData BotData = ConfigManage.Configs.Bots.get(i);
+            for (int i = 0; ConfigManage.configs.Bots.size() > i; i++) {
+                ConfigBotsData BotData = ConfigManage.configs.Bots.get(i);
                 CozeGPTConfig GPTConfig = new CozeGPTConfig();
                 try {
                     BotData.Key = Objects.equals(BotData.Key, "") ? "default" : BotData.Key;
@@ -49,11 +49,11 @@ public class Main {
                     GPTConfig.Discord_CreateChannel_Category =  BotData.CreateChannel_Category;
                     GPTConfig.CozeBot_id = BotData.CozeBot_id;
 
-                    GPTConfig.generate_timeout = ConfigManage.Configs.generate_timeout;
+                    GPTConfig.generate_timeout = ConfigManage.configs.generate_timeout;
 
-                    GPTConfig.Disable_2000Limit_Unlock = ConfigManage.Configs.Disable_2000Limit_Unlock;
-                    GPTConfig.Disable_Name_Cache = ConfigManage.Configs.Disable_Name_Cache;
-                    GPTConfig.Disable_CozeBot_ReplyMsgCheck = ConfigManage.Configs.Disable_CozeBot_ReplyMsgCheck;
+                    GPTConfig.Disable_2000Limit_Unlock = ConfigManage.configs.Disable_2000Limit_Unlock;
+                    GPTConfig.Disable_Name_Cache = ConfigManage.configs.Disable_Name_Cache;
+                    GPTConfig.Disable_CozeBot_ReplyMsgCheck = ConfigManage.configs.Disable_CozeBot_ReplyMsgCheck;
 
                     GPTConfig.Proxy = proxy;
 
@@ -75,7 +75,7 @@ public class Main {
             System.exit(-1);
         }
         KeepaliveTimer Keepalive = new KeepaliveTimer();
-        if (ConfigManage.Configs.Keepalive_timer > 0) {
+        if (ConfigManage.configs.Keepalive_timer > 0) {
             Keepalive.start();
         }
         // 程序退出前执行

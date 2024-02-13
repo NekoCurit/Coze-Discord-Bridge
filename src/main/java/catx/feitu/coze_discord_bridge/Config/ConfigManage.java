@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class ConfigManage {
-    public static ConfigData Configs;
+    public static ConfigData configs;
     private static final Logger logger = LogManager.getLogger(ConfigManage.class);
 
 
@@ -23,7 +23,7 @@ public class ConfigManage {
             logger.info("加载配置成功");
         } catch (Exception e) {
             logger.warn("加载配置失败",e);
-            Configs = Configs == null ? new ConfigData() : Configs;
+            configs = configs == null ? new ConfigData() : configs;
         }
     }
     public static void DefaultConfig() {
