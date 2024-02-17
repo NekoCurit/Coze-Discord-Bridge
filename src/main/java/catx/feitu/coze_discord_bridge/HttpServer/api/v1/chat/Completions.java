@@ -38,7 +38,6 @@ public class Completions implements APIHandler {
         boolean UsingStream = Handle.RequestParams.containsKey("stream") ? Handle.RequestParams.getBoolean("stream") : true;
         String Channel_id = "";
         List<String> SendMessage = new ArrayList<>(); // 待发送消息列表
-        List<String> OldMessage = new ArrayList<>();
         JSONArray messagesArray = Handle.RequestParams.getJSONArray("messages");
         String[] ForceDefaultModel = {"gpt4", "gpt-4-0314", "gpt-4-0613",
                 "gpt-4-32k", "gpt-4-32k-0314", "gpt-4-32-0613", "gpt-4-turbo-preview",
