@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+build{
+    dependsOn {
+        shadowJar
+    }
+}
+
+jar {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+group = 'catx.feitu'
+version = '1.0.0213'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Discord API
+    implementation 'org.javacord:javacord:3.8.0'
+
+    // Slack API
+    implementation "com.slack.api:bolt-socket-mode:1.38.1"
+    implementation "com.slack.api:bolt-servlet:1.38.1"
+    implementation "com.slack.api:bolt-jetty:1.38.1"
+    implementation "org.slf4j:slf4j-simple:1.7.36"
+}
