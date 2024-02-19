@@ -1,7 +1,9 @@
 package catx.feitu.CozeProxy;
 
+import catx.feitu.CozeProxy.Protocol.Protocols;
+
 public class CozeGPTConfig {
-    public String loginApp = "";
+    public String loginApp = Protocols.DISCORD;
     /**
      * #Discord bot token 获取方法
      * 浏览器打开 <a href="https://discord.com/developers/">Discord开发者平台</a>

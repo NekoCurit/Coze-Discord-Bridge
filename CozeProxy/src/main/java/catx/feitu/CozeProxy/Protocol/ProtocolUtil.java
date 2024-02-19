@@ -43,13 +43,13 @@ public class ProtocolUtil {
     public void login(String protocol ,String token ,Proxy proxy) throws Exception {
         switch (protocol){
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
-                api_discord.addListener(new DiscordListener(eventListener ,config));
                 api_discord = new DiscordApiBuilder()
                         .setToken(token)
                         .addIntents(Intent.MESSAGE_CONTENT)
                         .setProxy(proxy)
                         .login()
                         .join();
+                api_discord.addListener(new DiscordListener(eventListener ,config));
             case catx.feitu.CozeProxy.Protocol.Protocols.SLACK:
                 AppConfig config = new AppConfig();
                 config.setSingleTeamBotToken(token);

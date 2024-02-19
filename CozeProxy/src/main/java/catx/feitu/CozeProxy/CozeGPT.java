@@ -23,7 +23,7 @@ public class CozeGPT {
     private final LockManage LockManage = new LockManage();
     public CozeEventListener cozeEventListener;
     public ConversationData conversations = new ConversationData();
-    public ProtocolUtil protocol;
+    public ProtocolUtil protocol = new ProtocolUtil();
 
 
     public CozeGPT(CozeGPTConfig config) {
