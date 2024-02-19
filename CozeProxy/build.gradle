@@ -30,6 +30,7 @@ repositories {
 }
 
 dependencies {
+    // 协议
     // Discord API
     implementation 'org.javacord:javacord:3.8.0'
 
@@ -38,4 +39,8 @@ dependencies {
     implementation "com.slack.api:bolt-servlet:1.38.1"
     implementation "com.slack.api:bolt-jetty:1.38.1"
     implementation "org.slf4j:slf4j-simple:1.7.36"
+
+    // 依赖
+    // fastjson
+    implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
 }

@@ -46,4 +46,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     // https://mavenlibs.com/maven/dependency/com.esotericsoftware.yamlbeans/yamlbeans
     implementation 'com.esotericsoftware.yamlbeans:yamlbeans:1.17'
+
+    implementation project(':CozeProxy')
+
 }

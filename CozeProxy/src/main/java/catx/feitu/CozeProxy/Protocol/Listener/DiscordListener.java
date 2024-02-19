@@ -34,39 +34,47 @@ public class DiscordListener implements MessageCreateListener, MessageEditListen
     public void onMessageCreate(MessageCreateEvent event) {
         if (handle == null) { return; }
         if (!Objects.equals(event.getServer().isPresent() ? event.getServer().get().getIdAsString() : null , config.filterServerID)) { return; }
-        if (!Objects.equals(event.getMessageAuthor().getIdAsString(), config.filterUserID)) { return; }
-        List<Embed> embeds = event.getMessage().getEmbeds(); // 获取消息中的所有嵌入内容
-        List<String> files = new CopyOnWriteArrayList<>(); // 存储嵌入附件URL
-        for (Embed embed : embeds) {
-            if (embed.getImage().isPresent()) {
-                files.add(embed.getImage().get().getUrl().toString());
-            }
+
+        if (Objects.equals(event.getMessageAuthor().getIdAsString(), config.filterSelfUserID)) {
+            handle.onSelfMessageSend(event.getChannel().getIdAsString());
+            return;
         }
-        handle.onMessageStream(event.getChannel().getIdAsString(),
-                new UniversalMessage()
-                        .setContent(event.getMessageContent())
-                        .setFiles(files)
-                        .setHasButton(!event.getMessage().getComponents().isEmpty())
-        );
+
+        if (Objects.equals(event.getMessageAuthor().getIdAsString(), config.filterUserID)) {
+            List<Embed> embeds = event.getMessage().getEmbeds(); // 获取消息中的所有嵌入内容
+            List<String> files = new CopyOnWriteArrayList<>(); // 存储嵌入附件URL
+            for (Embed embed : embeds) {
+                if (embed.getImage().isPresent()) {
+                    files.add(embed.getImage().get().getUrl().toString());
+                }
+            }
+            handle.onMessageStream(event.getChannel().getIdAsString(),
+                    new UniversalMessage()
+                            .setContent(event.getMessageContent())
+                            .setFiles(files)
+                            .setHasButton(!event.getMessage().getComponents().isEmpty())
+            );
+        }
     }
 
     @Override
     public void onMessageEdit(MessageEditEvent event) {
         if (handle == null) { return; }
         if (!Objects.equals(event.getServer().isPresent() ? event.getServer().get().getIdAsString() : null , config.filterServerID)) { return; }
-        if (!Objects.equals(event.getMessageAuthor().getIdAsString(), config.filterUserID)) { return; }
-        List<Embed> embeds = event.getMessage().getEmbeds(); // 获取消息中的所有嵌入内容
-        List<String> files = new CopyOnWriteArrayList<>(); // 存储嵌入附件URL
-        for (Embed embed : embeds) {
-            if (embed.getImage().isPresent()) {
-                files.add(embed.getImage().get().getUrl().toString());
+        if (Objects.equals(event.getMessageAuthor().getIdAsString(), config.filterUserID)) {
+            List<Embed> embeds = event.getMessage().getEmbeds(); // 获取消息中的所有嵌入内容
+            List<String> files = new CopyOnWriteArrayList<>(); // 存储嵌入附件URL
+            for (Embed embed : embeds) {
+                if (embed.getImage().isPresent()) {
+                    files.add(embed.getImage().get().getUrl().toString());
+                }
             }
+            handle.onMessageStream(event.getChannel().getIdAsString(),
+                    new UniversalMessage()
+                            .setContent(event.getMessageContent())
+                            .setFiles(files)
+                            .setHasButton(!event.getMessage().getComponents().isEmpty())
+            );
         }
-        handle.onMessageStream(event.getChannel().getIdAsString(),
-                new UniversalMessage()
-                        .setContent(event.getMessageContent())
-                        .setFiles(files)
-                        .setHasButton(!event.getMessage().getComponents().isEmpty())
-        );
     }
 }

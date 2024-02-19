@@ -34,6 +34,9 @@ public class CozeGPTConfig {
     public boolean Disable_Name_Cache = false;
     public boolean Disable_2000Limit_Unlock = false;
 
+    public String promptOnSendMore2000Prefix = "根据Prompt.txt内容做出回应";
+    public String promptOnSendMore2000FileName = "Prompt.txt";
+
     /**
      * 额外标记 可填写任意内容
      */

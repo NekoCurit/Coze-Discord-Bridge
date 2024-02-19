@@ -6,6 +6,7 @@ import catx.feitu.CozeProxy.Protocol.Exception.ProtocolNotLoginException;
 import catx.feitu.CozeProxy.Protocol.Exception.UnSupportedProtocolException;
 import catx.feitu.CozeProxy.Protocol.Listener.DiscordListener;
 import catx.feitu.CozeProxy.Protocol.Listener.SlackListener;
+import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
 import catx.feitu.CozeProxy.Protocol.Utils.DiscordUtils;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
@@ -31,6 +32,7 @@ public class ProtocolUtil {
     public App api_slack;
     public UniversalEventListener eventListener;
     public UniversalEventListenerConfig config;
+    public ProtocolMessageCode code;
 
     public void setEventListener(UniversalEventListener event) {
         eventListener = event;
@@ -56,6 +58,7 @@ public class ProtocolUtil {
                 new SocketModeApp(api_slack).start();
 
         }
+        code = new ProtocolMessageCode(protocol);
     }
     public void disconnect() throws Exception {
         switch (apiSelected){
@@ -74,15 +77,15 @@ public class ProtocolUtil {
         }
         throw new UnSupportedProtocolException();
     }
-    public void sendMessage(String channelID , String message , List<InputStream> files) throws Exception {
+    public void sendMessage(String channelID , String message , List<UploadFile> files) throws Exception {
         switch (apiSelected){
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
                 MessageBuilder messageBuilder = new MessageBuilder()
                         .append(message);
                 // 发送附件(图片)处理
                 if (files != null)  {
-                    for (InputStream file : files) {
-                        messageBuilder.addAttachment(file ,"file");
+                    for (UploadFile file : files) {
+                        messageBuilder.addAttachment(file.GetByteArrayInputStream() ,file.GetFileName());
                     }
                 }
                 messageBuilder.send(DiscordUtils.GetDiscordChannelAsTextChannel(
