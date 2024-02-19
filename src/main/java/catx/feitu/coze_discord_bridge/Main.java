@@ -1,9 +1,10 @@
 package catx.feitu.coze_discord_bridge;
 
+import catx.feitu.CozeProxy.CozeGPTConfig;
+import catx.feitu.CozeProxy.Protocol.Protocols;
 import catx.feitu.coze_discord_bridge.Config.ConfigBotsData;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage;
-import catx.feitu.coze_discord_bridge.api.CozeGPTConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fusesource.jansi.AnsiConsole;
@@ -49,10 +50,11 @@ public class Main {
                     if (Objects.equals(BotData.Discord_Bot_Token, "")) {
                         throw new Exception("无效的Discord_Bot_Token");
                     }
-                    GPTConfig.Discord_Bot_Token = BotData.Discord_Bot_Token;
-                    GPTConfig.Server_id = BotData.Server_id;
+                    GPTConfig.token = BotData.Discord_Bot_Token;
+                    GPTConfig.serverID = BotData.Server_id;
                     GPTConfig.Discord_CreateChannel_Category =  BotData.CreateChannel_Category;
-                    GPTConfig.CozeBot_id = BotData.CozeBot_id;
+                    GPTConfig.botID = BotData.CozeBot_id;
+                    GPTConfig.loginApp = Protocols.DISCORD;
 
                     GPTConfig.generate_timeout = ConfigManage.configs.generate_timeout;
 

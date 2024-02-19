@@ -1,4 +1,4 @@
-package catx.feitu.coze_discord_bridge.HttpServer.api.api.Discord;
+package catx.feitu.coze_discord_bridge.HttpServer.api.api.Protocol;
 
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
@@ -11,7 +11,7 @@ public class ReLogin implements APIHandler {
         ResponseType Response = new ResponseType();
         JSONObject json = new JSONObject(true);
         try {
-            Handle.CozeGPT.Login();
+            Handle.CozeGPT.login();
             Response.code = 200;
             json.put("code", 200);
             json.put("message", "重新登录成功");

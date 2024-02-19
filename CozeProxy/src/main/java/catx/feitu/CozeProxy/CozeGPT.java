@@ -21,7 +21,7 @@ import java.util.Objects;
 public class CozeGPT {
     private final CozeGPTConfig config;
     private final LockManage LockManage = new LockManage();
-    private CozeEventListener cozeEventListener;
+    public CozeEventListener cozeEventListener;
     public ConversationData conversations = new ConversationData();
     public ProtocolUtil protocol;
 
@@ -73,7 +73,7 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public catx.feitu.CozeProxy.Types.GenerateMessage Chat(String Prompts, String conversationName, List<GPTFile> Files, ChatStreamEvent event) throws Exception {
+    public catx.feitu.CozeProxy.Types.GenerateMessage chat(String Prompts, String conversationName, List<GPTFile> Files, ChatStreamEvent event) throws Exception {
         if (Objects.equals(Prompts, "") || Objects.equals(Prompts, null)) {
             throw new InvalidPromptException();
         }
@@ -155,8 +155,8 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public GenerateMessage Chat(String Prompts, String ConversationID, List<GPTFile> Files) throws Exception {
-        return Chat(Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
+    public GenerateMessage chat(String Prompts, String ConversationID, List<GPTFile> Files) throws Exception {
+        return chat(Prompts ,ConversationID ,Files ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
     }
     /**
      * 发送一条消息到对话列表并等待Bot回复
@@ -167,8 +167,8 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public GenerateMessage Chat(String Prompts, String ConversationID, ChatStreamEvent event) throws Exception {
-        return Chat(Prompts ,ConversationID ,null ,event);
+    public GenerateMessage chat(String Prompts, String ConversationID, ChatStreamEvent event) throws Exception {
+        return chat(Prompts ,ConversationID ,null ,event);
     }
     /**
      * 发送一条消息到对话列表并等待Bot回复
@@ -178,8 +178,8 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public GenerateMessage Chat(String Prompts, String ConversationID) throws Exception {
-        return Chat(Prompts ,ConversationID ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
+    public GenerateMessage chat(String Prompts, String ConversationID) throws Exception {
+        return chat(Prompts ,ConversationID ,(ALLGenerateMessages, NewGenerateMessage) -> { return true; });
     }
     /**
      * 创建新的对话列表
