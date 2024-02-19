@@ -43,7 +43,7 @@ dependencies {
     // https://mavenlibs.com/maven/dependency/org.fusesource.jansi/jansi
     implementation 'org.fusesource.jansi:jansi:2.4.1'
     // https://mavenlibs.com/maven/dependency/org.apache.logging.log4j/log4j-core
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-core:3.0.0-beta1'
     // https://mavenlibs.com/maven/dependency/com.esotericsoftware.yamlbeans/yamlbeans
     implementation 'com.esotericsoftware.yamlbeans:yamlbeans:1.17'
 
