@@ -194,6 +194,7 @@ public class CozeGPT {
             throw new ConversationAlreadyExistsException(conversationName);
         }
         String conversationID = protocol.createChannel(conversationName ,config.Discord_CreateChannel_Category);
+        protocol.inviteBotInChannel(conversationID ,config.botID);
         // 写入存储
         conversations.put(conversationName ,conversationID);
         // 返回数据
