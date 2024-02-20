@@ -15,14 +15,16 @@ public class UploadFile {
         name = fileName;
     }
     public UploadFile(ByteArrayInputStream fileInputStream, String fileName) {
-
         file = fileInputStream;
         name = fileName;
     }
-    public ByteArrayInputStream GetByteArrayInputStream() {
+    public ByteArrayInputStream getByteArrayInputStream() {
         return file;
     }
-    public String GetFileName() {
+    public byte[] getByte() {
+        return file.readAllBytes();
+    }
+    public String getFileName() {
         return name;
     }
 }
