@@ -10,6 +10,17 @@ _觉得有点用的话 别忘了点个🌟_
 
 </div>
 
+## 警告
+
+由于 Coze 对发送者添加了是否为bot检测 因此此项目暂时处于不可用状态
+
+恢复时间待定
+
+ - [X] DiscordSelfBot 完成一部分 后续添加消息接收和文件上传后发布新版本
+ - [ ] SlackProxy 完成一部分 等修好Discord后继续写
+
+亦可提交pr加快进展
+
 ## 截图
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/24e4304b-a5f7-4baa-9559-8c01f9a935b3)
 
