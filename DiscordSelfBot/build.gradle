@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+jar {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+group = 'catx.feitu'
+version = '1.0.0222'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.slf4j:slf4j-api:2.0.5'
+    implementation 'org.slf4j:slf4j-simple:2.0.5'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'com.google.code.gson:gson:2.9.0'
+}
