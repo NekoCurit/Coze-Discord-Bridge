@@ -47,14 +47,14 @@ public class Main {
                 CozeGPTConfig GPTConfig = new CozeGPTConfig();
                 try {
                     BotData.Key = Objects.equals(BotData.Key, "") ? "default" : BotData.Key;
-                    if (Objects.equals(BotData.Discord_Bot_Token, "")) {
-                        throw new Exception("无效的Discord_Bot_Token");
+                    if (Objects.equals(BotData.Token, "")) {
+                        throw new Exception("无效的Token");
                     }
-                    GPTConfig.token = BotData.Discord_Bot_Token;
+                    GPTConfig.loginApp = BotData.Protocol;
+                    GPTConfig.token = BotData.Token;
                     GPTConfig.serverID = BotData.Server_id;
                     GPTConfig.Discord_CreateChannel_Category =  BotData.CreateChannel_Category;
                     GPTConfig.botID = BotData.CozeBot_id;
-                    GPTConfig.loginApp = Protocols.DISCORD;
 
                     GPTConfig.generate_timeout = ConfigManage.configs.generate_timeout;
 

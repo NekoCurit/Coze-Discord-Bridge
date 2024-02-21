@@ -6,14 +6,16 @@ Version_minSupport: 0
 
 #创建Bot 根据不同的密钥访问不同的Bot
 Bots:
-   -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
+   - #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
      Key: "default"
+     #登录协议
+     Protocol: "discord"
      #Discord bot token 获取方法
      #浏览器打开 https://discord.com/developers/
      #创建Application > 点击Bot > 点击 Reset Token 然后复制过来即可
      #注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
-     Discord_Bot_Token: ""
-     #创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
+     Token: ""
+     #[仅Discord可用]创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
      CreateChannel_Category: ""
      #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
      Server_id: ""

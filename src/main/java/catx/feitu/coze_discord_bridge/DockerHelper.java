@@ -14,7 +14,7 @@ public class DockerHelper {
 
         ConfigBotsData config = new ConfigBotsData();
 
-        config.Discord_Bot_Token = System.getenv("token");
+        config.Token = System.getenv("token");
         config.Server_id = System.getenv("discord_server");
         config.CozeBot_id = System.getenv("coze_bot");
         config.Key = System.getenv("key") != null ?
