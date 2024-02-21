@@ -1,12 +1,5 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
-
-build{
-    dependsOn {
-        shadowJar
-    }
 }
 
 jar {
@@ -23,7 +16,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 group = 'catx.feitu'
-version = '1.0.0213'
+version = '1.0.0222'
 
 repositories {
     mavenCentral()

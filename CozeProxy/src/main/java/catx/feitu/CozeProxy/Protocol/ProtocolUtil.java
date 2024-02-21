@@ -47,6 +47,8 @@ public class ProtocolUtil {
         this.config = config;
     }
     public void login(String protocol ,String token ,Proxy proxy) throws Exception {
+        code = new ProtocolMessageCode(protocol);
+        apiSelected = protocol;
         switch (protocol){
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
                 api_discord = new DiscordApiBuilder()
@@ -56,6 +58,7 @@ public class ProtocolUtil {
                         .login()
                         .join();
                 api_discord.addListener(new DiscordListener(eventListener ,config));
+                return;
             case catx.feitu.CozeProxy.Protocol.Protocols.SLACK:
                 AppConfig config = new AppConfig();
                 config.setSingleTeamBotToken(token);
@@ -64,9 +67,9 @@ public class ProtocolUtil {
                 api_slack_listen = new App(config);
                 api_slack_listen.event(MessageEvent.class, new SlackListener(eventListener ,this.config));
                 new SocketModeApp(api_slack_listen).start();
-
+                return;
         }
-        code = new ProtocolMessageCode(protocol);
+        throw new UnSupportedProtocolException();
     }
     public void disconnect() throws Exception {
         switch (apiSelected){
@@ -140,13 +143,16 @@ public class ProtocolUtil {
         throw new UnSupportedProtocolException();
     }
     public String createChannel(String name ,String category) throws Exception {
+        String realName = name == null ? "default" : name;
         switch (apiSelected){
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
-                ChannelCategory categoryObj = (ChannelCategory) DiscordUtils.GetDiscordChannel(DiscordUtils.GetDiscordServer(api_discord,config.filterServerID),category);
+                ChannelCategory categoryObj = Objects.equals(category, "") || category == null ?
+                        null :
+                        (ChannelCategory) DiscordUtils.GetDiscordChannel(DiscordUtils.GetDiscordServer(api_discord,config.filterServerID),category);
                 // 创建
                 ServerTextChannel channel = DiscordUtils.GetDiscordServer(api_discord,config.filterServerID)
                         .createTextChannelBuilder()
-                        .setName(name)
+                        .setName(realName)
                         .setCategory(categoryObj)
                         .create()
                         .join();
@@ -154,7 +160,7 @@ public class ProtocolUtil {
                 return channel.getIdAsString();
             case catx.feitu.CozeProxy.Protocol.Protocols.SLACK:
                 ConversationsCreateResponse response = api_slack.conversationsCreate(req -> req
-                        .name(name) // 设置你想要创建的频道名
+                        .name(realName) // 设置你想要创建的频道名
                         .isPrivate(false) // 设置频道是否为私有
                 );
                 if (!response.isOk()) {

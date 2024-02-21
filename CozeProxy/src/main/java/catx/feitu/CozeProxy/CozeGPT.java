@@ -6,6 +6,7 @@ import catx.feitu.CozeProxy.Listen.CozeEventListener;
 import catx.feitu.CozeProxy.LockManage.LockManage;
 import catx.feitu.CozeProxy.Protocol.ProtocolUtil;
 import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
+import catx.feitu.CozeProxy.Protocol.UniversalEventListenerConfig;
 import catx.feitu.CozeProxy.Types.ConversationInfo;
 import catx.feitu.CozeProxy.Types.GPTFile;
 import catx.feitu.CozeProxy.Types.GenerateMessage;
@@ -40,6 +41,7 @@ public class CozeGPT {
      */
     public void login() throws Exception {
         cozeEventListener = new CozeEventListener();
+        protocol.setConfig(new UniversalEventListenerConfig(config.serverID ,config.botID));
         protocol.setEventListener(cozeEventListener);
         protocol.login(config.loginApp ,config.token ,config.Proxy);
     }
@@ -74,7 +76,7 @@ public class CozeGPT {
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
     public catx.feitu.CozeProxy.Types.GenerateMessage chat(String Prompts, String conversationName, List<GPTFile> Files, ChatStreamEvent event) throws Exception {
-        if (Objects.equals(Prompts, "") || Objects.equals(Prompts, null)) {
+        if (Objects.equals(Prompts, "") || Prompts == null) {
             throw new InvalidPromptException();
         }
         String conversationID = conversations.get(conversationName);
@@ -199,7 +201,7 @@ public class CozeGPT {
         conversations.put(conversationName ,conversationID);
         // 返回数据
         return conversationID;
-    }
+   }
     /**
      * 创建新的对话列表
      *
