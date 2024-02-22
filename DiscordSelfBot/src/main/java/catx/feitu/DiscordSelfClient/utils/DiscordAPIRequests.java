@@ -1,6 +1,7 @@
 package catx.feitu.DiscordSelfClient.utils;
 
-import catx.feitu.DiscordSelfClient.client.Exceptions.*;
+import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidRequestBodyException;
+import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidTokenException;
 import com.alibaba.fastjson.JSON;
 
 import java.net.InetSocketAddress;

@@ -3,11 +3,11 @@ package catx.feitu.DiscordSelfClient.client;
 import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidFileException;
 import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidMessageException;
 import catx.feitu.DiscordSelfClient.client.Types.DiscordAttachment;
+import catx.feitu.DiscordSelfClient.client.impl.*;
 import catx.feitu.DiscordSelfClient.utils.DiscordAPIRequests;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import catx.feitu.DiscordSelfClient.client.impl.*;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;

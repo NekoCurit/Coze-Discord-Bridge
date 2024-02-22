@@ -1,9 +1,9 @@
 package catx.feitu.coze_discord_bridge;
 
 import catx.feitu.CozeProxy.ConversationManage.ConversationHelper;
+import catx.feitu.CozeProxy.CozeGPT;
 import catx.feitu.CozeProxy.CozeGPTConfig;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
-import catx.feitu.CozeProxy.CozeGPT;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -14,7 +14,10 @@ import org.apache.logging.log4j.Logger;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Completions implements APIHandler {
     // https://platform.openai.com/docs/api-reference/chat/create

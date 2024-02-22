@@ -1,13 +1,10 @@
 package catx.feitu.CozeProxy.Protocol;
 
-import catx.feitu.CozeProxy.Exceptions.InvalidDiscordChannelException;
-import catx.feitu.CozeProxy.Protocol.Exception.InvalidUserException;
-import catx.feitu.CozeProxy.Protocol.Exception.ProtocolNotLoginException;
 import catx.feitu.CozeProxy.Protocol.Exception.ProtocolAPIFailedException;
+import catx.feitu.CozeProxy.Protocol.Exception.ProtocolNotLoginException;
 import catx.feitu.CozeProxy.Protocol.Exception.UnSupportedProtocolException;
 import catx.feitu.CozeProxy.Protocol.Listener.SlackListener;
 import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
-import catx.feitu.CozeProxy.Protocol.Utils.DiscordUtils;
 import catx.feitu.DiscordSelfClient.client.SelfClient;
 import catx.feitu.DiscordSelfClient.client.Types.DiscordAttachment;
 import catx.feitu.DiscordSelfClient.client.impl.Message;
@@ -20,13 +17,11 @@ import com.slack.api.methods.response.conversations.ConversationsCreateResponse;
 import com.slack.api.methods.response.files.FilesUploadResponse;
 import com.slack.api.model.Attachment;
 import com.slack.api.model.event.MessageEvent;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ServerTextChannel;
-import org.javacord.api.entity.user.User;
-import org.javacord.api.entity.user.UserStatus;
 
 import java.net.Proxy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 

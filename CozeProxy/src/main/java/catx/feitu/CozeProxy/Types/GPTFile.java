@@ -1,6 +1,6 @@
 package catx.feitu.CozeProxy.Types;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
 import java.util.Base64;
 
 public class GPTFile {

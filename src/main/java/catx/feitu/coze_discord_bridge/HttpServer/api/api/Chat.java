@@ -7,7 +7,8 @@ import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
 import com.alibaba.fastjson.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Chat implements APIHandler {
     @Override

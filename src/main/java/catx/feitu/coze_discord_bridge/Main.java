@@ -1,7 +1,6 @@
 package catx.feitu.coze_discord_bridge;
 
 import catx.feitu.CozeProxy.CozeGPTConfig;
-import catx.feitu.CozeProxy.Protocol.Protocols;
 import catx.feitu.coze_discord_bridge.Config.ConfigBotsData;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage;

@@ -2,16 +2,16 @@ package catx.feitu.CozeProxy;
 
 import catx.feitu.CozeProxy.ConversationManage.ConversationData;
 import catx.feitu.CozeProxy.Exceptions.*;
+import catx.feitu.CozeProxy.FunctionalInterface.ChatStreamEvent;
 import catx.feitu.CozeProxy.Listen.CozeEventListener;
 import catx.feitu.CozeProxy.LockManage.LockManage;
+import catx.feitu.CozeProxy.MessageManage.BotResponseType;
 import catx.feitu.CozeProxy.Protocol.ProtocolUtil;
 import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
 import catx.feitu.CozeProxy.Protocol.UniversalEventListenerConfig;
 import catx.feitu.CozeProxy.Types.ConversationInfo;
 import catx.feitu.CozeProxy.Types.GPTFile;
 import catx.feitu.CozeProxy.Types.GenerateMessage;
-import catx.feitu.CozeProxy.FunctionalInterface.ChatStreamEvent;
-import catx.feitu.CozeProxy.MessageManage.BotResponseType;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;

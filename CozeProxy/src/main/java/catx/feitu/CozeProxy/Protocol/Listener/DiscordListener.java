@@ -10,7 +10,6 @@ import org.javacord.api.event.user.UserStartTypingEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
 import org.javacord.api.listener.message.MessageEditListener;
 import org.javacord.api.listener.user.UserStartTypingListener;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;

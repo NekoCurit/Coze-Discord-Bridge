@@ -7,9 +7,10 @@ import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
 import com.alibaba.fastjson.JSONObject;
 
-import java.io.*;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatStream implements APIHandler {
     @Override
