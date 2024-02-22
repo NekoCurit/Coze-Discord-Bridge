@@ -41,7 +41,7 @@ public class CozeGPT {
      */
     public void login() throws Exception {
         cozeEventListener = new CozeEventListener();
-        protocol.setConfig(new UniversalEventListenerConfig(config.serverID ,config.botID));
+        protocol.setConfig(new UniversalEventListenerConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
         protocol.eventListener = cozeEventListener;
         protocol.login(config.loginApp ,config.token ,config.Proxy);
     }

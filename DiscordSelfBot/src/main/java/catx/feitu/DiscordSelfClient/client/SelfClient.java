@@ -134,9 +134,9 @@ public class SelfClient {
 
         for (int i = 0; i < data.size(); i++) {
             JSONObject object = data.getJSONObject(i);
-
             String id = object.getString("id");
             List<Attachment> attachments = new ArrayList<>();
+            List<User> mentions = new ArrayList<>();
 
             JSONObject object_author = object.getJSONObject("author");
             User user = new User(object_author.getString("id") ,object_author.getString("username") ,object_author.getBooleanValue("bot"));
@@ -151,10 +151,19 @@ public class SelfClient {
                         object_attachments_object.getString("url")
                 ));
             }
+            JSONArray object_mentions = object.getJSONArray("mentions");
+            for(int j = 0; j < object_attachments.size(); j++) {
+                JSONObject object_mentions_object = object_attachments.getJSONObject(j);
+                mentions.add(new User(
+                        object_mentions_object.getString("id"),
+                        object_mentions_object.getString("username"),
+                        false
+                ));
+            }
             messages.add(new Message(id,
                     object.getIntValue("type"),
                     object.getString("content"),
-                    user, attachments ,!object.getJSONArray("components").isEmpty()));
+                    user, attachments ,mentions ,!object.getJSONArray("components").isEmpty()));
         }
         return messages;
     }
@@ -169,6 +178,7 @@ public class SelfClient {
             String id = object.getString("id");
             if (!Objects.equals(id, messageId)) continue;
             List<Attachment> attachments = new ArrayList<>();
+            List<User> mentions = new ArrayList<>();
 
             JSONObject object_author = object.getJSONObject("author");
             User user = new User(object_author.getString("id") ,object_author.getString("username") ,object_author.getBoolean("bot"));
@@ -183,10 +193,19 @@ public class SelfClient {
                         object_attachments_object.getString("url")
                 ));
             }
+            JSONArray object_mentions = object.getJSONArray("mentions");
+            for(int j = 0; j < object_attachments.size(); j++) {
+                JSONObject object_mentions_object = object_attachments.getJSONObject(j);
+                mentions.add(new User(
+                        object_mentions_object.getString("id"),
+                        object_mentions_object.getString("username"),
+                        false
+                ));
+            }
             return new Message(id,
                     object.getIntValue("type"),
                     object.getString("content"),
-                    user, attachments ,!object.getJSONArray("components").isEmpty());
+                    user, attachments ,mentions ,!object.getJSONArray("components").isEmpty());
         }
         throw new InvalidMessageException();
     }

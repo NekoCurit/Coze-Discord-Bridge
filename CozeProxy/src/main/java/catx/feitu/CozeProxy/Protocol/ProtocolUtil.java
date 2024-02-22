@@ -93,13 +93,11 @@ public class ProtocolUtil {
                         Thread.sleep(1000);
                         int attempt = 0; // 重试次数
                         Message latestMessage = api_discord.getLatestMessage(channelID);
-                        if (!latestMessage.getUser().isBot()) { // 如果是bot就已经出现 不需要再等待
+                        if (!latestMessage.getUser().isBot() && (config.filterReply || latestMessage.getMentions().contains(config.filterSelfUserID))) { // 如果是bot就已经出现 不需要再等待
                             while (!latestMessage.getUser().isBot()) {
                                 if (attempt > 20) { return; }
                                 latestMessage = api_discord.getLatestMessage(channelID);
                                 try { Thread.sleep(500); } catch (InterruptedException ignored) {}
-                                System.out.println(attempt);
-                                System.out.println(latestMessage.getId());
                                 attempt++;
                             }
                         }
@@ -120,7 +118,6 @@ public class ProtocolUtil {
                             );
                             if (latestMessage.isHasComponents()) { return; }
                             try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-                            System.out.println(attempt);
                             attempt++;
                         }
                     } catch (Exception ignored) { }

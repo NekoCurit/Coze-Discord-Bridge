@@ -5,8 +5,10 @@ public class UniversalEventListenerConfig {
     public String filterServerID;
     public String filterUserID;
     public String filterSelfUserID;
-    public UniversalEventListenerConfig(String serverID, String userID) {
+    public boolean filterReply;
+    public UniversalEventListenerConfig(String serverID, String userID , boolean reply) {
         filterServerID = serverID;
         filterUserID = userID;
+        filterReply = reply;
     }
 }

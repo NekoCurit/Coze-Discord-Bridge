@@ -8,15 +8,17 @@ public class Message {
     private final String content;
     private final User user;
     private final List<Attachment> attachments;
+    private final List<User> mentions;
     private final boolean hasComponents;
 
 
-    public Message(String id, int type, String content , User user , List<Attachment> attachments ,boolean hasComponents) {
+    public Message(String id, int type, String content , User user , List<Attachment> attachments , List<User> mentions ,boolean hasComponents) {
         this.id = id;
         this.type = type;
         this.content = content;
         this.user = user;
         this.attachments = attachments;
+        this.mentions = mentions;
         this.hasComponents = hasComponents;
     }
 
@@ -36,6 +38,9 @@ public class Message {
     }
     public List<Attachment> getAttachments() {
         return attachments;
+    }
+    public List<User> getMentions() {
+        return mentions;
     }
 
     public boolean isHasComponents() {
