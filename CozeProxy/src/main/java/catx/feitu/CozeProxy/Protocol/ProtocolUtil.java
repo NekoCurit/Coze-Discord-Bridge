@@ -9,6 +9,8 @@ import catx.feitu.CozeProxy.Protocol.Listener.DiscordListener;
 import catx.feitu.CozeProxy.Protocol.Listener.SlackListener;
 import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
 import catx.feitu.CozeProxy.Protocol.Utils.DiscordUtils;
+import catx.feitu.DiscordSelfClient.client.SelfClient;
+import catx.feitu.DiscordSelfClient.client.Types.DiscordAttachment;
 import com.slack.api.Slack;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
@@ -34,23 +36,23 @@ import java.util.stream.Collectors;
 public class ProtocolUtil {
     public String apiSelected;
     public DiscordApi api_discord;
+    public SelfClient api_discord2;
     public MethodsClient api_slack;
     public App api_slack_listen;
     public UniversalEventListener eventListener;
     public UniversalEventListenerConfig config;
     public ProtocolMessageCode code;
 
-    public void setEventListener(UniversalEventListener event) {
-        eventListener = event;
-    }
     public void setConfig(UniversalEventListenerConfig config) {
         this.config = config;
     }
-    public void login(String protocol ,String token ,Proxy proxy) throws Exception {
+    public void login(String protocol ,String token ,Proxy proxy,String token2) throws Exception {
         code = new ProtocolMessageCode(protocol);
         apiSelected = protocol;
         switch (protocol){
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
+                api_discord2 = new SelfClient(token2);
+                api_discord2.setProxy(proxy);
                 api_discord = new DiscordApiBuilder()
                         .setToken(token)
                         .addIntents(Intent.MESSAGE_CONTENT)
@@ -92,6 +94,14 @@ public class ProtocolUtil {
     public void sendMessage(String channelID , String message , List<UploadFile> files) throws Exception {
         switch (apiSelected){
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
+                List<DiscordAttachment> uploadFiles = new ArrayList<>();
+                if (files != null)  {
+                    for (UploadFile file : files) {
+                        uploadFiles.add(api_discord2.upLoadAttachment(file.getByte(),file.getFileName(),channelID));
+                    }
+                }
+                api_discord2.sendMessage(message ,channelID ,uploadFiles);
+                /*
                 MessageBuilder messageBuilder = new MessageBuilder()
                         .append(message);
                 // 发送附件(图片)处理
@@ -103,6 +113,7 @@ public class ProtocolUtil {
                 messageBuilder.send(DiscordUtils.GetDiscordChannelAsTextChannel(
                         DiscordUtils.GetDiscordServer(api_discord ,config.filterServerID) ,channelID)
                 );
+                */
                 return;
             case catx.feitu.CozeProxy.Protocol.Protocols.SLACK:
                 // by ChatGPT

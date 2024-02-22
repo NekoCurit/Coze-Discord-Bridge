@@ -25,6 +25,7 @@ public class DiscordListener implements MessageCreateListener, MessageEditListen
     }
     @Override
     public void onUserStartTyping(UserStartTypingEvent event) {
+        System.out.println(event.getChannel().getIdAsString());
         if (handle == null) { return; }
         if (!Objects.equals(event.getChannel().asServerChannel().isPresent() ? event.getChannel().asServerChannel().get().getIdAsString() : null , config.filterServerID)) { return; }
         if (!Objects.equals(event.getUserIdAsString(), config.filterUserID)) { return; }

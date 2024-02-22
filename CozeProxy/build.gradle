@@ -36,4 +36,6 @@ dependencies {
     // 依赖
     // fastjson
     implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
+
+    implementation project(':DiscordSelfBot')
 }

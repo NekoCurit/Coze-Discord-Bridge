@@ -15,6 +15,10 @@ Bots:
      #创建Application > 点击Bot > 点击 Reset Token 然后复制过来即可
      #注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
      Token: ""
+     #Discord user token
+     #打开Discord(推荐注册小号 因为UserBot 本身Discord就禁止) 按下F12打开开发者模式
+     #点进网络 随便选择一个 复制请求头 Authorization 粘贴在这里
+     Token2: ""
      #[仅Discord可用]创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
      CreateChannel_Category: ""
      #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可

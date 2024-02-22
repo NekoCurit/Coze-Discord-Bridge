@@ -42,8 +42,8 @@ public class CozeGPT {
     public void login() throws Exception {
         cozeEventListener = new CozeEventListener();
         protocol.setConfig(new UniversalEventListenerConfig(config.serverID ,config.botID));
-        protocol.setEventListener(cozeEventListener);
-        protocol.login(config.loginApp ,config.token ,config.Proxy);
+        protocol.eventListener = cozeEventListener;
+        protocol.login(config.loginApp ,config.token ,config.Proxy ,config.token2);
     }
     /**
      * Discord登出
@@ -110,15 +110,18 @@ public class CozeGPT {
             boolean BotStartGenerate = false;
             int attempt = 0; // 重试次数
             int maxRetries = 25; // 最大尝试次数
+            /*
             while (!BotStartGenerate) {
                 attempt++;
                 if (attempt > maxRetries) {
                     throw new RecvMsgException("超时无回应:未开始生成");
                 }
                 BotStartGenerate = cozeEventListener.botGenerateStatusManage.getGenerateStatus(conversationID);
+                System.out.println(BotStartGenerate + conversationID);
                 // 等待200ms
                 try { Thread.sleep(200); } catch (InterruptedException ignored) {}
             }
+            */
             BotResponseType Response = new BotResponseType();
             String LatestMessage = "";
             attempt = 0; // 重置重试次数
