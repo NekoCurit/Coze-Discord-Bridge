@@ -26,7 +26,11 @@ public class SelfClient {
         requests.proxy = address;
     }
     public void setProxy(Proxy address) {
-        requests.proxy = (InetSocketAddress) address.address();
+        if (address != null) {
+            requests.proxy = (InetSocketAddress) address.address();
+        } else {
+            requests.proxy = (InetSocketAddress) null;
+        }
     }
     public void setUserAgent(String agent) {
         requests.userAgent = agent;
