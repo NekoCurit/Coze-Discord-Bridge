@@ -43,7 +43,7 @@ public class CozeGPT {
         cozeEventListener = new CozeEventListener();
         protocol.setConfig(new UniversalEventListenerConfig(config.serverID ,config.botID));
         protocol.eventListener = cozeEventListener;
-        protocol.login(config.loginApp ,config.token ,config.Proxy ,config.token2);
+        protocol.login(config.loginApp ,config.token ,config.Proxy);
     }
     /**
      * Discord登出

@@ -4,7 +4,6 @@ public class ConfigBotsData {
     public String Key = "";
     public String Protocol = "";
     public String Token = "";
-    public String Token2 = "";
     public String CreateChannel_Category = "";
     public String CozeBot_id = "";
     public String Server_id = "";

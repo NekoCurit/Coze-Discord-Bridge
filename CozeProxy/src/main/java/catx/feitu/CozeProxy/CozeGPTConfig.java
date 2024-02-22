@@ -5,17 +5,10 @@ import catx.feitu.CozeProxy.Protocol.Protocols;
 public class CozeGPTConfig {
     public String loginApp = Protocols.DISCORD;
     /**
-     * #Discord bot token 获取方法
-     * 浏览器打开 <a href="https://discord.com/developers/">Discord开发者平台</a>
-     * 创建Application > 点击Bot > 点击 Reset Token 然后复制过来即可
-     * 注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
-     */
-    public String token = "";
-    /**
      * 用户Token 发消息使用
      * Coze现在屏蔽bot账号发送消息 必须换成用户账号发送
      */
-    public String token2 = "";
+    public String token = "";
     /**
      * 连接到Discord服务器时所使用的代理
      * 对于某些无法直连Discord的地区很有帮助

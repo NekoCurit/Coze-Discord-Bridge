@@ -1,26 +1,44 @@
 package catx.feitu.DiscordSelfClient.client.impl;
 
+import java.util.List;
+
 public class Message {
-    private String id;
-    private int type;
-    private String content;
+    private final String id;
+    private final int type;
+    private final String content;
+    private final User user;
+    private final List<Attachment> attachments;
+    private final boolean hasComponents;
 
 
-    public Message(String _id, int _type, String _content) {
-        id = _id;
-        type = _type;
-        content = _content;
+    public Message(String id, int type, String content , User user , List<Attachment> attachments ,boolean hasComponents) {
+        this.id = id;
+        this.type = type;
+        this.content = content;
+        this.user = user;
+        this.attachments = attachments;
+        this.hasComponents = hasComponents;
     }
 
-    public String id() {
+    public String getId() {
         return id;
     }
 
-    public int type() {
+    public int getType() {
         return type;
     }
 
-    public String content() {
+    public User getUser() {
+        return user;
+    }
+    public String getContent() {
         return content;
+    }
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public boolean isHasComponents() {
+        return hasComponents;
     }
 }

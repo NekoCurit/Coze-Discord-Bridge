@@ -52,7 +52,6 @@ public class Main {
                     }
                     GPTConfig.loginApp = BotData.Protocol;
                     GPTConfig.token = BotData.Token;
-                    GPTConfig.token2 = BotData.Token2;
                     GPTConfig.serverID = BotData.Server_id;
                     GPTConfig.Discord_CreateChannel_Category =  BotData.CreateChannel_Category;
                     GPTConfig.botID = BotData.CozeBot_id;

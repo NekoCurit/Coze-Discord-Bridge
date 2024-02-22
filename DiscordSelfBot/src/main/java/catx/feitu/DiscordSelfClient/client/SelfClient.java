@@ -1,6 +1,7 @@
 package catx.feitu.DiscordSelfClient.client;
 
 import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidFileException;
+import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidMessageException;
 import catx.feitu.DiscordSelfClient.client.Types.DiscordAttachment;
 import catx.feitu.DiscordSelfClient.utils.DiscordAPIRequests;
 import com.alibaba.fastjson.JSON;
@@ -103,43 +104,91 @@ public class SelfClient {
     public List<Channel> getChannels() throws Exception {
         List<Channel> channels = new ArrayList<>();
 
-        JSONArray data = (JSONArray) requests.get("<https://discord.com/api/v8/users/@me/channels>");
+        JSONArray data = (JSONArray) requests.get("https://discord.com/api/v8/users/@me/channels");
+        System.out.print(data.toJSONString());
         for (int i = 0; i < data.size(); i++) {
             JSONObject object = data.getJSONObject(i);
             String id = object.getString("id");
             int type = object.getIntValue("type");
             String lastMessageId = object.getString("last_message_id");
             int flags = object.getIntValue("flags");
-            Channel channel = new Channel(id, type, lastMessageId, flags);
+            Channel channel = new Channel(id, type, lastMessageId, flags, object.getString("name"));
             channels.add(channel);
         }
         return channels;
     }
-
     public Channel getChannel(String channelId) throws Exception {
         JSONObject data = (JSONObject) requests.get("https://discord.com/api/v9/channels/" + channelId);
 
-        String id = data.getString("id");
-        Integer type = data.getInteger("type");
-        String lastMessageId = data.getString("last_message_id");
-        Integer flags = data.getInteger("flags");
-
-        return new Channel(id, type, lastMessageId, flags);
+        return new Channel(data.getString("id"),
+                data.getInteger("type"),
+                data.getString("last_message_id"),
+                data.getInteger("flags"),
+                data.getString("name")
+        );
     }
 
     public List<Message> getMessages(String channelId) throws Exception {
         List<Message> messages = new ArrayList<>();
         JSONArray data = (JSONArray) requests.get("https://discord.com/api/v9/channels/" + channelId + "/messages");
+
         for (int i = 0; i < data.size(); i++) {
             JSONObject object = data.getJSONObject(i);
 
             String id = object.getString("id");
-            int type = object.getIntValue("type");
-            String content = object.getString("content");
+            List<Attachment> attachments = new ArrayList<>();
 
-            messages.add(new Message(id, type, content));
+            JSONObject object_author = object.getJSONObject("author");
+            User user = new User(object_author.getString("id") ,object_author.getString("username") ,object_author.getBooleanValue("bot"));
+
+            JSONArray object_attachments = object.getJSONArray("attachments");
+            for(int j = 0; j < object_attachments.size(); j++) {
+                JSONObject object_attachments_object = object_attachments.getJSONObject(j);
+                attachments.add(new Attachment(
+                        object_attachments_object.getString("id"),
+                        object_attachments_object.getString("filename"),
+                        object_attachments_object.getString("proxy_url"),
+                        object_attachments_object.getString("url")
+                ));
+            }
+            messages.add(new Message(id,
+                    object.getIntValue("type"),
+                    object.getString("content"),
+                    user, attachments ,!object.getJSONArray("components").isEmpty()));
         }
         return messages;
+    }
+    public Message getLatestMessage(String channelId) throws Exception {
+        return getMessages(channelId).get(0);
+    }
+    public Message getMessage(String channelId ,String messageId) throws Exception {
+        JSONArray data = (JSONArray) requests.get("https://discord.com/api/v9/channels/" + channelId + "/messages");
+        for (int i = 0; i < data.size(); i++) {
+            JSONObject object = data.getJSONObject(i);
+
+            String id = object.getString("id");
+            if (!Objects.equals(id, messageId)) continue;
+            List<Attachment> attachments = new ArrayList<>();
+
+            JSONObject object_author = object.getJSONObject("author");
+            User user = new User(object_author.getString("id") ,object_author.getString("username") ,object_author.getBoolean("bot"));
+
+            JSONArray object_attachments = object.getJSONArray("attachments");
+            for(int j = 0; j < object_attachments.size(); j++) {
+                JSONObject object_attachments_object = object_attachments.getJSONObject(j);
+                attachments.add(new Attachment(
+                        object_attachments_object.getString("id"),
+                        object_attachments_object.getString("filename"),
+                        object_attachments_object.getString("proxy_url"),
+                        object_attachments_object.getString("url")
+                ));
+            }
+            return new Message(id,
+                    object.getIntValue("type"),
+                    object.getString("content"),
+                    user, attachments ,!object.getJSONArray("components").isEmpty());
+        }
+        throw new InvalidMessageException();
     }
      public void sendMessage(String message, String channelId, List<DiscordAttachment> attachments) throws Exception {
         JSONObject json = new JSONObject();
@@ -198,17 +247,36 @@ public class SelfClient {
         requests.post("https://discord.com/api/v9/guilds/" + guildId + "/delete", "{}");
     }
 
-    public void createGuild(String name, String category) throws Exception {
+    public void createGuild(String name) throws Exception {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+
+        requests.post("https://discord.com/api/v9/guilds", JSON.toJSONString(json));
+    }
+    public String createChannel(String guild, String name, String category) throws Exception {
         JSONObject json = new JSONObject();
         json.put("name", name);
         if (category != null) json.put("parent_id", category);
+        json.put("type", 0);
 
-        requests.post("<https://discord.com/api/v9/guilds>", JSON.toJSONString(json));
+        return ((JSONObject) requests.post("https://discord.com/api/v9/guilds/" + guild + "/channels", JSON.toJSONString(json))).getString("id");
     }
-    public void createGuild(String name) throws Exception {
-        createGuild(name ,null);
+    public void deleteChannel(String channelId) throws Exception {
+        requests.delete("https://discord.com/api/v9/channels/" + channelId);
     }
+    public void renameChannel(String channelId,String name) throws Exception {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("type", 0);
+        json.put("topic", name);
+        json.put("bitrate", 64000);
+        json.put("user_limit", 0);
+        json.put("nsfw", false);
+        json.put("flags", 0);
+        json.put("rate_limit_per_user", 0);
 
+        requests.patch("https://discord.com/api/v9/channels/" + channelId, json.toJSONString());
+    }
     public void addFriend(String name, String discriminator) throws Exception {
         JSONObject json = new JSONObject();
         json.put("username", name);

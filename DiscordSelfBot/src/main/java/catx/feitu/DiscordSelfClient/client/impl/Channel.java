@@ -1,16 +1,18 @@
 package catx.feitu.DiscordSelfClient.client.impl;
 
 public class Channel {
-    private String id;
-    private int type;
-    private String lastMessageId;
-    private int flags;
+    private final String id;
+    private final int type;
+    private final String lastMessageId;
+    private final int flags;
+    private final String name;
 
-    public Channel(String _id, int _type, String _lastMessageId, int _flags) {
+    public Channel(String _id, int _type, String _lastMessageId, int _flags, String name) {
         id = _id;
         type = _type;
         lastMessageId = _lastMessageId;
         flags = _flags;
+        this.name = name;
     }
 
     public String id() {
@@ -27,5 +29,8 @@ public class Channel {
 
     public int flags() {
         return flags;
+    }
+    public String getName() {
+        return name;
     }
 }
