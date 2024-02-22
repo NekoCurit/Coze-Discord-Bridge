@@ -12,7 +12,7 @@ Bots:
      Protocol: "discord"
      #Discord user token
      #打开Discord(推荐注册小号 因为UserBot 本身Discord就禁止) 按下F12打开开发者模式
-     #点进网络 随便选择一个 复制请求头 Authorization 粘贴在这里
+     #点进网络 随便选择一个 复制请求头中的 Authorization 粘贴在这里
      Token: ""
      #[仅Discord可用]创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
      CreateChannel_Category: ""
