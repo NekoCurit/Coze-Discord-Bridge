@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+jar {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+group = 'catx.feitu'
+version = '1.0.0222'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
+}

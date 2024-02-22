@@ -1,11 +1,10 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 
+import catx.feitu.CozeProxy.Exceptions.InvalidConversationException;
+import catx.feitu.CozeProxy.Types.ConversationInfo;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConfigException;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConversationException;
-import catx.feitu.coze_discord_bridge.api.Types.ConversationInfo;
 import com.alibaba.fastjson.JSONObject;
 
 public class ConversationIsFound implements APIHandler {
@@ -15,7 +14,7 @@ public class ConversationIsFound implements APIHandler {
         JSONObject json = new JSONObject(true);
         String Name = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : "";
         try {
-            ConversationInfo Info = Handle.CozeGPT.GetConversationInfo(Name);
+            ConversationInfo Info = Handle.CozeGPT.getConversationInfo(Name);
             Response.code = 200;
             json.put("code", 200);
             json.put("message", "当前对话存在");
@@ -31,17 +30,10 @@ public class ConversationIsFound implements APIHandler {
             JSONObject json_data = new JSONObject(true);
             json_data.put("status", false);
             json.put("data", json_data);
-        } catch (InvalidConfigException e) {
-            Response.code = 502;
-            json.put("code", 502);
-            json.put("message", "服务端配置异常:" + e.Get_Invalid_ConfigName() + ":" + e.Get_message());
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
         } catch (Exception e) {
-            Response.code = 502;
-            json.put("code", 502);
-            json.put("message", "删除对话失败");
+            Response.code = 400;
+            json.put("code", 400);
+            json.put("message", "获取失败:" + e.getClass().getSimpleName() + ":" + e.getMessage());
             JSONObject json_data = new JSONObject(true);
             json_data.put("status", false);
             json.put("data", json_data);

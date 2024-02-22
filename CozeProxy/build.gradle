@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+<<<<<<< HEAD
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
@@ -7,6 +8,8 @@ build{
     dependsOn {
         shadowJar
     }
+=======
+>>>>>>> dev
 }
 
 jar {
@@ -23,13 +26,21 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 group = 'catx.feitu'
+<<<<<<< HEAD
 version = '1.0.0213'
+=======
+version = '1.0.0222'
+>>>>>>> dev
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+<<<<<<< HEAD
+=======
+    // 协议
+>>>>>>> dev
     // Discord API
     implementation 'org.javacord:javacord:3.8.0'
 
@@ -38,4 +49,14 @@ dependencies {
     implementation "com.slack.api:bolt-servlet:1.38.1"
     implementation "com.slack.api:bolt-jetty:1.38.1"
     implementation "org.slf4j:slf4j-simple:1.7.36"
+<<<<<<< HEAD
 }
+=======
+
+    // 依赖
+    // fastjson
+    implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
+
+    implementation project(':DiscordSelfBot')
+}
+>>>>>>> dev

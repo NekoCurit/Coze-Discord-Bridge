@@ -1,11 +1,11 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.v1.images;
 
+import catx.feitu.CozeProxy.Exceptions.InvalidConversationException;
+import catx.feitu.CozeProxy.Types.GenerateMessage;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConversationException;
-import catx.feitu.coze_discord_bridge.api.Types.GenerateMessage;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -18,9 +18,9 @@ public class Generations implements APIHandler {
         JSONObject json = new JSONObject(true);
         try {
             // 创建频道
-            try { Handle.CozeGPT.GetConversationInfo(ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel); }
-            catch (InvalidConversationException e) { Handle.CozeGPT.CreateConversation(ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel); }
-            GenerateMessage Generate = Handle.CozeGPT.Chat(
+            try { Handle.CozeGPT.getConversationInfo(ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel); }
+            catch (InvalidConversationException e) { Handle.CozeGPT.createConversation(ConfigManage.configs.OpenAPI_ImageGenerate_Default_Channel); }
+            GenerateMessage Generate = Handle.CozeGPT.chat(
                     ConfigManage.configs.OpenAI_ImageGenerate_Prompt_Prefix +
                             Handle.RequestParams.getString("prompt") +
                             ConfigManage.configs.OpenAI_ImageGenerate_Prompt_Suffix,

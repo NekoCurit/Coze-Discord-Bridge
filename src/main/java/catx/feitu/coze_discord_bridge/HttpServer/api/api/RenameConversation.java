@@ -3,8 +3,6 @@ package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConfigException;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConversationException;
 import com.alibaba.fastjson.JSONObject;
 
 public class RenameConversation implements APIHandler {
@@ -16,7 +14,7 @@ public class RenameConversation implements APIHandler {
         String OldName = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : "";
         String NewName = Handle.RequestParams.containsKey("new_name") ? Handle.RequestParams.getString("new_name") : "";
         try {
-            String ChannelID = Handle.CozeGPT.RenameConversation(OldName,NewName);
+            String ChannelID = Handle.CozeGPT.renameConversation(OldName,NewName);
 
             Response.code = 200;
             json.put("code", 200);
@@ -26,27 +24,11 @@ public class RenameConversation implements APIHandler {
             json_data.put("conversation_id", ChannelID);
             json_data.put("conversation_name", NewName);
             json.put("data", json_data);
-        } catch (InvalidConfigException e) {
-            Response.code = 502;
-            json.put("code", 502);
-            json.put("message", "服务端配置异常:" + e.Get_Invalid_ConfigName() + ":" + e.Get_message());
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
-        } catch (InvalidConversationException e) {
-            Response.code = 502;
-            json.put("code", 502);
-            json.put("message", "当前对话不存在");
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
         } catch (Exception e) {
-            Response.code = 502;
-            json.put("code", 502);
-            json.put("message", "重命名对话失败");
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
+            Response.code = 400;
+            json.put("code", 400);
+            json.put("message", "重命名对话失败:" + e.getClass().getSimpleName() + ":" + e.getMessage());
+            json.put("data", null);
         }
         Response.msg = json.toJSONString();
         return Response;

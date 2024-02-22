@@ -15,7 +15,7 @@ public class IsBotOnline implements APIHandler {
             json.put("code", 200);
             json.put("message", "获取成功");
             JSONObject json_data = new JSONObject(true);
-            json_data.put("status", Handle.CozeGPT.IsCozeBotOnline());
+            json_data.put("status", Handle.CozeGPT.isCozeBotOnline());
             json.put("data", json_data);
         } catch (Exception e) {
             Response.code = 502;

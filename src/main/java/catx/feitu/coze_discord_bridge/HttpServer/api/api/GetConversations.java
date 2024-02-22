@@ -20,8 +20,7 @@ public class GetConversations implements APIHandler {
             Response.code = 502;
             json.put("code", 502);
             json.put("message", "获取对话列表失败");
-            JSONObject json_data = new JSONObject(true);
-            json.put("data", json_data);
+            json.put("data", null);
         }
         Response.msg = json.toJSONString();
         return Response;

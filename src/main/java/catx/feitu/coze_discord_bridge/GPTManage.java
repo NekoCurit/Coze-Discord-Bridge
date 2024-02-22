@@ -1,9 +1,9 @@
 package catx.feitu.coze_discord_bridge;
 
+import catx.feitu.CozeProxy.ConversationManage.ConversationHelper;
+import catx.feitu.CozeProxy.CozeGPTConfig;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
-import catx.feitu.coze_discord_bridge.api.ConversationManage.ConversationHelper;
-import catx.feitu.coze_discord_bridge.api.CozeGPT;
-import catx.feitu.coze_discord_bridge.api.CozeGPTConfig;
+import catx.feitu.CozeProxy.CozeGPT;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,7 +40,7 @@ public class GPTManage {
         try {
             CozeGPT GPT = ResponseMap.get(botID);
             try {
-                GPT.Logout();
+                GPT.disconnect();
             } catch (Exception ignored) { }
             Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationHelper.conversation2JsonString(GPT.conversations));
             ResponseMap.remove(botID);
@@ -67,9 +67,9 @@ public class GPTManage {
                     ConfigManage.configs.Keepalive_maxIntervalMinutes
             ) {
                 try {
-                    try { cozeGPT.GetConversationInfo(ConfigManage.configs.Keepalive_sendChannel); }
-                    catch (Exception e) { cozeGPT.CreateConversation(ConfigManage.configs.Keepalive_sendChannel); }
-                    cozeGPT.Chat(ConfigManage.configs.Keepalive_sendChannel ,ConfigManage.configs.Keepalive_sendMessage);
+                    try { cozeGPT.getConversationInfo(ConfigManage.configs.Keepalive_sendChannel); }
+                    catch (Exception e) { cozeGPT.createConversation(ConfigManage.configs.Keepalive_sendChannel); }
+                    cozeGPT.chat(ConfigManage.configs.Keepalive_sendChannel ,ConfigManage.configs.Keepalive_sendMessage);
                     logger.info("[keepalive] " + cozeGPT.getMark() + " 成功");
                     success++;
                 } catch (Exception e) {

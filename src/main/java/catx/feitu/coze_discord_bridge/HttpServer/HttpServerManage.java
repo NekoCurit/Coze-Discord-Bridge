@@ -4,7 +4,7 @@ import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.GPTManage;
 import catx.feitu.coze_discord_bridge.HttpServer.api.Ping;
 import catx.feitu.coze_discord_bridge.HttpServer.api.api.*;
-import catx.feitu.coze_discord_bridge.HttpServer.api.api.Discord.*;
+import catx.feitu.coze_discord_bridge.HttpServer.api.api.Protocol.*;
 import catx.feitu.coze_discord_bridge.HttpServer.api.index;
 import catx.feitu.coze_discord_bridge.HttpServer.api.robots;
 import catx.feitu.coze_discord_bridge.HttpServer.api.v1.Models;
@@ -130,9 +130,7 @@ public class HttpServerManage {
         AddAPI("/api/Keepalive", new Keepalive(), true);
         AddAPI("/api/GetConversations", new GetConversations(), true);
 
-        AddAPI("/api/discord/GetUserInfo", new GetUserInfo(), true);
-        AddAPI("/api/discord/ReLogin", new ReLogin(), true);
-        AddAPI("/api/discord/GetChannels", new GetChannels(), true);
+        AddAPI("/api/protocol/ReLogin", new ReLogin(), true);
 
         AddAPI("/v1/models", new Models(), true);
         AddAPI("/v1/chat/Completions", new Completions(), true);

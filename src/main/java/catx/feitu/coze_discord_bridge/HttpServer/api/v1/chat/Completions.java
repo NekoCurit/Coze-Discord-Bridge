@@ -1,11 +1,11 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.v1.chat;
 
+import catx.feitu.CozeProxy.Exceptions.InvalidConversationException;
+import catx.feitu.CozeProxy.Types.GenerateMessage;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidConversationException;
-import catx.feitu.coze_discord_bridge.api.Types.GenerateMessage;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
@@ -138,10 +138,10 @@ public class Completions implements APIHandler {
                 os.flush();
             }
             // 创建频道
-            try { Handle.CozeGPT.GetConversationInfo(Channel_id); }
-            catch (InvalidConversationException e) { Handle.CozeGPT.CreateConversation(Channel_id);
+            try { Handle.CozeGPT.getConversationInfo(Channel_id); }
+            catch (InvalidConversationException e) { Handle.CozeGPT.createConversation(Channel_id);
             };
-            GenerateMessage Generate = Handle.CozeGPT.Chat(String.join("\n\n", SendMessage), Channel_id,(ALLGenerateMessages, NewGenerateMessage) -> {
+            GenerateMessage Generate = Handle.CozeGPT.chat(String.join("\n\n", SendMessage), Channel_id,(ALLGenerateMessages, NewGenerateMessage) -> {
                 if (UsingStream) { // 启用流式返回
                     // 流式返回 JSON
                     JSONObject update_choice = new JSONObject(true);

@@ -1,13 +1,10 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 
+import catx.feitu.CozeProxy.Types.GPTFile;
+import catx.feitu.CozeProxy.Types.GenerateMessage;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.api.Exceptions.InvalidPromptException;
-import catx.feitu.coze_discord_bridge.api.Exceptions.PromptTooLongException;
-import catx.feitu.coze_discord_bridge.api.Exceptions.RecvMsgException;
-import catx.feitu.coze_discord_bridge.api.Types.GPTFile;
-import catx.feitu.coze_discord_bridge.api.Types.GenerateMessage;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
@@ -24,7 +21,7 @@ public class Chat implements APIHandler {
             if (Handle.RequestParams.containsKey("image")) {
                 Files.add(new GPTFile(Handle.RequestParams.getString("image"),"default.png"));
             }
-            GenerateMessage Generate = Handle.CozeGPT.Chat(Prompt, Name, Files);
+            GenerateMessage Generate = Handle.CozeGPT.chat(Prompt, Name, Files);
 
             Response.code = 200;
             json.put("code", 200);
@@ -33,32 +30,10 @@ public class Chat implements APIHandler {
             json_data.put("prompt", Generate.Message);
             json_data.put("files", Generate.Files);
             json.put("data", json_data);
-        } catch (InvalidPromptException e) {
-            Response.code = 400;
-            json.put("code", 400);
-            json.put("message", "无效的提示词");
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
-        } catch (PromptTooLongException e) {
-            Response.code = 400;
-            json.put("code", 400);
-            json.put("message", "提示词超过长度限制  当前长度:" + e.GetPromptLength() +
-                    " > 限制长度:" + e.GetLimitLength());
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
-        } catch (RecvMsgException e) {
-            Response.code = 400;
-            json.put("code", 400);
-            json.put("message", e.getMessage());
-            JSONObject json_data = new JSONObject(true);
-            json_data.put("status", false);
-            json.put("data", json_data);
         } catch (Exception e) {
             Response.code = 400;
             json.put("code", 400);
-            json.put("message", "未知错误");
+            json.put("message", e.getClass().getSimpleName() + ":" + e.getMessage());
             JSONObject json_data = new JSONObject(true);
             json_data.put("status", false);
             json.put("data", json_data);

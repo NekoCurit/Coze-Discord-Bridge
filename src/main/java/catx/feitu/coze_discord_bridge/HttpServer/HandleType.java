@@ -1,6 +1,6 @@
 package catx.feitu.coze_discord_bridge.HttpServer;
 
-import catx.feitu.coze_discord_bridge.api.CozeGPT;
+import catx.feitu.CozeProxy.CozeGPT;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 
