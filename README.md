@@ -12,14 +12,13 @@ _觉得有点用的话 别忘了点个🌟_
 
 ## 警告
 
-由于 Coze 对发送者添加了是否为bot检测 因此此项目暂时处于不可用状态
+由于 Coze 对发送者添加了是否为bot检测
 
-恢复时间待定
+虽目前已经修复
 
- - [X] DiscordSelfBot 完成一部分 后续添加消息接收和文件上传后发布新版本
- - [ ] SlackProxy 完成一部分 等修好Discord后继续写
+但不保证未来 Coze 不会通过更多方式阻止bot调用
 
-亦可提交pr加快进展
+因此作者不保证该项目的稳定性
 
 ## 截图
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/24e4304b-a5f7-4baa-9559-8c01f9a935b3)
@@ -326,3 +325,5 @@ D:\GITHUB\coze-discord-bridge\build\libs>curl --get --data-urlencode "prompt=___
 ## 结尾
 
 本项目不推荐用于商业用途
+
+如果使用本项目即同意使用本项目所造成的一切后果(不限于Coze,Discord账号被封禁)作者不承担任何责任
