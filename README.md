@@ -66,14 +66,15 @@ _觉得有点用的话 别忘了点个🌟_
 ````
 #Github: https://github.com/catx-feitu/coze-discord-bridge
 Bots:
-  -  #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
+   - #访问密钥 留空或default 表示无需密钥 通过不同的密钥链接不同的bot
      Key: "default"
-     #Discord bot token 获取方法
-     #浏览器打开 https://discord.com/developers/
-     #创建Application > 点击Bot > 点击 Reset Token 然后复制过来即可
-     #注意 还需要打开Privileged Gateway Intents下面的选项 (MESSAGE CONTENT INTENT一定要开)
-     Discord_Bot_Token: ""
-     #创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
+     #登录协议
+     Protocol: "discord"
+     #Discord user token
+     #打开Discord(推荐注册小号 因为UserBot 本身Discord就禁止) 按下F12打开开发者模式
+     #点进网络 随便选择一个 复制请求头中的 Authorization 粘贴在这里
+     Token: ""
+     #[仅Discord可用]创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
      CreateChannel_Category: ""
      #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
      Server_id: ""
@@ -93,7 +94,7 @@ APIPort: 8092
 APISSLPort: 8093
 ......
 ````
-首先你要在[Discord开发者平台](https://discord.com/developers/)创建两个Application
+首先你要在[Discord开发者平台](https://discord.com/developers/)创建一个Application
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/41310da4-5db7-46df-946d-de642b64f985)
 
@@ -137,7 +138,7 @@ ps:Changelog必填 随便写即可 如果你有强迫症的话那..不太建议.
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/f5b32f9e-8f9b-484a-afcd-7a935904dd45)
 
-如果配置正确你应该能看到一个机器人在线 一个机器人离线
+如果配置正确你应该能看到托管到Coze的机器人上线了
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/580a331d-713f-4686-961e-8c3169bcbee4)
 
@@ -155,20 +156,37 @@ ps:Changelog必填 随便写即可 如果你有强迫症的话那..不太建议.
 
 在Config中保存这两个ID
 
+````
+     ......
+     #Coze Bot所处的服务器ID 打开Discord开发者模式 右键服务器复制过来即可
+     Server_id: "xxxxxx"
+     #接入Coze的Bot id 邀请进服务器在用户列表右键 复制用户ID 过来即可
+     CozeBot_id: "xxxxxx"
+     ......
+````
 
-![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/a0b28f98-616a-425b-8cde-a677f4e691d3)
+回到Discord页面 按下F12打开浏览器开发者页面
 
-最后保存另一个没有使用的Bot Token进去
+点击网络(Network) 随便选择一个 复制请求头 Authorization
 
-![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/fac6a998-c32b-4a39-aef3-f8a00b1ab65f)
+![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/7d802fb5-4c62-458f-83da-c0b7770fd6d1)
 
+保存到配置中
+````
+     ......
+     #Discord user token
+     #打开Discord(推荐注册小号 因为UserBot 本身Discord就禁止) 按下F12打开开发者模式
+     #点进网络 随便选择一个 复制请求头中的 Authorization 粘贴在这里
+     Token: "xxxxxxxxxxxxxxx"
+     ......
+````
 4.再次运行 `java -jar CozeDiscordBridge-xxxxxx.jar` 如下显示则正常  如果您是使用的是Windows且控制台编码为GBK 请先执行`chcp 65001`
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/803bfe60-39d5-42d5-b1b3-7aaf932a2808)
 
 ps:第一次启动报错 `读取 cache_names.json 失败` 正常 直接忽略即可
 
-5.最后可通过curl或者其它工具测试 如果服务器内亮机器人互问互答就是部署成功啦
+5.最后可通过curl或者其它工具测试 如果服务器内你的账号自动向机器人提问 随后机器人回答就是部署成功
 
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/a87d04ac-5c52-4929-bb7c-ff62bd2fde65)
 
