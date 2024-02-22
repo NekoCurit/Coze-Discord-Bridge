@@ -45,6 +45,8 @@ public class ProtocolUtil {
             case catx.feitu.CozeProxy.Protocol.Protocols.DISCORD:
                 api_discord = new SelfClient(token);
                 api_discord.setProxy(proxy);
+
+                config.filterSelfUserID = api_discord.getSelf().id();
                 return;
             case catx.feitu.CozeProxy.Protocol.Protocols.SLACK:
                 AppConfig config = new AppConfig();
