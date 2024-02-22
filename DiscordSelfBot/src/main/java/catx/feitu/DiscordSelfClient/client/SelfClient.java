@@ -220,7 +220,6 @@ public class SelfClient {
         JSONObject json = new JSONObject();
         json.put("type", 2);
         requests.put("https://discord.com/api/v9/users/@me/relationships/" + id, JSON.toJSONString(json));
-        System.out.println("block friend: [ID:" + id + "]");
     }
 
     public void changeAvatar(String avatar) throws Exception {

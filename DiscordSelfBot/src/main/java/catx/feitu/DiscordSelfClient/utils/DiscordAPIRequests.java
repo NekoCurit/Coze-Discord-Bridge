@@ -31,7 +31,6 @@ public class DiscordAPIRequests {
         return responseHandle(getHttpClient(), request);
     }
     public Object post(String api, String json) throws Exception {
-        System.out.println(json);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(api))
                 .header("User-Agent", userAgent)
@@ -82,7 +81,6 @@ public class DiscordAPIRequests {
 
     private Object responseHandle(HttpClient client, HttpRequest request) throws java.io.IOException, InterruptedException, InvalidRequestBodyException, InvalidTokenException {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-        System.out.println(response.body());
         switch (response.statusCode()) {
             case 400:
                 throw new InvalidRequestBodyException();
