@@ -23,8 +23,5 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.slf4j:slf4j-api:2.0.5'
-    implementation 'org.slf4j:slf4j-simple:2.0.5'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
 }
