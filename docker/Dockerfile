@@ -2,7 +2,7 @@
 FROM openjdk:17-oracle
 
 # 全局版本号
-ARG VERSION=1.0.0213
+ARG VERSION=1.0.0223
 
 # DOCKERFILE信息
 LABEL maintainer="catxfeitu@gmail.com"
