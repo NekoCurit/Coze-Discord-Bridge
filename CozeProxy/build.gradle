@@ -32,7 +32,7 @@ repositories {
 dependencies {
     // 协议
     // Discord API
-    implementation 'org.javacord:javacord:3.8.0'
+    implementation project(':DiscordSelfBot')
 
     // Slack API
     implementation "com.slack.api:bolt-socket-mode:1.38.1"
@@ -44,5 +44,4 @@ dependencies {
     // fastjson
     implementation 'com.alibaba:fastjson:1.1.77.android_noneautotype'
 
-    implementation project(':DiscordSelfBot')
 }
