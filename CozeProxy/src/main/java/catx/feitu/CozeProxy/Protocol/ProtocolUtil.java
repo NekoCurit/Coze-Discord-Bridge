@@ -3,6 +3,7 @@ package catx.feitu.CozeProxy.Protocol;
 import catx.feitu.CozeProxy.Protocol.Exception.ProtocolAPIFailedException;
 import catx.feitu.CozeProxy.Protocol.Exception.ProtocolNotLoginException;
 import catx.feitu.CozeProxy.Protocol.Exception.UnSupportedProtocolException;
+import catx.feitu.CozeProxy.Protocol.Listener.DiscordListener;
 import catx.feitu.CozeProxy.Protocol.Listener.SlackListener;
 import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
 import catx.feitu.DiscordSelfClient.client.SelfClient;
@@ -87,42 +88,7 @@ public class ProtocolUtil {
                     }
                 }
                 api_discord.sendMessage(message ,channelID ,uploadFiles);
-
-                Thread thread = new Thread(() -> { // Websocket监听器不会写(其实是太耗时了)
-                    try {
-                        Thread.sleep(1000);
-                        int attempt = 0; // 重试次数
-                        Message latestMessage = api_discord.getLatestMessage(channelID);
-                        if (!latestMessage.getUser().isBot() && (config.filterReply || latestMessage.getMentions().contains(config.filterSelfUserID))) { // 如果是bot就已经出现 不需要再等待
-                            while (!latestMessage.getUser().isBot()) {
-                                if (attempt > 20) { return; }
-                                latestMessage = api_discord.getLatestMessage(channelID);
-                                try { Thread.sleep(500); } catch (InterruptedException ignored) {}
-                                attempt++;
-                            }
-                        }
-                        eventListener.onStartGenerate(channelID);
-                        attempt = 0;
-                        while (attempt < 120) {
-                            latestMessage = api_discord.getMessage(channelID ,latestMessage.getId());
-
-                            List<String> eventFiles = new CopyOnWriteArrayList<>(); // 存储嵌入附件URL
-                            for (catx.feitu.DiscordSelfClient.client.impl.Attachment attachment : latestMessage.getAttachments()) {
-                                eventFiles.add(attachment.getUrl());
-                            }
-
-                            eventListener.onMessageStream(channelID ,new UniversalMessage()
-                                    .setContent(latestMessage.getContent())
-                                    .setFiles(eventFiles)
-                                    .setHasButton(latestMessage.isHasComponents())
-                            );
-                            if (latestMessage.isHasComponents()) { return; }
-                            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-                            attempt++;
-                        }
-                    } catch (Exception ignored) { }
-                });
-                thread.start();
+                new DiscordListener().listen(api_discord ,channelID ,eventListener ,config);
                 return;
             case catx.feitu.CozeProxy.Protocol.Protocols.SLACK:
                 // by ChatGPT
