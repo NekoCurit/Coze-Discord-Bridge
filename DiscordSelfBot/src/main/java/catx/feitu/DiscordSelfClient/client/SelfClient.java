@@ -1,5 +1,6 @@
 package catx.feitu.DiscordSelfClient.client;
 
+import catx.feitu.DiscordSelfClient.client.Exceptions.CreateChannelException;
 import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidFileException;
 import catx.feitu.DiscordSelfClient.client.Exceptions.InvalidMessageException;
 import catx.feitu.DiscordSelfClient.client.Types.DiscordAttachment;
@@ -273,12 +274,14 @@ public class SelfClient {
         requests.post("https://discord.com/api/v9/guilds", JSON.toJSONString(json));
     }
     public String createChannel(String guild, String name, String category) throws Exception {
-        JSONObject json = new JSONObject();
-        json.put("name", name);
-        if (category != null) json.put("parent_id", category);
+        JSONObject json = new JSONObject(true);
         json.put("type", 0);
-
-        return ((JSONObject) requests.post("https://discord.com/api/v9/guilds/" + guild + "/channels", JSON.toJSONString(json))).getString("id");
+        json.put("name", name);
+        json.put("permission_overwrites", new JSONArray());
+        if (category != null && !category.isEmpty()) json.put("parent_id", category);
+        JSONObject object = (JSONObject) requests.post("https://discord.com/api/v9/guilds/" + guild + "/channels", JSON.toJSONString(json));
+        if (!object.containsKey("id")) { throw new CreateChannelException(object.toJSONString()); }
+        return (object.getString("id"));
     }
     public void deleteChannel(String channelId) throws Exception {
         requests.delete("https://discord.com/api/v9/channels/" + channelId);
