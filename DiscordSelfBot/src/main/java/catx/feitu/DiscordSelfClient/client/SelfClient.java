@@ -16,6 +16,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SelfClient {
 
@@ -128,8 +130,42 @@ public class SelfClient {
                 data.getString("name")
         );
     }
+    static class latestMessageCache {
+        public final List<Message> messages;
+        public final long timestamp;
 
+        public latestMessageCache(List<Message> messages, long timestamp) {
+            this.messages = messages;
+            this.timestamp = timestamp;
+        }
+    }
+    ConcurrentHashMap<String, latestMessageCache> messageCache = new ConcurrentHashMap<>();
     public List<Message> getMessages(String channelId) throws Exception {
+        long currentTime = System.currentTimeMillis();
+
+        latestMessageCache cacheEntry = messageCache.get(channelId);
+        if (cacheEntry != null && (currentTime - cacheEntry.timestamp) < 1000) {
+            return cacheEntry.messages;
+        } else {
+            List<Message> messages = getMessagesIgnoreCache(channelId);
+            messageCache.put(channelId, new latestMessageCache(messages, currentTime));
+            return messages;
+        }
+    }
+    public Message getMessage(String channelId ,String messageId) throws Exception {
+        Optional<Message> messageOptional = getMessages(channelId).stream()
+                .filter(message -> messageId.equals(message.getId()))
+                .findFirst();
+        if (messageOptional.isPresent()) {
+            return messageOptional.get();
+        } else {
+            throw new InvalidMessageException();
+        }
+    }
+    public Message getLatestMessage(String channelId) throws Exception {
+        return getMessages(channelId).get(0);
+    }
+    public List<Message> getMessagesIgnoreCache(String channelId) throws Exception {
         List<Message> messages = new ArrayList<>();
         JSONArray data = (JSONArray) requests.get("https://discord.com/api/v9/channels/" + channelId + "/messages");
 
@@ -167,48 +203,6 @@ public class SelfClient {
                     user, attachments ,mentions ,!object.getJSONArray("components").isEmpty()));
         }
         return messages;
-    }
-    public Message getLatestMessage(String channelId) throws Exception {
-        return getMessages(channelId).get(0);
-    }
-    public Message getMessage(String channelId ,String messageId) throws Exception {
-        JSONArray data = (JSONArray) requests.get("https://discord.com/api/v9/channels/" + channelId + "/messages");
-        for (int i = 0; i < data.size(); i++) {
-            JSONObject object = data.getJSONObject(i);
-
-            String id = object.getString("id");
-            if (!Objects.equals(id, messageId)) continue;
-            List<Attachment> attachments = new ArrayList<>();
-            List<User> mentions = new ArrayList<>();
-
-            JSONObject object_author = object.getJSONObject("author");
-            User user = new User(object_author.getString("id") ,object_author.getString("username") ,object_author.getBoolean("bot"));
-
-            JSONArray object_attachments = object.getJSONArray("attachments");
-            for(int j = 0; j < object_attachments.size(); j++) {
-                JSONObject object_attachments_object = object_attachments.getJSONObject(j);
-                attachments.add(new Attachment(
-                        object_attachments_object.getString("id"),
-                        object_attachments_object.getString("filename"),
-                        object_attachments_object.getString("proxy_url"),
-                        object_attachments_object.getString("url")
-                ));
-            }
-            JSONArray object_mentions = object.getJSONArray("mentions");
-            for(int j = 0; j < object_attachments.size(); j++) {
-                JSONObject object_mentions_object = object_attachments.getJSONObject(j);
-                mentions.add(new User(
-                        object_mentions_object.getString("id"),
-                        object_mentions_object.getString("username"),
-                        false
-                ));
-            }
-            return new Message(id,
-                    object.getIntValue("type"),
-                    object.getString("content"),
-                    user, attachments ,mentions ,!object.getJSONArray("components").isEmpty());
-        }
-        throw new InvalidMessageException();
     }
      public void sendMessage(String message, String channelId, List<DiscordAttachment> attachments) throws Exception {
         JSONObject json = new JSONObject();
