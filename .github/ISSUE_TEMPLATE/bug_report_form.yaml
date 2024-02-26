@@ -1,0 +1,48 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[BUG] "
+labels: 
+  - "a:bug"
+body:
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: 在此之前,你需要先检查..
+      options:
+        - label: 我已确认我使用的是 [最新版本](https://github.com/catx-feitu/Coze-Discord-Bridge/releases)
+          required: true
+        - label: 我已寻找 [issues](https://github.com/catx-feitu/Coze-Discord-Bridge/issues?q=is%3Aissue) 没发现类似的问题
+          required: true
+        - label: 我已经检查了配置没有问题
+          required: true
+  - type: textarea
+    id: reproduce-step
+    attributes:
+      label: 复现步骤
+      placeholder: "1. 运行程序.."
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: 其它有帮助的信息..
+      placeholder: 配置文件(记得去除token等隐私信息) , 日志 ...
+      render: txt
+  - type: input
+    id: jdk-info
+    attributes:
+      label: jdk信息 (java -version)
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: 运行系统
+      description: 你用的是什么系统运行..
+      options:
+        - Windows
+        - Linux
+        - MacOS
+        - Other

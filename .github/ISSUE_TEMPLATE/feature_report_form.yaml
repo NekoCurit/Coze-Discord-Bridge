@@ -1,0 +1,22 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "[Idea] "
+labels:
+  - "a:enhancement"
+  - "a:new-feature"
+body:
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: 在此之前,你需要先检查..
+      options:
+        - label: 我已确认我使用的是 [最新版本](https://github.com/catx-feitu/Coze-Discord-Bridge/releases)
+          required: true
+        - label: 我已寻找 [issues](https://github.com/catx-feitu/Coze-Discord-Bridge/issues?q=is%3Aissue) 没发现类似的问题
+          required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: 你期待的功能
+      placeholder: 详细描述,如果有能力可以直接提交pr...
+      render: txt
