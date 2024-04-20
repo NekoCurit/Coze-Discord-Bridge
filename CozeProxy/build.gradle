@@ -34,11 +34,6 @@ dependencies {
     // Discord API
     implementation project(':DiscordSelfBot')
 
-    // Slack API
-    implementation "com.slack.api:bolt-socket-mode:1.38.1"
-    implementation "com.slack.api:bolt-servlet:1.38.1"
-    implementation "com.slack.api:bolt-jetty:1.38.1"
-    implementation "org.slf4j:slf4j-simple:1.7.36"
 
     // 依赖
     // fastjson
