@@ -1,8 +1,8 @@
 package catx.feitu.coze_discord_bridge;
 
-import catx.feitu.CozeProxy.ConversationManage.ConversationHelper;
 import catx.feitu.CozeProxy.CozeGPT;
 import catx.feitu.CozeProxy.CozeGPTConfig;
+import catx.feitu.CozeProxy.utils.ConversationUtils;
 import catx.feitu.coze_discord_bridge.Config.ConfigManage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ public class GPTManage {
         GPT.setMark(botID);
         if (!config.Disable_2000Limit_Unlock) {
             if (new File("conversation_" + botID + ".json").exists()) {
-                GPT.conversations = ConversationHelper.jsonString2Conversation(
+                GPT.data.conversations = ConversationUtils.jsonString2Conversation(
                         Files.readString(Paths.get("conversation_" + botID + ".json"))
                 );
             }
@@ -42,7 +42,7 @@ public class GPTManage {
             try {
                 GPT.disconnect();
             } catch (Exception ignored) { }
-            Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationHelper.conversation2JsonString(GPT.conversations));
+            Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationUtils.conversation2JsonString(GPT.data.conversations));
             ResponseMap.remove(botID);
         } catch (Exception ignored) {}
     }

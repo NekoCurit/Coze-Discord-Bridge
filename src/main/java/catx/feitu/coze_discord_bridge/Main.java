@@ -10,6 +10,9 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -50,7 +53,7 @@ public class Main {
                         throw new Exception("无效的Token");
                     }
                     GPTConfig.loginApp = BotData.Protocol;
-                    GPTConfig.token = BotData.Token;
+                    GPTConfig.token = new ArrayList<>(Arrays.asList((BotData.Token.split(","))));
                     GPTConfig.serverID = BotData.Server_id;
                     GPTConfig.Discord_CreateChannel_Category =  BotData.CreateChannel_Category;
                     GPTConfig.botID = BotData.CozeBot_id;
@@ -70,7 +73,7 @@ public class Main {
 
                     logger.info("[" + BotData.Key + "] 开始登录流程..");
                     GPTManage.newGPT(BotData.Key, GPTConfig);
-                    logger.info("[" + BotData.Key + "] 初始化成功");
+                    logger.info("[" + BotData.Key + "] 初始化成功 Token数:" +GPTConfig.token.size());
                     successOne = true;
                 } catch (Exception e){
                     logger.error("[" + BotData.Key + "] 初始化失败", e);

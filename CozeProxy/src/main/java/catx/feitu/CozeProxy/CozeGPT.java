@@ -7,33 +7,37 @@ import catx.feitu.CozeProxy.data.Data;
 import catx.feitu.CozeProxy.impl.response.Response;
 import catx.feitu.CozeProxy.protocol.ProtocolHandle;
 import catx.feitu.CozeProxy.protocol.impl.UploadFile;
-import catx.feitu.CozeProxy.protocol.listene.EventListeneConfig;
+import catx.feitu.CozeProxy.protocol.listene.EventListenConfig;
 import catx.feitu.CozeProxy.impl.ConversationInfo;
 import catx.feitu.CozeProxy.impl.GPTFile;
 import catx.feitu.CozeProxy.impl.GenerateMessage;
 import catx.feitu.CozeProxy.utils.BotResponseStatusCode;
+import catx.feitu.CozeProxy.utils.ProtocolUtils;
 import catx.feitu.CozeProxy.utils.Utils;
+import catx.feitu.CozeProxy.utils.extensions.Protocol;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CozeGPT {
     public Data data = new Data();
     public Utils utils = new Utils(data);
     private final CozeGPTConfig config;
-    public EventHandle eventListener = new EventHandle(utils);
+    public EventHandle eventListen;
 
-    public ProtocolHandle protocol = new ProtocolHandle();
+    public List<Protocol> protocol = new CopyOnWriteArrayList<>();
 
 
     public CozeGPT(CozeGPTConfig config) {
+        eventListen = new EventHandle(utils);
         this.config = config;
     }
     public CozeGPT(CozeGPTConfig config,boolean autoLogin) throws Exception {
-        this.config = config;
+        this(config);
         if (autoLogin) {
             this.login();
         }
@@ -42,18 +46,25 @@ public class CozeGPT {
      * Discord登录
      */
     public void login() throws Exception {
-        eventListener = new EventHandle(utils);
-        protocol.setConfig(new EventListeneConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
-        protocol.eventListene = eventListener;
-        protocol.login(config.loginApp ,config.token ,config.Proxy);
+        disconnect();
+
+        for (String token : config.token) {
+            Protocol protocolJoin = new Protocol();
+
+            protocolJoin.setConfig(new EventListenConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
+            protocolJoin.login(config.loginApp ,token ,config.Proxy);
+
+            protocol.add(protocolJoin);
+        }
+        if (protocol.isEmpty()) throw new NoAccountLoginException();
     }
     /**
      * Discord登出
-     *
-     * @throws Exception       如果Bot未登录,可能会抛出 BotNotLoginException 异常
      */
-    public void disconnect() throws Exception {
-        protocol.disconnect();
+    public void disconnect() {
+        for (ProtocolHandle protocol : protocol) {
+            try { protocol.disconnect(); } catch (Exception ignored) { }
+        }
     }
     /**
      * 获取标记
@@ -81,7 +92,7 @@ public class CozeGPT {
         if (Objects.equals(Prompts, "") || Prompts == null) {
             throw new InvalidPromptException();
         }
-        String conversationID = utils.conversation.get(conversationName);
+        String conversationID = utils.conversation.getId(conversationName);
         // 锁定 避免同频道多次对话
         utils.lock.getLock(conversationID).lock();
         // 初始化回复记录
@@ -92,8 +103,12 @@ public class CozeGPT {
             boolean isDone = false;
             GenerateMessage responseMessage = new GenerateMessage();
 
+            List<Protocol> protocols = ProtocolUtils.getAliveProtocols(protocol);
+
             while (!isDone) {
-                String sendMessage = protocol.code.mentionUser(config.botID);
+                Protocol selectedProtocol = protocols.get(0);
+
+                String sendMessage = selectedProtocol.code.mentionUser(config.botID);
                 List<UploadFile> sendFiles = new ArrayList<>();
                 if (Prompts.length() > 2000) { // 长文本发送消息
                     if (!config.Disable_2000Limit_Unlock) {
@@ -111,9 +126,12 @@ public class CozeGPT {
                         sendFiles.add(new UploadFile(file.GetByteArrayInputStream(), file.GetFileName()));
                     }
                 }
-                protocol.sendMessage(conversationID, sendMessage, sendFiles);
+
+                selectedProtocol.eventListen = eventListen;
+
+                selectedProtocol.sendMessage(conversationID, sendMessage, sendFiles);
                 // 在此之下为bot回复消息处理阶段 -> 5s 超时
-                boolean BotStartGenerate = false;
+                //boolean BotStartGenerate = false;
                 int attempt = 0; // 重试次数
                 int maxRetries = 25; // 最大尝试次数
             /*
@@ -152,10 +170,16 @@ public class CozeGPT {
                     }
                 }
 
+                selectedProtocol.eventListen = null;
+
                 responseMessage.Message = Response.prompt;
                 responseMessage.Files = Response.files;
 
                 if (Objects.equals(responseMessage.Message, BotResponseStatusCode.TRY_A_BIT_LATER)) continue;
+                if (Objects.equals(responseMessage.Message, BotResponseStatusCode.TRY_TOMORROW)) {
+                    selectedProtocol.isLimited = true;
+                    protocols.remove(0);
+                }
 
                 isDone = true;
             }
@@ -209,16 +233,25 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public String createConversation (String conversationName) throws Exception {
-        // 已有对话名称检查
-        if (protocol.isChannelFound(utils.conversation.get(conversationName))) {
-            throw new ConversationAlreadyExistsException(conversationName);
+        // ID与名称相同会造成问题 需要检查
+        String id = utils.conversation.getId(conversationName);
+
+        List<Exception> exceptions = new ArrayList<>();
+        for (ProtocolHandle protocol : protocol) {
+            try {
+                if (protocol.isChannelFound(id)) {
+                    throw new ConversationAlreadyExistsException(conversationName);
+                }
+                String conversationID = protocol.createChannel(conversationName ,config.Discord_CreateChannel_Category);
+                // 写入存储
+                utils.conversation.put(conversationName ,conversationID);
+                // 返回数据
+                return conversationID;
+            } catch (Exception e) {
+                exceptions.add(e);
+            }
         }
-        String conversationID = protocol.createChannel(conversationName ,config.Discord_CreateChannel_Category);
-        protocol.inviteBotInChannel(conversationID ,config.botID);
-        // 写入存储
-        utils.conversation.put(conversationName ,conversationID);
-        // 返回数据
-        return conversationID;
+        throw new RunningFailedException(exceptions,conversationName);
    }
     /**
      * 创建新的对话列表
@@ -232,15 +265,31 @@ public class CozeGPT {
     /**
      * 删除对话列表
      *
-     * @param conversationName 对话名词/对话ID
-     * @throws Exception       如果遇到任何问题,则抛出异常.
+     * @param key 对话名称/对话ID
+     * @throws Exception 如果遇到任何问题,则抛出异常.
      */
-    public void deleteConversation (String conversationName) throws Exception {
-        protocol.deleteChannel(utils.conversation.get(conversationName));
+    public void deleteConversation (String key) throws Exception {
+        List<Exception> exceptions = new ArrayList<>();
+        for (ProtocolHandle protocol : protocol) {
+            try {
+                protocol.deleteChannel(utils.conversation.getId(key));
+                deleteConversationLocal(key);
+            } catch (Exception e) {
+                exceptions.add(e);
+            }
+        }
+        throw new RunningFailedException(exceptions,key);
+    }
+    /**
+     * 在本地缓存中删除对话列表索引 速度更快
+     *
+     * @param conversationName 对话名词/对话ID
+     */
+    public void deleteConversationLocal (String conversationName) {
         utils.conversation.remove(conversationName);
     }
     /**
-     * 修改某个对话的名词
+     * 修改某个对话的名称
      * 注:对话ID无法修改
      *
      * @param oldConversationName 旧的对话名词/对话ID
@@ -248,9 +297,29 @@ public class CozeGPT {
      * @throws Exception          如果遇到任何问题,则抛出异常.
      */
     public String renameConversation (String oldConversationName, String newConversationName) throws Exception {
-        String conversationID = utils.conversation.get(oldConversationName);
+        String conversationID = utils.conversation.getId(oldConversationName);
+        List<Exception> exceptions = new ArrayList<>();
+        for (ProtocolHandle protocol : protocol) {
+            try {
+                protocol.setChannelName(conversationID ,newConversationName);
+                return renameConversationLocal(oldConversationName, newConversationName);
+            } catch (Exception e) {
+                exceptions.add(e);
+            }
+        }
+        throw new RunningFailedException(exceptions,oldConversationName);
+    }
+    /**
+     * 仅在本地索引中修改某个对话的名称
+     * 注:对话ID无法修改
+     *
+     * @param oldConversationName 旧的对话名词/对话ID
+     * @param newConversationName 新的对话名词
+     * @throws Exception          如果遇到任何问题,则抛出异常.
+     */
+    public String renameConversationLocal (String oldConversationName, String newConversationName) throws Exception {
+        String conversationID = utils.conversation.getId(oldConversationName);
 
-        protocol.setChannelName(conversationID ,newConversationName);
         utils.conversation.put(newConversationName ,conversationID);
         utils.conversation.remove(oldConversationName);
 
@@ -259,17 +328,50 @@ public class CozeGPT {
     /**
      * 获取某个对话的信息
      *
-     * @param key 对话名词/对话ID
+     * @param key 对话名称/对话ID
+     * @param noCache 不通过缓存获取
+     * @return                 对话信息
+     * @throws Exception       如果遇到任何问题,则抛出异常.
+     */
+    public ConversationInfo getConversationInfo (String key,Boolean noCache) throws Exception {
+        ConversationInfo response = new ConversationInfo();
+
+        response.ID = utils.conversation.getId(key);
+
+        if (noCache) {
+            for (ProtocolHandle protocol : protocol) {
+                // 获取失败(异常) 就尝试下一个token
+                try {
+                    response.Name = protocol.getChannelName(response.ID);
+                } catch (Exception ignored) { }
+            }
+        } else {
+            response.Name = utils.conversation.getName(response.ID);
+        }
+
+        if (response.Name == null) throw new InvalidConversationException(response.ID);
+
+        return response;
+    }
+    /**
+     * 获取某个对话的信息
+     *
+     * @param key 对话名称/对话ID
      * @return                 对话信息
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public ConversationInfo getConversationInfo (String key) throws Exception {
-        ConversationInfo response = new ConversationInfo();
-
-        response.Name = protocol.getChannelName(utils.conversation.get(key));
-        response.ID = utils.conversation.get(key);
-
-        return response;
+        return getConversationInfo(key,false);
+    }
+    /**
+     * 从本地索引获取某个对话的信息
+     *
+     * @param key 对话名称/对话ID
+     * @return                 对话信息
+     * @throws Exception       如果遇到任何问题,则抛出异常.
+     */
+    public ConversationInfo getConversationInfoLocal (String key) throws Exception {
+        return getConversationInfo(key,true);
     }
     /**
      * 取bot是否在线
@@ -278,21 +380,29 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public boolean isCozeBotOnline() throws Exception {
-        return protocol.isUserOnline(config.botID);
+        List<Exception> exceptions = new ArrayList<>();
+        for (ProtocolHandle protocol : protocol) {
+            try {
+                return protocol.isUserOnline(config.botID);
+            } catch (Exception e) {
+                exceptions.add(e);
+            }
+        }
+        throw new RunningFailedException(exceptions,null);
     }
     /**
      * 取出最后一次发送消息时间
      * @return 返回 Instant 类型  如果没有记录 返回类创建时间
      */
     public Instant getLatestSendMsgInstant () {
-        return eventListener.getLatestSendMessageInstant();
+        return eventListen.getLatestSendMessageInstant();
     }
     /**
      * 取出最后一次接收Coze Bot消息时间
      * @return 返回 Instant 类型  如果没有记录 返回类创建时间
      */
     public Instant getLatestReceiveCozeMsgInstant () {
-        return eventListener.getLatestReceiveMessageInstant();
+        return eventListen.getLatestReceiveMessageInstant();
     }
 
 }

@@ -1,13 +1,13 @@
 package catx.feitu.CozeProxy.listen;
 
 import catx.feitu.CozeProxy.impl.response.Response;
-import catx.feitu.CozeProxy.protocol.listene.EventListene;
+import catx.feitu.CozeProxy.protocol.listene.EventListen;
 import catx.feitu.CozeProxy.protocol.message.MessageBuilder;
 import catx.feitu.CozeProxy.utils.Utils;
 
 import java.time.Instant;
 
-public class EventHandle implements EventListene {
+public class EventHandle implements EventListen {
     private final Utils utils;
     public EventHandle(Utils _utils) {
         utils = _utils;
@@ -28,8 +28,12 @@ public class EventHandle implements EventListene {
     }
     @Override
     public void onStartGenerate(String channelID) {
-        utils.generateStatus.saveGenerateStatus(channelID);
-        latestReceiveCozeMessage = Instant.now();
+        try {
+            utils.generateStatus.saveGenerateStatus(channelID);
+            latestReceiveCozeMessage = Instant.now();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     @Override
     public void onMessageStream(String channelID , MessageBuilder message) {

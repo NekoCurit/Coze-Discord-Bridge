@@ -2,8 +2,8 @@ package catx.feitu.CozeProxy.protocol;
 
 import catx.feitu.CozeProxy.protocol.exception.ProtocolNotLoginException;
 import catx.feitu.CozeProxy.protocol.exception.UnSupportedProtocolException;
-import catx.feitu.CozeProxy.protocol.listene.EventListene;
-import catx.feitu.CozeProxy.protocol.listene.EventListeneConfig;
+import catx.feitu.CozeProxy.protocol.listene.EventListen;
+import catx.feitu.CozeProxy.protocol.listene.EventListenConfig;
 import catx.feitu.CozeProxy.protocol.listene.api.DiscordListener;
 import catx.feitu.CozeProxy.protocol.impl.UploadFile;
 import catx.feitu.CozeProxy.protocol.message.MessageCode;
@@ -18,11 +18,11 @@ import java.util.List;
 public class ProtocolHandle {
     public String apiSelected;
     public SelfClient api_discord;
-    public EventListene eventListene;
-    public EventListeneConfig config;
+    public EventListen eventListen;
+    public EventListenConfig config;
     public MessageCode code;
 
-    public void setConfig(EventListeneConfig config) {
+    public void setConfig(EventListenConfig config) {
         this.config = config;
     }
     public void login(String protocol ,String token ,Proxy proxy) throws Exception {
@@ -59,7 +59,7 @@ public class ProtocolHandle {
                     }
                 }
                 api_discord.sendMessage(message ,channelID ,uploadFiles);
-                new DiscordListener().listen(api_discord ,channelID , eventListene,config);
+                new DiscordListener().listen(api_discord ,channelID , eventListen,config);
                 return;
 
         }
@@ -70,13 +70,6 @@ public class ProtocolHandle {
         switch (apiSelected){
             case catx.feitu.CozeProxy.protocol.Protocols.DISCORD:
                 return api_discord.createChannel(config.filterServerID ,name ,category);
-        }
-        throw new UnSupportedProtocolException();
-    }
-    public void inviteBotInChannel(String channelID ,String botID) throws Exception {
-        switch (apiSelected){
-            case catx.feitu.CozeProxy.protocol.Protocols.DISCORD:
-                return;
         }
         throw new UnSupportedProtocolException();
     }

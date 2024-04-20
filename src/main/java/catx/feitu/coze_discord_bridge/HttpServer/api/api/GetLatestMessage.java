@@ -13,7 +13,7 @@ public class GetLatestMessage implements APIHandler {
         JSONObject json = new JSONObject(true);
         String Name = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : "";
         try {
-            catx.feitu.CozeProxy.impl.response.Response Generate = Handle.CozeGPT.utils.response.getMsg(Handle.CozeGPT.utils.conversation.get(Name));
+            catx.feitu.CozeProxy.impl.response.Response Generate = Handle.CozeGPT.utils.response.getMsg(Handle.CozeGPT.utils.conversation.getId(Name));
 
             json.put("code", 200);
             json.put("message", "成功!");

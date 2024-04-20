@@ -108,7 +108,6 @@ public class SelfClient {
         List<Channel> channels = new ArrayList<>();
 
         JSONArray data = (JSONArray) requests.get("https://discord.com/api/v8/users/@me/channels");
-        System.out.print(data.toJSONString());
         for (int i = 0; i < data.size(); i++) {
             JSONObject object = data.getJSONObject(i);
             String id = object.getString("id");
@@ -144,7 +143,7 @@ public class SelfClient {
         long currentTime = System.currentTimeMillis();
 
         latestMessageCache cacheEntry = messageCache.get(channelId);
-        if (cacheEntry != null && (currentTime - cacheEntry.timestamp) < 1000) {
+        if (cacheEntry != null && (currentTime - cacheEntry.timestamp) < 200) {
             return cacheEntry.messages;
         } else {
             List<Message> messages = getMessagesIgnoreCache(channelId);

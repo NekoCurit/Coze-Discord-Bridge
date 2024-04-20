@@ -23,7 +23,15 @@ public class ConversationUtils {
     public void remove(String name) {
         conversations.conversations.remove(name);
     }
-    public String get(String name) { return conversations.conversations.getOrDefault(name, name); // 索引为空那么传入的可能是频道ID 直接返回
+    public String getId(String name) { return conversations.conversations.getOrDefault(name, name); // 索引为空那么传入的可能是频道ID 直接返回
+    }
+    public String getName(String Id) {
+        for (String key : conversations.conversations.keySet()) {
+            if (conversations.conversations.get(key).equals(Id)) {
+                return key; // 返回寻找到的第一个
+            }
+        }
+        return null;
     }
     public void SetMap(ConcurrentHashMap<String, String> _conversations) {
         conversations.conversations = _conversations;

@@ -15,7 +15,7 @@ public class GetConversations implements APIHandler {
             Response.code = 200;
             json.put("code", 200);
             json.put("message", "获取对话列表成功");
-            json.put("data", Handle.CozeGPT.conversations.conversations);
+            json.put("data", Handle.CozeGPT.data.conversations.conversations);
         } catch (Exception e) {
             Response.code = 502;
             json.put("code", 502);
