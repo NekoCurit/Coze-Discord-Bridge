@@ -1,6 +1,6 @@
 package catx.feitu.CozeProxy;
 
-import catx.feitu.CozeProxy.Protocol.Protocols;
+import catx.feitu.CozeProxy.protocol.Protocols;
 
 public class CozeGPTConfig {
     public String loginApp = Protocols.DISCORD;

@@ -1,7 +1,7 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 
-import catx.feitu.CozeProxy.Exceptions.InvalidConversationException;
-import catx.feitu.CozeProxy.Types.ConversationInfo;
+import catx.feitu.CozeProxy.exception.InvalidConversationException;
+import catx.feitu.CozeProxy.impl.ConversationInfo;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;

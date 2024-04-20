@@ -1,17 +1,18 @@
 package catx.feitu.CozeProxy;
 
-import catx.feitu.CozeProxy.ConversationManage.ConversationData;
-import catx.feitu.CozeProxy.Exceptions.*;
-import catx.feitu.CozeProxy.FunctionalInterface.ChatStreamEvent;
-import catx.feitu.CozeProxy.Listen.CozeEventListener;
-import catx.feitu.CozeProxy.LockManage.LockManage;
-import catx.feitu.CozeProxy.MessageManage.BotResponseType;
-import catx.feitu.CozeProxy.Protocol.ProtocolUtil;
-import catx.feitu.CozeProxy.Protocol.Types.UploadFile;
-import catx.feitu.CozeProxy.Protocol.UniversalEventListenerConfig;
-import catx.feitu.CozeProxy.Types.ConversationInfo;
-import catx.feitu.CozeProxy.Types.GPTFile;
-import catx.feitu.CozeProxy.Types.GenerateMessage;
+import catx.feitu.CozeProxy.exception.*;
+import catx.feitu.CozeProxy.Interface.ChatStreamEvent;
+import catx.feitu.CozeProxy.listen.EventHandle;
+import catx.feitu.CozeProxy.data.Data;
+import catx.feitu.CozeProxy.impl.response.Response;
+import catx.feitu.CozeProxy.protocol.ProtocolHandle;
+import catx.feitu.CozeProxy.protocol.impl.UploadFile;
+import catx.feitu.CozeProxy.protocol.listene.EventListeneConfig;
+import catx.feitu.CozeProxy.impl.ConversationInfo;
+import catx.feitu.CozeProxy.impl.GPTFile;
+import catx.feitu.CozeProxy.impl.GenerateMessage;
+import catx.feitu.CozeProxy.utils.BotResponseStatusCode;
+import catx.feitu.CozeProxy.utils.Utils;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
@@ -20,11 +21,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class CozeGPT {
+    public Data data = new Data();
+    public Utils utils = new Utils(data);
     private final CozeGPTConfig config;
-    private final LockManage LockManage = new LockManage();
-    public CozeEventListener cozeEventListener;
-    public ConversationData conversations = new ConversationData();
-    public ProtocolUtil protocol = new ProtocolUtil();
+    public EventHandle eventListener = new EventHandle(utils);
+
+    public ProtocolHandle protocol = new ProtocolHandle();
 
 
     public CozeGPT(CozeGPTConfig config) {
@@ -40,9 +42,9 @@ public class CozeGPT {
      * Discord登录
      */
     public void login() throws Exception {
-        cozeEventListener = new CozeEventListener();
-        protocol.setConfig(new UniversalEventListenerConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
-        protocol.eventListener = cozeEventListener;
+        eventListener = new EventHandle(utils);
+        protocol.setConfig(new EventListeneConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
+        protocol.eventListene = eventListener;
         protocol.login(config.loginApp ,config.token ,config.Proxy);
     }
     /**
@@ -75,41 +77,45 @@ public class CozeGPT {
      * @return                 生成的消息信息.
      * @throws Exception       如果消息生成过程遇到任何问题,则抛出异常.
      */
-    public catx.feitu.CozeProxy.Types.GenerateMessage chat(String Prompts, String conversationName, List<GPTFile> Files, ChatStreamEvent event) throws Exception {
+    public catx.feitu.CozeProxy.impl.GenerateMessage chat(String Prompts, String conversationName, List<GPTFile> Files, ChatStreamEvent event) throws Exception {
         if (Objects.equals(Prompts, "") || Prompts == null) {
             throw new InvalidPromptException();
         }
-        String conversationID = conversations.get(conversationName);
+        String conversationID = utils.conversation.get(conversationName);
         // 锁定 避免同频道多次对话
-        LockManage.getLock(conversationID).lock();
+        utils.lock.getLock(conversationID).lock();
         // 初始化回复记录
-        cozeEventListener.botGenerateStatusManage.clearGenerateStatus(conversationID);
-        cozeEventListener.botResponseManage.clearMsg(conversationID);
+        utils.generateStatus.clearGenerateStatus(conversationID);
+        utils.response.clearMsg(conversationID);
         // 开始
         try {
-            String sendMessage = protocol.code.mentionUser(config.botID);
-            List<UploadFile> sendFiles = new ArrayList<>();
-            if (Prompts.length() > 2000) { // 长文本发送消息
-                if (!config.Disable_2000Limit_Unlock) {
-                    throw new PromptTooLongException(Prompts,2000);
-                }
+            boolean isDone = false;
+            GenerateMessage responseMessage = new GenerateMessage();
 
-                sendMessage += config.promptOnSendMore2000Prefix;
-                sendFiles.add(new UploadFile(new ByteArrayInputStream(Prompts.getBytes()),config.promptOnSendMore2000FileName));
-            } else {
-                sendMessage += Prompts;
-            }
-            // 发送附件(图片)处理
-            if (Files != null)  {
-                for (GPTFile file : Files) {
-                    sendFiles.add(new UploadFile(file.GetByteArrayInputStream() ,file.GetFileName()));
+            while (!isDone) {
+                String sendMessage = protocol.code.mentionUser(config.botID);
+                List<UploadFile> sendFiles = new ArrayList<>();
+                if (Prompts.length() > 2000) { // 长文本发送消息
+                    if (!config.Disable_2000Limit_Unlock) {
+                        throw new PromptTooLongException(Prompts, 2000);
+                    }
+
+                    sendMessage += config.promptOnSendMore2000Prefix;
+                    sendFiles.add(new UploadFile(new ByteArrayInputStream(Prompts.getBytes()), config.promptOnSendMore2000FileName));
+                } else {
+                    sendMessage += Prompts;
                 }
-            }
-            protocol.sendMessage(conversationID ,sendMessage ,sendFiles);
-            // 在此之下为bot回复消息处理阶段 -> 5s 超时
-            boolean BotStartGenerate = false;
-            int attempt = 0; // 重试次数
-            int maxRetries = 25; // 最大尝试次数
+                // 发送附件(图片)处理
+                if (Files != null) {
+                    for (GPTFile file : Files) {
+                        sendFiles.add(new UploadFile(file.GetByteArrayInputStream(), file.GetFileName()));
+                    }
+                }
+                protocol.sendMessage(conversationID, sendMessage, sendFiles);
+                // 在此之下为bot回复消息处理阶段 -> 5s 超时
+                boolean BotStartGenerate = false;
+                int attempt = 0; // 重试次数
+                int maxRetries = 25; // 最大尝试次数
             /*
             while (!BotStartGenerate) {
                 attempt++;
@@ -122,32 +128,41 @@ public class CozeGPT {
                 try { Thread.sleep(200); } catch (InterruptedException ignored) {}
             }
             */
-            BotResponseType Response = new BotResponseType();
-            String LatestMessage = "";
-            attempt = 0; // 重置重试次数
-            maxRetries = 120; // 最大尝试次数
-            // 超时 2 分钟
-            while (!Response.IsCompleted(config.generate_timeout)) {
-                attempt++;
-                if (attempt > maxRetries) {
-                    throw new RecvMsgException("超时无回应:超过设定时间");
+                Response Response = new Response();
+                String LatestMessage = "";
+                attempt = 0; // 重置重试次数
+                maxRetries = 120; // 最大尝试次数
+                // 超时 2 分钟
+                while (!Response.IsCompleted(config.generate_timeout)) {
+                    attempt++;
+                    if (attempt > maxRetries) {
+                        throw new RecvMsgException("超时无回应:超过设定时间");
+                    }
+                    try {
+                        Response = utils.response.getMsg(conversationID);
+                    } catch (NullPointerException ignored) {
+                    }
+                    if (!event.handle(Response.prompt, Response.prompt.replace(LatestMessage, ""))) {
+                        throw new StopGenerateException();
+                    }
+                    LatestMessage = Response.prompt;
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {
+                    }
                 }
-                try {
-                    Response = cozeEventListener.botResponseManage.getMsg(conversationID);
-                } catch (NullPointerException ignored) {}
-                if (!event.handle(Response.prompt, Response.prompt.replace(LatestMessage,""))) {
-                    throw new StopGenerateException();
-                }
-                LatestMessage = Response.prompt;
-                try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+
+                responseMessage.Message = Response.prompt;
+                responseMessage.Files = Response.files;
+
+                if (Objects.equals(responseMessage.Message, BotResponseStatusCode.TRY_A_BIT_LATER)) continue;
+
+                isDone = true;
             }
-            GenerateMessage return_info = new GenerateMessage();
-            return_info.Message = Response.prompt;
-            return_info.Files = Response.files;
-            LockManage.getLock(conversationID).unlock();
-            return return_info;
+            utils.lock.getLock(conversationID).unlock();
+            return responseMessage;
         } catch (Exception e) {
-            LockManage.getLock(conversationID).unlock();
+            utils.lock.getLock(conversationID).unlock();
             throw e;
         }
     }
@@ -195,13 +210,13 @@ public class CozeGPT {
      */
     public String createConversation (String conversationName) throws Exception {
         // 已有对话名称检查
-        if (protocol.isChannelFound(conversations.get(conversationName))) {
+        if (protocol.isChannelFound(utils.conversation.get(conversationName))) {
             throw new ConversationAlreadyExistsException(conversationName);
         }
         String conversationID = protocol.createChannel(conversationName ,config.Discord_CreateChannel_Category);
         protocol.inviteBotInChannel(conversationID ,config.botID);
         // 写入存储
-        conversations.put(conversationName ,conversationID);
+        utils.conversation.put(conversationName ,conversationID);
         // 返回数据
         return conversationID;
    }
@@ -221,8 +236,8 @@ public class CozeGPT {
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public void deleteConversation (String conversationName) throws Exception {
-        protocol.deleteChannel(conversations.get(conversationName));
-        conversations.remove(conversationName);
+        protocol.deleteChannel(utils.conversation.get(conversationName));
+        utils.conversation.remove(conversationName);
     }
     /**
      * 修改某个对话的名词
@@ -233,25 +248,28 @@ public class CozeGPT {
      * @throws Exception          如果遇到任何问题,则抛出异常.
      */
     public String renameConversation (String oldConversationName, String newConversationName) throws Exception {
-        String conversationID = conversations.get(oldConversationName);
+        String conversationID = utils.conversation.get(oldConversationName);
+
         protocol.setChannelName(conversationID ,newConversationName);
-        conversations.put(newConversationName ,conversationID);
-        conversations.remove(oldConversationName);
+        utils.conversation.put(newConversationName ,conversationID);
+        utils.conversation.remove(oldConversationName);
+
         return conversationID;
     }
     /**
-     * 修改某个对话的名词
-     * 注:对话ID无法修改
+     * 获取某个对话的信息
      *
      * @param key 对话名词/对话ID
      * @return                 对话信息
      * @throws Exception       如果遇到任何问题,则抛出异常.
      */
     public ConversationInfo getConversationInfo (String key) throws Exception {
-        ConversationInfo return_info = new ConversationInfo();
-        return_info.Name = protocol.getChannelName(conversations.get(key));
-        return_info.ID = conversations.get(key);
-        return return_info;
+        ConversationInfo response = new ConversationInfo();
+
+        response.Name = protocol.getChannelName(utils.conversation.get(key));
+        response.ID = utils.conversation.get(key);
+
+        return response;
     }
     /**
      * 取bot是否在线
@@ -267,14 +285,14 @@ public class CozeGPT {
      * @return 返回 Instant 类型  如果没有记录 返回类创建时间
      */
     public Instant getLatestSendMsgInstant () {
-        return cozeEventListener.getLatestSendMessageInstant();
+        return eventListener.getLatestSendMessageInstant();
     }
     /**
      * 取出最后一次接收Coze Bot消息时间
      * @return 返回 Instant 类型  如果没有记录 返回类创建时间
      */
     public Instant getLatestReceiveCozeMsgInstant () {
-        return cozeEventListener.getLatestReceiveMessageInstant();
+        return eventListener.getLatestReceiveMessageInstant();
     }
 
 }

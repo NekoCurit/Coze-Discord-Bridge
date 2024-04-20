@@ -1,6 +1,5 @@
 package catx.feitu.coze_discord_bridge.HttpServer.api.api;
 
-import catx.feitu.CozeProxy.MessageManage.BotResponseType;
 import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
 import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
@@ -14,7 +13,7 @@ public class GetLatestMessage implements APIHandler {
         JSONObject json = new JSONObject(true);
         String Name = Handle.RequestParams.containsKey("name") ? Handle.RequestParams.getString("name") : "";
         try {
-            BotResponseType Generate = Handle.CozeGPT.cozeEventListener.botResponseManage.getMsg(Handle.CozeGPT.conversations.get(Name));
+            catx.feitu.CozeProxy.impl.response.Response Generate = Handle.CozeGPT.utils.response.getMsg(Handle.CozeGPT.utils.conversation.get(Name));
 
             json.put("code", 200);
             json.put("message", "成功!");
