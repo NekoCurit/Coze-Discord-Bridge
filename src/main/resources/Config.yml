@@ -31,7 +31,7 @@ ProxyType: "HTTP"
 #API端口 默认8092 curl http://127.0.0.1:8092/Ping
 APIPort: 8092
 #API HTTPS 端口 默认8093 curl https://127.0.0.1:8093/Ping
-APISSLPort: 8093
+APISSLPort: 0
 #API HTTPS 证书 格式jks
 APISSL_keyStorePath: "keystore.jks"
 APISSL_keyStorePassword: "123456"
