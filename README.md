@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Coze-Discord-Bridge
 
@@ -9,16 +9,6 @@ _通过 `discord bot`调用 `coze 托管 discord bot`实现`免费使用GPT-4作
 _觉得有点用的话 别忘了点个🌟_
 
 </div>
-
-## 警告
-
-由于 Coze 对发送者添加了是否为bot检测
-
-虽目前已经修复
-
-但不保证未来 Coze 不会通过更多方式阻止bot调用
-
-因此作者不保证该项目的稳定性
 
 ## 截图
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/24e4304b-a5f7-4baa-9559-8c01f9a935b3)
@@ -215,133 +205,15 @@ Keepalive_sendMessage: "keepalive"
 
 ## API文档
 
-调用方式: GET `http://地址:端口/终结点?key1=value1&key2=value2`  POST `http://地址:端口/终结点` `{"key1":"value1","key2":"value2"}`
-
-终结点无需区分大小写
-
-<br>
-
-终结点:`/` 根目录
-
-参数:无
-
-返回:Int code 状态码 固定200 | String message 信息 固定内容 | data {Int now 当前时间 10位时间戳} 数据
-
-<br>
-
-终结点:`/Ping` 检查服务是否活着
-
-参数:无
-
-返回:Int code 状态码 固定200 | String message 信息 固定Pong!
-
-<br>
-
-终结点:`/api/CreateConversation` 创建对话
-
-参数:<可选>String name 创建的子频道名称 也可以用于之后调用(如果没开启 `Disable_Name_Cache` 的话)
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {String conversation_id 频道ID 即使开启 `Disable_Name_Cache` 也能用作日后调用对话,String conversation_name 频道名称 如果参数 `name` 为空则随机生成} 数据
-
-<br>
-
-终结点:`/api/Chat` 聊天
-
-参数:String name 名称 | String prompt 提示词 | <可选>String image 图片(经过base64编码过的png图片数据)
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {String prompt bot生成的文本,String[] files bot生成/找到的图片} 数据
-
-<br>
-
-终结点:`/api/ChatStream` 聊天
-
-参数:String name 名称 | String prompt 提示词 | <可选>String image 图片(经过base64编码过的png图片数据)
-
-返回:
-
-中途:Int code 状态码 200为成功 | String message 信息 固定为`生成中` | data {String prompt_all bot生成的文本,String prompt_new bot新生成的文本,String[] files bot生成/找到的图片,Boolean done 是否完成 固定false} 数据
-
-完成:Int code 状态码 200为成功 | String message 信息 | data {String prompt_all bot生成的文本,String prompt_new bot新生成的文本 为空,String[] files bot生成/找到的图片,Boolean done 是否完成 固定true} 数据
-
-`````
-curl --no-buffer "http://127.0.0.1:8092/api/ChatStream?name=1201576967368085686&prompt=1"
-data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How","prompt_new":"Ah, I see you've signaled me with a \"1\". How"},"message":"生成中.."}
-
-data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can","prompt_new":" can"},"message":"生成中.."}
-
-data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist","prompt_new":" I assist"},"message":"生成中.."}
-
-data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you","prompt_new":" you"},"message":"生成中.."}
-
-data: {"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead","prompt_new":" today? If you have any questions or there's something you'd like to share, please go ahead"},"message":"生成中.."}
-
-data:{"code":200,"data":{"done":false,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":"!"},"message":"生成中.."}
-
-data: {"code":200,"data":{"done":true,"files":[],"prompt_all":"Ah, I see you've signaled me with a \"1\". How can I assist you today? If you have any questions or there's something you'd like to share, please go ahead!","prompt_new":""},"message":"成功!"}
-`````
-
-<br>
-
-终结点:`/api/GetLatestMessage` 获取上一次对话消息(常用于聊天中途连接丢失获取消息内容)
-
-参数:String name 名称
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否找到,String prompt bot生成的文本,String[] files bot生成/找到的图片} 数据
-
-<br>
-
-终结点:`/api/ConversationIsFound` 对话是否存在
-
-参数:String name 名称
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否存在,String conversation_id 频道ID 即使开启 `Disable_Name_Cache` 也能用作日后调用对话,String conversation_name 频道名称} 数据
-
-<br>
-
-终结点:`/api/DeleteConversation` 删除对话
-
-参数:String name 名称
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否成功} 数据
-
-<br>
-
-终结点:`/api/RenameConversation` 对话改名   如果你开启 `Disable_Name_Cache` 那么只能改Discord子频道名称
-
-参数:String name 名称 | String new_name 新名称
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明 | data {Boolean status 是否成功,String conversation_id 频道ID,String conversation_name 频道名称} 数据
-
-<br>
-
-终结点:`/api/keepalive` 执行keepalive任务
-
-参数:无
-
-返回:Int code 状态码 200为成功 | String message 信息 额外说明
-
-<br>
-
-
-终结点:`/v1/xxxx` OpenAI官方接口适配
-
-仅适配了部分 具体请参照[OpenAI官方文档](https://platform.openai.com/docs/introduction)
-
-## Api-key
-
-确保安全性 您还可以通过配置文件开启安全访问
-
-之后你需要在header或者请求参数中添加`key`属性才能访问
+[传送门](https://github.com/catx-feitu/Coze-Discord-Bridge/wiki)
 
 ````
-D:\GITHUB\coze-discord-bridge\build\libs>curl --get --data-urlencode "prompt=___启动" "http://127.0.0.1:8092/api/Chat?name=xxxxxxxxxxx
-{"code":403,"message":"无权访问本服务"}
-D:\GITHUB\coze-discord-bridge\build\libs>curl --get --data-urlencode "prompt=___启动" "http://127.0.0.1:8092/api/Chat?name=xxxxxxxxxxx&key=nya_
-{"code":200,"data":{"files":[],"prompt":"哦，明白啦！如果你是在寻求帮助来启动《___》游戏，......"},"message":"成功!"}
-````
 
-## 结尾
+## 免责申明
 
-本项目不推荐用于商业用途
+本项目中的任何代码/构建产品仅供学习使用
 
-如果使用本项目即同意使用本项目所造成的一切后果(不限于Coze,Discord账号被封禁)作者不承担任何责任
+使用即代表您承担一切滥用所造成的后果
+
+作者不保证软件绝对稳定 如果有能力请使用[Coze API](https://www.coze.com/open)
+
