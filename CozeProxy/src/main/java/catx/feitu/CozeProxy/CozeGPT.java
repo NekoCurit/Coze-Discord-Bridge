@@ -17,6 +17,7 @@ import catx.feitu.CozeProxy.utils.Utils;
 import catx.feitu.CozeProxy.utils.extensions.Protocol;
 
 import java.io.ByteArrayInputStream;
+import java.net.Proxy;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,32 +37,101 @@ public class CozeGPT {
         eventListen = new EventHandle(utils);
         this.config = config;
     }
-    public CozeGPT(CozeGPTConfig config,boolean autoLogin) throws Exception {
-        this(config);
-        if (autoLogin) {
-            this.login();
+    /**
+     * 登录一个新的Discord账号
+     * @param token DiscordUser账号Token
+     * @param proxy 自定义代理配置 null使用配置中默认代理
+     * @throws Exception 如果登录过程遇到任何问题,则抛出异常.
+     */
+    public void login(String token, Proxy proxy) throws Exception {
+        Protocol protocolJoin = new Protocol();
+
+        protocolJoin.setConfig(new EventListenConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
+        protocolJoin.login(config.loginApp ,token ,proxy == null ? config.Proxy : proxy);
+
+        protocol.add(protocolJoin);
+    }
+    /**
+     * 登录一个新的Discord账号
+     * @param token DiscordUser账号Token
+     * @throws Exception 如果登录过程遇到任何问题,则抛出异常.
+     */
+    public void login(String token) throws Exception {
+        login(token,null);
+    }
+    /**
+     * 批量登录新的Discord账号
+     * @param tokens DiscordUser账号Token列表
+     * @param ignoredException 是否忽略异常 为否一个账号登录失败则直接throw
+     * @param proxy 自定义代理配置 null使用配置中默认代理
+     * @return 登录成功的账号数
+     * @throws Exception 如果登录过程遇到任何问题,则抛出异常.
+     */
+    public int login(List<String> tokens, boolean ignoredException, Proxy proxy) throws Exception {
+        int i = 0;
+         for (String token : tokens) {
+             try {
+                 Protocol protocolJoin = new Protocol();
+
+                 protocolJoin.setConfig(new EventListenConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
+                 protocolJoin.login(config.loginApp ,token ,proxy == null ? config.Proxy : proxy);
+
+                 protocol.add(protocolJoin);
+                 i++;
+             } catch (Exception e) {
+                 if (!ignoredException) {
+                     throw e;
+                 }
+             }
+        }
+        return i;
+    }
+    /**
+     * 批量登录新的Discord账号
+     * @param tokens DiscordUser账号Token列表
+     * @param ignoredException 是否忽略异常 为否一个账号登录失败则直接throw
+     * @return 登录成功的账号数
+     * @throws Exception 如果登录过程遇到任何问题,则抛出异常.
+     */
+    public int login(List<String> tokens, boolean ignoredException) throws Exception {
+        return login(tokens, ignoredException, null);
+    }
+    /**
+     * 批量登录新的Discord账号
+     * @param tokens DiscordUser账号Token列表
+     * @param proxy 自定义代理配置 null使用配置中默认代理
+     * @return 登录成功的账号数
+     */
+    public int login(List<String> tokens, Proxy proxy) {
+        try {
+            return login(tokens, true,proxy);
+        } catch (Exception ignored) {
+            return 0;
         }
     }
     /**
-     * Discord登录
+     * 批量登录新的Discord账号
+     * @param tokens DiscordUser账号Token列表
+     * @return 登录成功的账号数
      */
-    public void login() throws Exception {
-        disconnect();
-
-        for (String token : config.token) {
-            Protocol protocolJoin = new Protocol();
-
-            protocolJoin.setConfig(new EventListenConfig(config.serverID ,config.botID,!config.Disable_CozeBot_ReplyMsgCheck));
-            protocolJoin.login(config.loginApp ,token ,config.Proxy);
-
-            protocol.add(protocolJoin);
+    public int login(List<String> tokens) {
+        try {
+            return login(tokens, true);
+        } catch (Exception ignored) {
+            return 0;
         }
-        if (protocol.isEmpty()) throw new NoAccountLoginException();
     }
     /**
-     * Discord登出
+     * 获取已登录账号数
+     * @return 已登录账号数
      */
-    public void disconnect() {
+    public int getLoginCount() {
+        return protocol.size();
+    }
+    /**
+     * 退出登录并删除全部账号
+     */
+    public void disconnectAll() {
         for (ProtocolHandle protocol : protocol) {
             try { protocol.disconnect(); } catch (Exception ignored) { }
         }

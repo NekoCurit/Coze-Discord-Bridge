@@ -8,11 +8,6 @@ import java.util.ArrayList;
 public class CozeGPTConfig {
     public String loginApp = Protocols.DISCORD;
     /**
-     * 用户Token 发消息使用
-     * Coze现在屏蔽bot账号发送消息 必须换成用户账号发送
-     */
-    public List<String> token = new ArrayList<String>();
-    /**
      * 连接到Discord服务器时所使用的代理
      * 对于某些无法直连Discord的地区很有帮助
      * 设置为 null 则不适用
