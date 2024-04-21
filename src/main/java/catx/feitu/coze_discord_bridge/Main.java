@@ -1,9 +1,10 @@
 package catx.feitu.coze_discord_bridge;
 
 import catx.feitu.CozeProxy.CozeGPTConfig;
-import catx.feitu.coze_discord_bridge.Config.ConfigBotsData;
-import catx.feitu.coze_discord_bridge.Config.ConfigManage;
+import catx.feitu.coze_discord_bridge.config.ConfigBotsData;
+import catx.feitu.coze_discord_bridge.config.ConfigManage;
 import catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage;
+import catx.feitu.coze_discord_bridge.utils.JdkUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fusesource.jansi.AnsiConsole;
@@ -12,16 +13,15 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+
 
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        AnsiConsole.systemInstall();
-        try {
+         AnsiConsole.systemInstall();
          try {
             if (JdkUtils.getJdkVersion() < 11) {
                 throw new Exception("当前JDK版本过低 推荐使用17或更高版本");
@@ -57,7 +57,6 @@ public class Main {
                         throw new Exception("无效的Token");
                     }
                     GPTConfig.loginApp = BotData.Protocol;
-                    GPTConfig.token = new ArrayList<>(Arrays.asList((BotData.Token.split(","))));
                     GPTConfig.serverID = BotData.Server_id;
                     GPTConfig.Discord_CreateChannel_Category =  BotData.CreateChannel_Category;
                     GPTConfig.botID = BotData.CozeBot_id;
@@ -76,8 +75,11 @@ public class Main {
                     }
 
                     logger.info("[" + BotData.Key + "] 开始登录流程..");
-                    GPTManage.newGPT(BotData.Key, GPTConfig);
-                    logger.info("[" + BotData.Key + "] 初始化成功 Token数:" +GPTConfig.token.size());
+                    int LoginCount = GPTManage.newGPT(BotData.Key, GPTConfig, new ArrayList<>(Arrays.asList((BotData.Token.split(",")))));
+                    if (LoginCount == 0) {
+                        throw new Exception("无有效登录信息");
+                    }
+                    logger.info("[" + BotData.Key + "] 初始化成功 账号数:" + LoginCount);
                     successOne = true;
                 } catch (Exception e){
                     logger.error("[" + BotData.Key + "] 初始化失败", e);

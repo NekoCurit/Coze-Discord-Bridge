@@ -1,4 +1,4 @@
-package catx.feitu.coze_discord_bridge.Config;
+package catx.feitu.coze_discord_bridge.config;
 
 public class ConfigBotsData {
     public String Key = "";

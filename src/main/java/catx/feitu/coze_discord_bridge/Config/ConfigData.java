@@ -1,4 +1,4 @@
-package catx.feitu.coze_discord_bridge.Config;
+package catx.feitu.coze_discord_bridge.config;
 
 import java.util.ArrayList;
 import java.util.List;

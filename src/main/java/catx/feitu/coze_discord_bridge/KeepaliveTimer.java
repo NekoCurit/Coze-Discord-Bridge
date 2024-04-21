@@ -1,5 +1,5 @@
 package catx.feitu.coze_discord_bridge;
-import catx.feitu.coze_discord_bridge.Config.ConfigManage;
+import catx.feitu.coze_discord_bridge.config.ConfigManage;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

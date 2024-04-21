@@ -1,6 +1,6 @@
-package catx.feitu.coze_discord_bridge.Misc;
+package catx.feitu.coze_discord_bridge.utils;
 
-public class Random {
+public class RandomUtils {
     public static String RandomName() {
         java.util.Random random = new java.util.Random();
         StringBuilder sb = new StringBuilder(16);

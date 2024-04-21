@@ -1,7 +1,7 @@
 package catx.feitu.coze_discord_bridge;
 
-import catx.feitu.coze_discord_bridge.Config.ConfigBotsData;
-import catx.feitu.coze_discord_bridge.Config.ConfigManage;
+import catx.feitu.coze_discord_bridge.config.ConfigBotsData;
+import catx.feitu.coze_discord_bridge.config.ConfigManage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

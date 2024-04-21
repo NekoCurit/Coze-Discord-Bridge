@@ -1,4 +1,4 @@
-package catx.feitu.coze_discord_bridge.Config.YmalReslove;
+package catx.feitu.coze_discord_bridge.utils.ymal;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;

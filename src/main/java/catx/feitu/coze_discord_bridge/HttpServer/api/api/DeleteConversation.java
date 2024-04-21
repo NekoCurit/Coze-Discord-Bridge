@@ -5,7 +5,7 @@ import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
 import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
 import com.alibaba.fastjson.JSONObject;
 
-import static catx.feitu.coze_discord_bridge.Misc.Random.RandomName;
+import static catx.feitu.coze_discord_bridge.utils.RandomUtils.RandomName;
 
 public class DeleteConversation implements APIHandler {
 

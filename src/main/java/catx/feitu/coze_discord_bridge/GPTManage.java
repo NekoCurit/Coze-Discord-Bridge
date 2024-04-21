@@ -3,7 +3,7 @@ package catx.feitu.coze_discord_bridge;
 import catx.feitu.CozeProxy.CozeGPT;
 import catx.feitu.CozeProxy.CozeGPTConfig;
 import catx.feitu.CozeProxy.utils.ConversationUtils;
-import catx.feitu.coze_discord_bridge.Config.ConfigManage;
+import catx.feitu.coze_discord_bridge.config.ConfigManage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,14 +12,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GPTManage {
     private static final Logger logger = LogManager.getLogger(GPTManage.class);
 
-    private static ConcurrentHashMap<Object, CozeGPT> ResponseMap = new ConcurrentHashMap<>();
-    public static void newGPT(String botID, CozeGPTConfig config) throws Exception {
-        CozeGPT GPT = new CozeGPT(config, true);
+    private static final ConcurrentHashMap<Object, CozeGPT> ResponseMap = new ConcurrentHashMap<>();
+    public static int newGPT(String botID, CozeGPTConfig config, List<String> tokens) throws Exception {
+        CozeGPT GPT = new CozeGPT(config);
+        GPT.login(tokens);
         GPT.setMark(botID);
         if (!config.Disable_2000Limit_Unlock) {
             if (new File("conversation_" + botID + ".json").exists()) {
@@ -29,6 +31,7 @@ public class GPTManage {
             }
         }
         ResponseMap.put(botID, GPT);
+        return GPT.getLoginCount();
     }
     public static CozeGPT getGPT(String botID) throws NullPointerException {
         if (!ResponseMap.containsKey(botID)) {
@@ -40,7 +43,7 @@ public class GPTManage {
         try {
             CozeGPT GPT = ResponseMap.get(botID);
             try {
-                GPT.disconnect();
+                GPT.disconnectAll();
             } catch (Exception ignored) { }
             Files.writeString(new File("conversation_" + botID + ".json").toPath(), ConversationUtils.conversation2JsonString(GPT.data.conversations));
             ResponseMap.remove(botID);

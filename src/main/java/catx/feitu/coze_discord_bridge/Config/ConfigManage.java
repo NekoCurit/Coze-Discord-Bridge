@@ -1,6 +1,6 @@
-package catx.feitu.coze_discord_bridge.Config;
+package catx.feitu.coze_discord_bridge.config;
 
-import catx.feitu.coze_discord_bridge.Config.YmalReslove.YamlConfig;
+import catx.feitu.coze_discord_bridge.utils.ymal.YamlConfig;
 import catx.feitu.coze_discord_bridge.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
