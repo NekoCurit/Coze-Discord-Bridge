@@ -47,7 +47,7 @@ public class ConversationUtils {
         return JSON.toJSONString(conversation.conversations);
     }
     public static ConversationData jsonString2Conversation(String jsonString) {
-        TypeReference<ConcurrentHashMap<String, String>> typeRef = new TypeReference<>() {};
+        TypeReference<ConcurrentHashMap<String, String>> typeRef = new TypeReference<ConcurrentHashMap<String, String>>() {};
 
         ConversationData data = new ConversationData();
         data.conversations = JSON.parseObject(jsonString, typeRef);

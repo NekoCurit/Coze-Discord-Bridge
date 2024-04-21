@@ -22,6 +22,10 @@ public class Main {
     public static void main(String[] args) {
         AnsiConsole.systemInstall();
         try {
+         try {
+            if (JdkUtils.getJdkVersion() < 11) {
+                throw new Exception("当前JDK版本过低 推荐使用17或更高版本");
+            }
             ConfigManage.DefaultConfig();
 
             ConfigManage.ReadConfig();
