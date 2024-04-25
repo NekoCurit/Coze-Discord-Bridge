@@ -1,4 +1,4 @@
-#Github: https://github.com/catx-feitu/coze-discord-bridge
+﻿#Github: https://github.com/catx-feitu/coze-discord-bridge
 
 #配置版本 无特殊不需要改动
 Version: 0
@@ -11,8 +11,9 @@ Bots:
      #登录协议
      Protocol: "discord"
      #Discord user token
-     #打开Discord(推荐注册小号 因为UserBot 本身Discord就禁止) 按下F12打开开发者模式
+     #打开Discord 按下F12打开开发者模式
      #点进网络 随便选择一个 复制请求头中的 Authorization 粘贴在这里
+     # 支持多个Token 使用 , 分割 到达每日使用限制后自动切换
      Token: ""
      #[仅Discord可用]创建频道时使用的父频道 (也可以理解成 分组) 打开开发者模式 右键就可以看到ID 为空关闭
      CreateChannel_Category: ""
