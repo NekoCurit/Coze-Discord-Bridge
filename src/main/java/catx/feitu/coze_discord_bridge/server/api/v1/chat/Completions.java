@@ -1,11 +1,11 @@
-package catx.feitu.coze_discord_bridge.HttpServer.api.v1.chat;
+package catx.feitu.coze_discord_bridge.server.api.v1.chat;
 
 import catx.feitu.CozeProxy.exception.InvalidConversationException;
 import catx.feitu.CozeProxy.impl.GenerateMessage;
 import catx.feitu.coze_discord_bridge.config.ConfigManage;
-import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
-import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
-import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
+import catx.feitu.coze_discord_bridge.server.APIHandler;
+import catx.feitu.coze_discord_bridge.server.HandleType;
+import catx.feitu.coze_discord_bridge.server.ResponseType;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;

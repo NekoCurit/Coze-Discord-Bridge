@@ -1,8 +1,8 @@
-package catx.feitu.coze_discord_bridge.HttpServer.api.v1;
+package catx.feitu.coze_discord_bridge.server.api.v1;
 
-import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
-import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
-import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
+import catx.feitu.coze_discord_bridge.server.APIHandler;
+import catx.feitu.coze_discord_bridge.server.HandleType;
+import catx.feitu.coze_discord_bridge.server.ResponseType;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 

@@ -3,7 +3,7 @@ package catx.feitu.coze_discord_bridge;
 import catx.feitu.CozeProxy.CozeGPTConfig;
 import catx.feitu.coze_discord_bridge.config.ConfigBotsData;
 import catx.feitu.coze_discord_bridge.config.ConfigManage;
-import catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage;
+import catx.feitu.coze_discord_bridge.server.HttpServerManage;
 import catx.feitu.coze_discord_bridge.utils.JdkUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

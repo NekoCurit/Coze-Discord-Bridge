@@ -1,10 +1,10 @@
-package catx.feitu.coze_discord_bridge.HttpServer.api.api;
+package catx.feitu.coze_discord_bridge.server.api.api;
 
 import catx.feitu.CozeProxy.impl.GPTFile;
 import catx.feitu.CozeProxy.impl.GenerateMessage;
-import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
-import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
-import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
+import catx.feitu.coze_discord_bridge.server.APIHandler;
+import catx.feitu.coze_discord_bridge.server.HandleType;
+import catx.feitu.coze_discord_bridge.server.ResponseType;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.OutputStream;

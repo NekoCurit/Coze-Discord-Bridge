@@ -1,15 +1,15 @@
-package catx.feitu.coze_discord_bridge.HttpServer;
+package catx.feitu.coze_discord_bridge.server;
 
 import catx.feitu.coze_discord_bridge.config.ConfigManage;
 import catx.feitu.coze_discord_bridge.GPTManage;
-import catx.feitu.coze_discord_bridge.HttpServer.api.Ping;
-import catx.feitu.coze_discord_bridge.HttpServer.api.api.*;
-import catx.feitu.coze_discord_bridge.HttpServer.api.api.Protocol.GetLoginCount;
-import catx.feitu.coze_discord_bridge.HttpServer.api.index;
-import catx.feitu.coze_discord_bridge.HttpServer.api.robots;
-import catx.feitu.coze_discord_bridge.HttpServer.api.v1.Models;
-import catx.feitu.coze_discord_bridge.HttpServer.api.v1.chat.Completions;
-import catx.feitu.coze_discord_bridge.HttpServer.api.v1.images.Generations;
+import catx.feitu.coze_discord_bridge.server.api.Ping;
+import catx.feitu.coze_discord_bridge.server.api.api.*;
+import catx.feitu.coze_discord_bridge.server.api.api.Protocol.GetLoginCount;
+import catx.feitu.coze_discord_bridge.server.api.index;
+import catx.feitu.coze_discord_bridge.server.api.robots;
+import catx.feitu.coze_discord_bridge.server.api.v1.Models;
+import catx.feitu.coze_discord_bridge.server.api.v1.chat.Completions;
+import catx.feitu.coze_discord_bridge.server.api.v1.images.Generations;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.*;
@@ -34,8 +34,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.APIS;
-import static catx.feitu.coze_discord_bridge.HttpServer.HttpServerManage.ProtectPaths;
+import static catx.feitu.coze_discord_bridge.server.HttpServerManage.APIS;
+import static catx.feitu.coze_discord_bridge.server.HttpServerManage.ProtectPaths;
 
 public class HttpServerManage {
 

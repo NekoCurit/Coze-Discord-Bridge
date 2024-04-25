@@ -1,4 +1,4 @@
-package catx.feitu.coze_discord_bridge.HttpServer;
+package catx.feitu.coze_discord_bridge.server;
 
 
 

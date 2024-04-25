@@ -1,9 +1,9 @@
-package catx.feitu.coze_discord_bridge.HttpServer.api;
+package catx.feitu.coze_discord_bridge.server.api;
 
-import catx.feitu.coze_discord_bridge.HttpServer.APIHandler;
-import catx.feitu.coze_discord_bridge.HttpServer.HandleType;
-import catx.feitu.coze_discord_bridge.HttpServer.ResponseType;
-import catx.feitu.coze_discord_bridge.HttpServer.api.api.GetLatestMessage;
+import catx.feitu.coze_discord_bridge.server.APIHandler;
+import catx.feitu.coze_discord_bridge.server.HandleType;
+import catx.feitu.coze_discord_bridge.server.ResponseType;
+import catx.feitu.coze_discord_bridge.server.api.api.GetLatestMessage;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
