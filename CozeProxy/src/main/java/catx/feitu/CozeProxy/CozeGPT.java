@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.net.Proxy;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -247,11 +248,12 @@ public class CozeGPT {
 
                 if (Objects.equals(responseMessage.Message, BotResponseStatusCode.TRY_A_BIT_LATER)) continue;
                 if (Objects.equals(responseMessage.Message, BotResponseStatusCode.TRY_TOMORROW)) {
-                    selectedProtocol.isLimited = true;
+                    selectedProtocol.limitedDate = new Date();
                     protocols.remove(0);
                 }
 
                 isDone = true;
+                selectedProtocol.chatCountTotal++;
             }
             utils.lock.getLock(conversationID).unlock();
             return responseMessage;

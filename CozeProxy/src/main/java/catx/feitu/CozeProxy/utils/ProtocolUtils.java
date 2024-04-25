@@ -9,7 +9,7 @@ public class ProtocolUtils {
     public static List<Protocol> getAliveProtocols (List<Protocol> protocols) {
         List<Protocol> aliveProtocols = new ArrayList<>();
         for (Protocol protocol : protocols) {
-            if (!protocol.isLimited) {
+            if (protocol.limitedDate == null || DateUtils.isBeforeNineAMNextDay(protocol.limitedDate,9)) {
                 aliveProtocols.add(protocol);
             }
         }
