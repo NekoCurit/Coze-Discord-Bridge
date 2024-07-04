@@ -10,6 +10,12 @@ _觉得有点用的话 别忘了点个🌟_
 
 </div>
 
+## 停止维护
+
+已停止维护 推荐个类似的
+
+[Coze-Discord-Proxy](https://github.com/deanxv/coze-discord-proxy)
+
 ## 截图
 ![image](https://github.com/catx-feitu/Coze-Discord-Bridge/assets/108512490/24e4304b-a5f7-4baa-9559-8c01f9a935b3)
 
